@@ -1,0 +1,21 @@
+.publicNavBar {
+  position: sticky;
+  top: 0;
+  background-color: #d4a373;
+  width: 100%;
+  padding: 1rem 0;
+}
+
+.publicNavBar ul {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  gap: 2rem;
+  width: 100%;
+}
+
+.publicNavBar li a {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+}

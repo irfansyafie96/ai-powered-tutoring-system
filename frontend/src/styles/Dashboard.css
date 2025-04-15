@@ -1,14 +1,10 @@
-* {
-  font-family: "Montserrat", sans-serif;
-}
-
 .dashboardContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 2rem;
   justify-content: center;
-  height: 100vh;
+  height: 90vh;
 }
 
 .leftColumn {
@@ -29,6 +25,7 @@
 }
 
 .buttonContainer {
+  padding: 1rem 0;
   display: flex;
   gap: 1rem;
 }
@@ -39,6 +36,7 @@
   border-width: 1px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-size: 1rem;
 }
 
 .buttonContainer button:hover {
