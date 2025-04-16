@@ -5,6 +5,21 @@ const api = axios.create({
   timeout: 10000,
 });
 
+// Sign up function
+export const signUp = async (username, email, password) => {
+  try {
+    const response = await api.post("/auth/signup", {
+      username,
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Signup error: ", error);
+    throw error;
+  }
+};
+
 // Login function
 export const login = async (username, password) => {
   try {

@@ -20,7 +20,7 @@ const Dashboard = () => {
           with AI-powered summaries and quizzes tailored just for you.
         </p>
         <div className="buttonContainer">
-          <button>Sign Up</button>
+          <button onClick={() => navigate("/signup")}>Sign Up</button>
           <button onClick={() => navigate("/login")}>Login</button>
         </div>
       </div>
