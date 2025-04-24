@@ -1,34 +1,24 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000",
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000" + "/api",
   timeout: 10000,
 });
 
 // Sign up function
-export const signUp = async (username, email, password) => {
-  try {
-    const response = await api.post("/auth/signup", {
-      username,
-      email,
-      password,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Signup error: ", error);
-    throw error;
-  }
+export const signUp = async ({ username, email, password }) => {
+  const response = await api.post("/auth/signup", {
+    username,
+    email,
+    password,
+  });
+  return response.data;
 };
 
 // Login function
-export const login = async (username, password) => {
-  try {
-    const response = await api.post("/auth/login", { username, password });
-    return response.data;
-  } catch (error) {
-    console.error("Login error: ", error);
-    throw error;
-  }
+export const login = async ({ username, password }) => {
+  const response = await api.post("/auth/login", { username, password });
+  return response.data;
 };
 
 // Note upload function
