@@ -6,6 +6,9 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedLayout from "./components/ProtectedLayout";
 import Home from "./pages/Home";
+import UploadNotes from "./pages/UploadNote";
+import GenerateQuiz from "./pages/GenerateQuiz";
+import Preview from "./pages/Preview";
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
         </Route>
         <Route element={<ProtectedLayout />}>
           <Route path="/home" element={<Home />}></Route>
+          <Route path="/upload" element={<UploadNotes />}></Route>
+          <Route path="/quiz" element={<GenerateQuiz />}></Route>
+          <Route path="/summary" element={<Preview />}></Route>
         </Route>
       </Routes>
     </Router>

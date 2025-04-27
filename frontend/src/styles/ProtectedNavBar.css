@@ -1,0 +1,39 @@
+.protectedNavBar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 125px;
+  background-color: #d4a373;
+  padding: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.protectedNavBar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.protectedNavBar li {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.protectedNavBar a {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+  display: block;
+  width: 100%;
+}
+
+.protectedNavBar .active {
+  text-decoration: underline;
+}
