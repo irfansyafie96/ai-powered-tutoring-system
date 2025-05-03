@@ -7,7 +7,7 @@ import "../styles/Preview.css";
 
 export default function Preview() {
   const { state } = useLocation();
-  const { fileUrl, summary } = state | {};
+  const { fileUrl, summary } = state || {};
   const [numPages, setNumPages] = useState(0);
   const [text, setText] = useState("");
 
@@ -27,6 +27,8 @@ export default function Preview() {
   }
 
   const ext = fileUrl.split(".").pop().toLowerCase();
+  console.log(`Base URL is ${process.env.BASE_URL}`);
+  console.log(fileUrl);
 
   return (
     <div className="previewContainer">

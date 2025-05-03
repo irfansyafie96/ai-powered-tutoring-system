@@ -41,7 +41,7 @@ const UploadNotes = () => {
 
       const { fileUrl, summary } = response.note;
 
-      navigate("/preview", {
+      navigate("/summary", {
         state: {
           fileUrl,
           summary,

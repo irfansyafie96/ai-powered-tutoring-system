@@ -21,17 +21,12 @@ export const login = async ({ username, password }) => {
   return response.data;
 };
 
-// Note upload function
+//Note upload function
 export const uploadNote = async (formData) => {
-  try {
-    const response = await api.post("/notes/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Upload note error: ", error);
-    throw error;
-  }
+  const response = await api.post("/notes/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
 };
 
 // Generate summary function
