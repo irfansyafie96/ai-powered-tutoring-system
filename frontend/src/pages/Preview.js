@@ -27,7 +27,6 @@ export default function Preview() {
   }
 
   const ext = fileUrl.split(".").pop().toLowerCase();
-  console.log(`Base URL is ${process.env.BASE_URL}`);
   console.log(fileUrl);
 
   return (

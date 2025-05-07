@@ -4,10 +4,11 @@ import App from "./App";
 import { pdfjs } from "react-pdf";
 import "./index.css";
 
+console.log("pdfjs.version =", pdfjs.version);
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+
 const container = document.getElementById("root");
 const root = createRoot(container);
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 root.render(
   <React.StrictMode>

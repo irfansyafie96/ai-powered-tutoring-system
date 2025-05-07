@@ -6,16 +6,22 @@ export const uploadNote = async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const fileUrl = `${process.env.BASE_URL}/uploads/${path.basename(
-      req.file.filename
-    )}`;
+    const baseUrl = process.env.BASE_URL || "http://localhost:5000";
 
-    const summary = "Placeholder summary.";
+    const encodeFileName = encodeURIComponent(req.file.filename);
+
+    // const safeFilename = encodeURIComponent(req.file.filename);
+
+    const fileUrl = `${baseUrl}/uploads/${encodeFileName}`;
+
+    // const fileUrl = `/uploads/${encodeURIComponent(req.file.filename)}`;
+
+    // const summary = "Placeholder summary.";
 
     res.status(201).json({
       note: {
         fileUrl,
-        summary,
+        summary: "Placeholder",
       },
     });
   } catch (error) {
