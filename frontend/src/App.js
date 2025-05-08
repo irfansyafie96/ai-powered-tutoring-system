@@ -1,4 +1,5 @@
 import React from "react";
+import "./utils/pdfOverride.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PublicLayout from "./components/PublicLayout";
 import Register from "./pages/Register";

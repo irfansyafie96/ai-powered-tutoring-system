@@ -20,7 +20,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prestart": "cp node_modules/pdfjs-dist/build/pdf.worker.* public/pdfjs/"
+  },
+  "overrides": {
+    "pdfjs-dist": "3.11.174"
+  },
+  "resolutions": {
+    "pdfjs-dist": "3.11.174"
   },
   "eslintConfig": {
     "extends": [
