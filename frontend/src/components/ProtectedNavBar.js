@@ -8,7 +8,7 @@ const ProtectedNavBar = () => {
       <ul>
         <li>
           <NavLink
-            to={"/home"}
+            to="/home"
             className={({ isActive }) => (isActive ? "active" : "")}
           >
             Home
@@ -16,7 +16,7 @@ const ProtectedNavBar = () => {
         </li>
         <li>
           <NavLink
-            to={"/upload"}
+            to="/upload"
             className={({ isActive }) => (isActive ? "active" : "")}
           >
             Upload Notes
@@ -24,7 +24,7 @@ const ProtectedNavBar = () => {
         </li>
         <li>
           <NavLink
-            to={"/quiz"}
+            to="/quiz"
             className={({ isActive }) => (isActive ? "active" : "")}
           >
             Generate Quiz
