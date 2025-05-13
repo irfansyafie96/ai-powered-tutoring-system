@@ -1,4 +1,9 @@
 import path from "path";
+import fs from "fs";
+import { promisify } from "util";
+import libre from "libreoffice-convert";
+
+const convertAsync = promisify(libre.convert);
 
 export const uploadNote = async (req, res) => {
   try {
@@ -7,16 +12,26 @@ export const uploadNote = async (req, res) => {
     }
 
     const baseUrl = process.env.BASE_URL || "http://localhost:5000";
+    const uploadsDir = path.join(process.cwd(), "uploads");
+    const inputPath = path.join(uploadsDir, req.file.filename);
+    const ext = path.extname(req.file.filename).toLowerCase();
 
-    const encodeFileName = encodeURIComponent(req.file.filename);
+    let outputFileName, outputPath, fileUrl;
 
-    // const safeFilename = encodeURIComponent(req.file.filename);
+    if (ext === ".pptx") {
+      outputFileName = req.file.filename.replace(/\.pptx$/, ".pdf");
+      outputPath = path.join(uploadsDir, outputFileName);
 
-    const fileUrl = `${baseUrl}/uploads/${encodeFileName}`;
+      const fileBuf = await fs.promises.readFile(inputPath);
 
-    // const fileUrl = `/uploads/${encodeURIComponent(req.file.filename)}`;
+      const pdfBuf = await convertAsync(fileBuf, ".pdf", undefined);
 
-    // const summary = "Placeholder summary.";
+      await fs.promises.writeFile(outputPath, pdfBuf);
+
+      fileUrl = `${baseUrl}/uploads/${encodeURIComponent(outputFileName)}`;
+    } else {
+      fileUrl = `${baseUrl}/uploads/${encodeURIComponent(req.file.filename)}`;
+    }
 
     res.status(201).json({
       note: {

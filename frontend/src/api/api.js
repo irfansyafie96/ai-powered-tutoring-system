@@ -4,7 +4,7 @@ export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL
     ? `${process.env.REACT_APP_API_URL}/api`
     : "http://localhost:5000/api",
-  timeout: 10000,
+  timeout: 60000,
 });
 
 // Sign up function
