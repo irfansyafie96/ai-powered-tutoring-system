@@ -1,9 +1,8 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import { fileURLToPath } from "url";
 import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config();
 
 import express from "express";
 import cors from "cors";

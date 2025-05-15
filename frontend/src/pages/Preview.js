@@ -107,18 +107,6 @@ export default function Preview() {
               <pre className="text-preview">{text}</pre>
             </div>
           )}
-
-          {ext === "pptx" && (
-            <div className="pdf-container">
-              <iframe
-                title="pptx-viewer"
-                src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
-                  fileUrl
-                )}`}
-                className="ppt-viewer"
-              />
-            </div>
-          )}
         </div>
       </div>
 
