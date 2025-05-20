@@ -1,0 +1,124 @@
+.uploadContainer {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background-color: #ccd5ae;
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  margin: 2rem auto;
+  border-radius: 8px;
+}
+
+.errorText {
+  color: #cc0000;
+  font-size: 0.9rem;
+}
+
+/* Hidden native file input */
+.uploadInput {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+/* Custom label as file button */
+.uploadLabel {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: center;
+  margin: 0;
+}
+.uploadLabel:hover {
+  background-color: #e2e6ea;
+}
+
+.fileInputWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.uploadForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.uploadButton {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+.uploadButton:hover:not(:disabled) {
+  background-color: #d4a373;
+}
+.uploadButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading overlay */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.loadingBar {
+  width: 80%;
+  max-width: 400px;
+  height: 12px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.loadingFill {
+  height: 100%;
+  background: #6c757d;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .uploadContainer {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+  .uploadLabel {
+    width: 100%;
+  }
+  .uploadButton {
+    width: 100%;
+  }
+}

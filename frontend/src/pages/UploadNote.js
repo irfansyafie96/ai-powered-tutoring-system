@@ -1,8 +1,7 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { uploadNote } from "../api/api";
 import { useNavigate } from "react-router-dom";
-import "../styles/UploadNotes.css";
+import styles from "../styles/UploadNote.module.css";
 
 const UploadNotes = () => {
   const [file, setFile] = useState(null);
@@ -11,13 +10,13 @@ const UploadNotes = () => {
   const [percent, setPercent] = useState(0);
   const navigate = useNavigate();
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
     setError(null);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!file) {
       setError("Please select a file first");
       return;
@@ -40,15 +39,9 @@ const UploadNotes = () => {
       });
 
       const { fileUrl, summary } = response.note;
-
-      navigate("/summary", {
-        state: {
-          fileUrl,
-          summary,
-        },
-      });
-    } catch (error) {
-      setError(error.response?.data?.error || "Upload failed");
+      navigate("/summary", { state: { fileUrl, summary } });
+    } catch (err) {
+      setError(err.response?.data?.error || "Upload failed");
     } finally {
       setLoading(false);
     }
@@ -56,9 +49,12 @@ const UploadNotes = () => {
 
   if (loading) {
     return (
-      <div className="loadingOverlay">
-        <div className="loadingBar">
-          <div className="loadingFill" style={{ width: `${percent}%` }}></div>
+      <div className={styles.loadingOverlay}>
+        <div className={styles.loadingBar}>
+          <div
+            className={styles.loadingFill}
+            style={{ width: `${percent}%` }}
+          />
         </div>
         <p>Uploading... {percent}%</p>
       </div>
@@ -66,25 +62,27 @@ const UploadNotes = () => {
   }
 
   return (
-    <div className="uploadContainer">
-      {error && (
-        <div className="errorText" style={{ color: "red" }}>
-          {error}
-        </div>
-      )}
+    <div className={styles.uploadContainer}>
+      {error && <div className={styles.errorText}>{error}</div>}
       <h2>Upload Your Notes</h2>
-      <form className="uploadForm" onSubmit={handleSubmit}>
-        <div className="fileInputWrapper">
+      <form className={styles.uploadForm} onSubmit={handleSubmit}>
+        <div className={styles.fileInputWrapper}>
           <input
             type="file"
             id="fileInput"
-            accept=".pdf, .txt, .pptx"
+            accept=".pdf,.txt,.pptx"
             onChange={handleFileChange}
-            className="uploadInput"
+            className={styles.uploadInput}
           />
-          <label htmlFor="fileInput">{file ? file.name : "Choose file"}</label>
+          <label htmlFor="fileInput" className={styles.uploadLabel}>
+            {file ? file.name : "Choose file"}
+          </label>
         </div>
-        <button type="submit" disabled={loading} className="uploadButton">
+        <button
+          type="submit"
+          disabled={loading}
+          className={styles.uploadButton}
+        >
           {loading ? "Uploading..." : "Upload"}
         </button>
       </form>

@@ -5,6 +5,7 @@
   gap: 2rem;
   justify-content: center;
   height: 90vh;
+  padding: 1rem;
 }
 
 .leftColumn {
@@ -16,18 +17,24 @@
 
 .dashboardTitle {
   font-size: 4rem;
+  text-align: center;
 }
 
 .rightColumn {
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .buttonContainer {
   padding: 1rem 0;
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .buttonContainer button {
@@ -37,24 +44,36 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-size: 1rem;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
 }
 
 .buttonContainer button:hover {
   background-color: #d4a373;
 }
 
-/*
+/* Responsive for tablets and smaller */
 @media (max-width: 768px) {
   .dashboardContainer {
     grid-template-columns: 1fr;
     text-align: center;
-    align-items: center;
+    height: auto;
   }
 
-  .leftColumn,
-  .rightColumn {
-    padding: 1rem;
-    grid-column: auto;
+  .dashboardTitle {
+    font-size: 3rem;
   }
 }
-*/
+
+/* Extra responsive for small phones */
+@media (max-width: 480px) {
+  .dashboardTitle {
+    font-size: 2.25rem;
+  }
+
+  .buttonContainer button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+  }
+}

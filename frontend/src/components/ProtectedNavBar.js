@@ -1,7 +1,6 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import "../styles/ProtectedNavBar.css";
+import { NavLink, useNavigate } from "react-router-dom";
+import styles from "../styles/ProtectedNavBar.module.css";
 
 const ProtectedNavBar = () => {
   const navigate = useNavigate();
@@ -12,43 +11,31 @@ const ProtectedNavBar = () => {
   };
 
   return (
-    <nav className="protectedNavBar" activeClassName="active">
+    <nav className={styles.protectedNavBar}>
       <ul>
+        {[
+          ["Home", "/home"],
+          ["Upload Notes", "/upload"],
+          ["Generate Quiz", "/quiz"],
+          ["Profile", "/profile"],
+        ].map(([label, path]) => (
+          <li key={path}>
+            <NavLink
+              to={path}
+              className={({ isActive }) =>
+                isActive ? styles.active : undefined
+              }
+            >
+              {label}
+            </NavLink>
+          </li>
+        ))}
+
         <li>
-          <NavLink
-            to="/home"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Home
-          </NavLink>
+          <button className={styles.logoutBtn} onClick={handleLogout}>
+            Logout
+          </button>
         </li>
-        <li>
-          <NavLink
-            to="/upload"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Upload Notes
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/quiz"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Generate Quiz
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/profile"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Profile
-          </NavLink>
-        </li>
-        <button className="btn btn-secondary logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
       </ul>
     </nav>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUp } from "../api/api";
-import "../styles/Register.css";
+import styles from "../styles/Register.module.css";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Register = () => {
     const cleanEmail = email.trim().toLowerCase();
 
     if (password !== confirmPassword) {
-      setError("Passwords does not match");
+      setError("Passwords do not match");
       return;
     }
     setLoading(true);
@@ -27,68 +27,72 @@ const Register = () => {
     try {
       await signUp({ username: clearUsername, email: cleanEmail, password });
       navigate("/login");
-      console.log("Signup succesful");
-    } catch (error) {
-      setError(error.response?.data?.error || "Sign up failed");
+    } catch (err) {
+      setError(err.response?.data?.error || "Sign up failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="registerContainer">
-      <h2 className="registerTitle">Sign Up</h2>
-      {error && (
-        <div className="errorText" style={{ color: "red" }}>
-          {error}
-        </div>
-      )}
-      <form className="registerForm" onSubmit={handleSubmit}>
-        <div className="registerFormGroup">
-          <label>Username: </label>
+    <div className={styles.registerContainer}>
+      <h2 className={styles.registerTitle}>Sign Up</h2>
+      {error && <div className={styles.errorText}>{error}</div>}
+
+      <form className={styles.registerForm} onSubmit={handleSubmit}>
+        <div className={styles.registerFormGroup}>
+          <label>Username</label>
           <input
             type="text"
             placeholder="Username"
             required
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="registerInput"
+            className={styles.registerInput}
           />
         </div>
-        <div className="registerFormGroup">
-          <label>Email: </label>
+
+        <div className={styles.registerFormGroup}>
+          <label>Email</label>
           <input
             type="email"
             placeholder="Email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="registerInput"
+            className={styles.registerInput}
           />
         </div>
-        <div className="registerFormGroup">
-          <label>Password: </label>
+
+        <div className={styles.registerFormGroup}>
+          <label>Password</label>
           <input
             type="password"
             placeholder="Password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="registerInput"
+            className={styles.registerInput}
           />
         </div>
-        <div className="registerFormGroup">
-          <label>Confirm Password: </label>
+
+        <div className={styles.registerFormGroup}>
+          <label>Confirm Password</label>
           <input
             type="password"
             placeholder="Confirm password"
             required
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="registerInput"
+            className={styles.registerInput}
           />
         </div>
-        <button type="submit" className="submitButton" disabled={loading}>
+
+        <button
+          type="submit"
+          className={styles.submitButton}
+          disabled={loading}
+        >
           {loading ? "Signing up..." : "Sign Up"}
         </button>
       </form>

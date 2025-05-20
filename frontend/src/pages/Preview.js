@@ -1,8 +1,7 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Document, Page } from "react-pdf";
-import "../styles/Preview.css";
+import styles from "../styles/Preview.module.css";
 
 export default function Preview() {
   const { state } = useLocation();
@@ -10,51 +9,45 @@ export default function Preview() {
   const [numPages, setNumPages] = useState(0);
   const [text, setText] = useState("");
   const [error, setError] = useState(null);
-  const [containerWidth, setContainerWidth] = useState(800);
 
   useEffect(() => {
     if (!fileUrl) return;
 
     const handleResize = () => {
-      const container = document.querySelector(".pane.left");
+      const container = document.querySelector(`.${styles.paneLeft}`);
       if (container) {
-        setContainerWidth(container.offsetWidth - 48); // Account for padding
+        // Force a re-render by updating state if needed
       }
     };
 
-    handleResize();
     window.addEventListener("resize", handleResize);
-
-    // Cleanup
     return () => window.removeEventListener("resize", handleResize);
   }, [fileUrl]);
 
   useEffect(() => {
-    if (!fileUrl || !fileUrl.toLowerCase().endsWith(".txt")) {
+    if (!fileUrl?.toLowerCase().endsWith(".txt")) {
       setText("");
       return;
     }
-
     fetch(fileUrl)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load text file");
         return res.text();
       })
       .then(setText)
-      .catch((error) => {
-        console.error("Text load error:", error);
-        setText("Error loading text content");
-      });
+      .catch(() => setText("Error loading text content"));
   }, [fileUrl]);
 
-  const handlePdfError = (error) => {
-    console.error("PDF Error:", error);
+  const handlePdfError = (err) => {
+    console.error("PDF Error:", err);
     setError("Failed to load PDF document");
   };
 
   if (!fileUrl) {
     return (
-      <p className="pdf-loading">No file to preview. Please upload first.</p>
+      <p className={styles.pdfLoading}>
+        No file to preview. Please upload first.
+      </p>
     );
   }
 
@@ -62,25 +55,23 @@ export default function Preview() {
   const ext = cleanUrl.split(".").pop().toLowerCase();
 
   return (
-    <div className="previewContainer">
-      {/* Left Pane - Document Viewer */}
-      <div className="pane left">
-        <div className="originalFileHeader">
+    <div className={styles.previewContainer}>
+      <div className={styles.paneLeft}>
+        <div className={styles.originalFileHeader}>
           <h3>Original Document</h3>
         </div>
-
-        <div className="originalFileContent">
+        <div className={styles.originalFileContent}>
           {ext === "pdf" && (
-            <div className="pdf-container">
+            <div className={styles.pdfContainer}>
               {error ? (
-                <div className="pdf-loading">{error}</div>
+                <div className={styles.pdfLoading}>{error}</div>
               ) : (
                 <Document
                   file={fileUrl}
                   onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                   onLoadError={handlePdfError}
                   loading={
-                    <div className="pdf-loading">Loading document...</div>
+                    <div className={styles.pdfLoading}>Loading document...</div>
                   }
                   error={null}
                 >
@@ -91,7 +82,7 @@ export default function Preview() {
                       renderTextLayer={false}
                       renderAnnotationLayer={false}
                       loading={
-                        <div className="pdf-loading">
+                        <div className={styles.pdfLoading}>
                           Loading page {i + 1}...
                         </div>
                       }
@@ -101,28 +92,23 @@ export default function Preview() {
               )}
             </div>
           )}
-
           {ext === "txt" && (
-            <div className="pdf-container">
-              <pre className="text-preview">{text}</pre>
+            <div className={styles.pdfContainer}>
+              <pre className={styles.textPreview}>{text}</pre>
             </div>
           )}
         </div>
       </div>
-
-      {/* Right Pane - Summary */}
-      <div className="pane right">
-        <div className="summaryBox">
-          <div className="summaryTitle">
-            <h3>Analysis & Summary</h3>
-          </div>
-          <div className="summaryContent">
-            {summary
-              ?.split("\n")
-              .map((line, i) => (
-                <p key={`summary_line_${i}`}>{line || <br />}</p>
-              )) || <p className="pdf-loading">No analysis available</p>}
-          </div>
+      <div className={styles.summaryBox}>
+        <div className={styles.summaryTitle}>
+          <h3>Analysis & Summary</h3>
+        </div>
+        <div className={styles.summaryContent}>
+          {summary
+            ?.split("\n")
+            .map((line, i) => (
+              <p key={`summary_line_${i}`}>{line || <br />}</p>
+            )) || <p className={styles.pdfLoading}>No analysis available</p>}
         </div>
       </div>
     </div>

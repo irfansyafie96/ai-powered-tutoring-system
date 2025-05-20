@@ -7,3 +7,11 @@
   align-items: center;
   justify-content: center;
 }
+
+/* On small screens, stack full width (no left padding) */
+@media (max-width: 768px) {
+  .protectedLayoutMain {
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+}

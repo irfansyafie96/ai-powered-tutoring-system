@@ -1,19 +1,25 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/PublicNavBar.css";
+import styles from "../styles/PublicNavBar.module.css";
 
 const PublicNavBar = () => {
   return (
-    <nav className="publicNavBar">
-      <ul>
-        <li>
-          <Link to="/">Dashboard</Link>
+    <nav className={styles.publicNavBar}>
+      <ul className={styles.navList}>
+        <li className={styles.navItem}>
+          <Link to="/" className={styles.navLink}>
+            Dashboard
+          </Link>
         </li>
-        <li>
-          <Link>About</Link>
+        <li className={styles.navItem}>
+          <Link to="/" className={styles.navLink}>
+            About
+          </Link>
         </li>
-        <li>
-          <Link>Contact Us</Link>
+        <li className={styles.navItem}>
+          <Link to="/" className={styles.navLink}>
+            Contact Us
+          </Link>
         </li>
       </ul>
     </nav>

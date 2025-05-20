@@ -9,7 +9,8 @@
   margin-top: 64px;
 }
 
-.pane.left {
+/* Left pane */
+.paneLeft {
   flex: 1;
   min-width: 0;
   background: #ffffff;
@@ -19,6 +20,7 @@
   flex-direction: column;
 }
 
+/* Original file header */
 .originalFileHeader {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid rgba(221, 161, 94, 0.15);
@@ -26,6 +28,7 @@
   flex-shrink: 0;
 }
 
+/* Content area of left pane */
 .originalFileContent {
   flex: 1;
   overflow: hidden;
@@ -34,7 +37,8 @@
   display: flex;
 }
 
-.pdf-container {
+/* PDF or text container */
+.pdfContainer {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -42,28 +46,8 @@
   padding: 1.5rem;
 }
 
-.react-pdf__Document {
-  margin: 0 auto;
-  max-width: 100%;
-}
-
-.react-pdf__Page {
-  margin: 0 auto 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  background: white !important;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.react-pdf__Page__canvas {
-  width: 100% !important;
-  height: auto !important;
-  display: block !important;
-  max-width: 100%;
-  margin: 0 auto;
-}
-
-.text-preview {
+/* Text fallback styling */
+.textPreview {
   padding: 1.5rem;
   white-space: pre-wrap;
   word-break: break-word;
@@ -77,7 +61,28 @@
   margin: 1.5rem;
 }
 
-.pane.right {
+/* PDF.js global overrides */
+:global(.react-pdf__Document) {
+  margin: 0 auto;
+  max-width: 100%;
+}
+:global(.react-pdf__Page) {
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: white !important;
+  border-radius: 6px;
+  overflow: hidden;
+}
+:global(.react-pdf__Page__canvas) {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Right pane renamed to summaryBox */
+.summaryBox {
   flex: 0 0 380px;
   background: white;
   border-radius: 12px;
@@ -86,6 +91,7 @@
   flex-direction: column;
 }
 
+/* Summary header */
 .summaryTitle {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid rgba(221, 161, 94, 0.15);
@@ -93,6 +99,7 @@
   flex-shrink: 0;
 }
 
+/* Summary content area */
 .summaryContent {
   flex: 1;
   overflow-y: auto;
@@ -102,7 +109,8 @@
   color: #4a5568;
 }
 
-.pdf-loading {
+/* Loading / error text in either pane */
+.pdfLoading {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,7 +119,8 @@
   font-style: italic;
 }
 
-.ppt-viewer {
+/* Optional PPT viewer fallback */
+.pptViewer {
   flex: 1;
   width: 100%;
   height: 100%;
@@ -121,8 +130,36 @@
   background: white;
 }
 
-.pdf-container pre.text-preview {
+/* Ensure text preview scrolls if inside PDF container */
+.pdfContainer :global(pre.text-preview) {
   flex: 1;
   overflow-y: auto;
   margin: 0;
+}
+
+/* Responsive: stack panes on tablet and smaller */
+@media (max-width: 768px) {
+  .previewContainer {
+    flex-direction: column;
+    height: auto;
+  }
+  .summaryBox {
+    width: 100%;
+  }
+}
+
+/* Extra small screens: reduce padding */
+@media (max-width: 480px) {
+  .previewContainer {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .originalFileHeader,
+  .summaryTitle {
+    padding: 1rem;
+  }
+  .pdfContainer,
+  .summaryContent {
+    padding: 1rem;
+  }
 }
