@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { login } from "../api/api";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";
 import "../styles/Login.css";
 
 const Login = () => {
@@ -19,7 +18,6 @@ const Login = () => {
     try {
       const { token } = await login({ username, password });
       localStorage.setItem("token", token);
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       navigate("/home");
       console.log("Login successful");
     } catch (error) {

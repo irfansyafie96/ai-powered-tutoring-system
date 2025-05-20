@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import UploadNotes from "./pages/UploadNote";
 import GenerateQuiz from "./pages/GenerateQuiz";
 import Preview from "./pages/Preview";
+import Profile from "./pages/Profile.js";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/upload" element={<UploadNotes />}></Route>
           <Route path="/quiz" element={<GenerateQuiz />}></Route>
           <Route path="/summary" element={<Preview />}></Route>
+          <Route path="/profile" element={<Profile />}></Route>
         </Route>
       </Routes>
     </Router>

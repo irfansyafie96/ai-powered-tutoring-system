@@ -7,6 +7,13 @@ export const api = axios.create({
   timeout: 60000,
 });
 
+// Inject JWT on every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 // Sign up function
 export const signUp = async ({ username, email, password }) => {
   const response = await api.post("/auth/signup", {
@@ -21,6 +28,17 @@ export const signUp = async ({ username, email, password }) => {
 export const login = async ({ username, password }) => {
   const response = await api.post("/auth/login", { username, password });
   return response.data;
+};
+
+// Profile endpoints
+export const getProfile = async () => {
+  const res = await api.get("/auth/me");
+  return res.data.user;
+};
+
+export const updateProfile = async (body) => {
+  const res = await api.put("/auth/profile", body);
+  return res.data.user;
 };
 
 //Note upload function

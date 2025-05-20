@@ -1,0 +1,103 @@
+/* Profile.module.css */
+
+/* Global button base */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+/* Primary button—for “Save Changes” */
+.btnPrimary {
+  background-color: #007bff;
+  color: #fff;
+}
+.btnPrimary:hover {
+  background-color: #0056b3;
+}
+
+/* Secondary button—for “Change Password” and “Cancel” */
+.btnSecondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+.btnSecondary:hover {
+  background-color: #5a6268;
+}
+
+/* Container & layout */
+.profileContainer {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading inside container */
+.profileContainer h2 {
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  text-align: center;
+}
+
+/* Message box */
+.profileMessage {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+/* Variants */
+.error {
+  background-color: #ffe5e5;
+  color: #cc0000;
+}
+.success {
+  background-color: #e5ffe5;
+  color: #007700;
+}
+
+/* Field groups */
+.profileField {
+  margin-bottom: 1rem;
+}
+.profileField label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+.profileField input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Action buttons container */
+.profileActions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+/* Center any standalone button inside the container */
+.profileContainer > .btn {
+  display: block;
+  margin: 1rem auto 0;
+}
+
+@media (max-width: 400px) {
+  .profileActions {
+    flex-direction: column;
+  }
+}

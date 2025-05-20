@@ -1,8 +1,16 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles/ProtectedNavBar.css";
 
 const ProtectedNavBar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
   return (
     <nav className="protectedNavBar" activeClassName="active">
       <ul>
@@ -30,6 +38,17 @@ const ProtectedNavBar = () => {
             Generate Quiz
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/profile"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            Profile
+          </NavLink>
+        </li>
+        <button className="btn btn-secondary logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </ul>
     </nav>
   );
