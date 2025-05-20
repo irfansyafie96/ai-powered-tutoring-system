@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Document, Page } from "react-pdf";
+import { saveNote } from "../api/api";
 import styles from "../styles/Preview.module.css";
+import MetadataModal from "../components/MetadataModal";
 
 export default function Preview() {
   const { state } = useLocation();
@@ -9,6 +11,11 @@ export default function Preview() {
   const [numPages, setNumPages] = useState(0);
   const [text, setText] = useState("");
   const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [subject, setSubject] = useState("");
+  const [topic, setTopic] = useState("");
+  const [saveError, setSaveError] = useState(null);
 
   useEffect(() => {
     if (!fileUrl) return;
@@ -53,6 +60,24 @@ export default function Preview() {
 
   const cleanUrl = fileUrl.split(/[#?]/)[0];
   const ext = cleanUrl.split(".").pop().toLowerCase();
+
+  const handleSave = async () => {
+    if (!subject.trim() || !topic.trim()) {
+      setSaveError("Subject and topic are required.");
+      return;
+    }
+    setSaving(true);
+    try {
+      await saveNote({ fileUrl, summary, subject, topic });
+      setShowModal(false);
+      setSaveError(null);
+      // Optionally show success toast or redirect
+    } catch (err) {
+      setSaveError(err.response?.data?.error || "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className={styles.previewContainer}>
@@ -109,6 +134,34 @@ export default function Preview() {
             .map((line, i) => (
               <p key={`summary_line_${i}`}>{line || <br />}</p>
             )) || <p className={styles.pdfLoading}>No analysis available</p>}
+
+          {!showModal && (
+            <div className={styles.saveButtonContainer}>
+              <button
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                onClick={() => setShowModal(true)}
+              >
+                Save Notes
+              </button>
+            </div>
+          )}
+
+          {/* Modal */}
+          {showModal && (
+            <MetadataModal
+              subject={subject}
+              topic={topic}
+              saving={saving}
+              error={saveError}
+              onSubjectChange={setSubject}
+              onTopicChange={setTopic}
+              onSave={handleSave}
+              onCancel={() => {
+                setShowModal(false);
+                setSaveError(null);
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

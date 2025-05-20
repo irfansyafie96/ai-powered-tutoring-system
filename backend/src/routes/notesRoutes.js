@@ -1,9 +1,12 @@
 import { Router } from "express";
 import multer from "multer";
 import { authenticateJWT } from "../middleware/authenticateJWT.js";
-import { uploadNote } from "../controllers/notesController.js";
+import {
+  uploadNote,
+  saveNoteMetadata,
+} from "../controllers/notesController.js";
 
-//Multer setup
+// Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => {
@@ -14,11 +17,14 @@ const storage = multer.diskStorage({
     cb(null, `${uniqueSuffix}-${sanitizedName}`);
   },
 });
-
 const upload = multer({ storage });
 
 const notesRoutes = Router();
 
+// 1️⃣ Upload & summarize (no DB write yet)
 notesRoutes.post("/upload", authenticateJWT, upload.single("file"), uploadNote);
+
+// 2️⃣ Save metadata (fileUrl, summary, subject, topic) to notes table
+notesRoutes.post("/", authenticateJWT, saveNoteMetadata);
 
 export default notesRoutes;

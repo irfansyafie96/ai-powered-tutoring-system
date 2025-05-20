@@ -60,6 +60,16 @@ export const generateSummary = async (noteId) => {
   }
 };
 
+/**
+ * Save a note’s metadata (subject + topic) to the DB.
+ * @param {{ fileUrl, summary, subject, topic }} body
+ */
+
+export const saveNote = async (body) => {
+  const res = await api.post("/notes", body);
+  return res.data.note;
+};
+
 // Generate quiz function
 export const quizCreation = async (noteId, difficulty) => {
   try {

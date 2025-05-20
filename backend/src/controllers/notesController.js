@@ -4,6 +4,7 @@ import { promisify } from "util";
 import libre from "libreoffice-convert";
 import { extractTextFromFile } from "../utils/extractTextFromFile.js";
 import { summarizeWithDeepSeek } from "../utils/summarizeWithDeepSeek.js";
+import pool from "../db.js";
 
 const convertAsync = promisify(libre.convert);
 
@@ -44,6 +45,31 @@ export const uploadNote = async (req, res) => {
     });
   } catch (error) {
     console.error("Error uploading note:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const saveNoteMetadata = async (req, res) => {
+  const userId = req.user.id;
+  const { fileUrl, summary, subject, topic } = req.body;
+
+  if (!fileUrl || !summary || !subject || !topic) {
+    return res
+      .status(400)
+      .json({ error: "fileUrl, summary, subject and topic are required." });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO notes 
+         (user_id, file_url, summary, subject, topic, created_at)
+       VALUES ($1,$2,$3,$4,$5,NOW())
+       RETURNING id, user_id, file_url, summary, subject, topic, created_at`,
+      [userId, fileUrl, summary, subject, topic]
+    );
+    res.status(201).json({ note: result.rows[0] });
+  } catch (err) {
+    console.error("Save note metadata error:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
