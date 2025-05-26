@@ -4,7 +4,7 @@ export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL
     ? `${process.env.REACT_APP_API_URL}/api`
     : "http://localhost:5000/api",
-  timeout: 60000,
+  timeout: 100000,
 });
 
 // Inject JWT on every request
@@ -41,10 +41,14 @@ export const updateProfile = async (body) => {
   return res.data.user;
 };
 
-//Note upload function
-export const uploadNote = async (formData) => {
+// Note upload function
+export const uploadNote = async (formData, config = {}) => {
   const response = await api.post("/notes/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+    ...config,
+    headers: {
+      "Content-Type": "multipart/form-data",
+      ...config.headers,
+    },
   });
   return response.data;
 };

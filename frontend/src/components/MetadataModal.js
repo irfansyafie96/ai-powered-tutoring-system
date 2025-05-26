@@ -11,6 +11,15 @@ export default function MetadataModal({
   onSave,
   onCancel,
 }) {
+  // ✅ Check if both fields are filled
+  const isFormValid = subject.trim() !== "" && topic.trim() !== "";
+
+  // ✅ Handle form submission
+  const handleSaveClick = () => {
+    if (!isFormValid) return; // Prevent save if form not valid
+    onSave();
+  };
+
   return (
     <div className={styles.overlay}>
       <div className={styles.modal}>
@@ -29,7 +38,16 @@ export default function MetadataModal({
           onChange={(e) => onTopicChange(e.target.value)}
           disabled={saving}
         />
+
+        {/* Optional: Show message if fields are empty */}
+        {!isFormValid && (
+          <div className={styles.helpText}>
+            Please enter both subject and topic to continue.
+          </div>
+        )}
+
         {error && <div className={styles.errorText}>{error}</div>}
+
         <div className={styles.actions}>
           <button
             className={`${styles.btn} ${styles.btnSecondary}`}
@@ -40,8 +58,8 @@ export default function MetadataModal({
           </button>
           <button
             className={`${styles.btn} ${styles.btnPrimary}`}
-            onClick={onSave}
-            disabled={saving}
+            onClick={handleSaveClick}
+            disabled={!isFormValid || saving}
           >
             {saving ? "Saving…" : "Save"}
           </button>

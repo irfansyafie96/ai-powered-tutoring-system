@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Document, Page } from "react-pdf";
+import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import { saveNote } from "../api/api";
 import styles from "../styles/Preview.module.css";
 import MetadataModal from "../components/MetadataModal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Preview() {
   const { state } = useLocation();
@@ -23,7 +25,7 @@ export default function Preview() {
     const handleResize = () => {
       const container = document.querySelector(`.${styles.paneLeft}`);
       if (container) {
-        // Force a re-render by updating state if needed
+        // Optional: Force re-render or adjust layout
       }
     };
 
@@ -36,6 +38,7 @@ export default function Preview() {
       setText("");
       return;
     }
+
     fetch(fileUrl)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load text file");
@@ -66,21 +69,63 @@ export default function Preview() {
       setSaveError("Subject and topic are required.");
       return;
     }
+
     setSaving(true);
     try {
       await saveNote({ fileUrl, summary, subject, topic });
-      setShowModal(false);
       setSaveError(null);
-      // Optionally show success toast or redirect
+      setShowModal(false);
+
+      // ✅ Show toast instead of using `saved` state
+      toast.success("✅ Notes saved to your collection!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (err) {
-      setSaveError(err.response?.data?.error || "Save failed");
+      // ✅ Show error toast on failure
+      toast.error("❌ Failed to save notes", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+      });
     } finally {
       setSaving(false);
     }
   };
 
+  const handleCopySummary = () => {
+    if (!summary) {
+      toast.error("❌ No summary available to copy", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(summary)
+      .then(() => {
+        toast.success("📋 Summary copied to clipboard!", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      })
+      .catch((err) => {
+        console.error("Copy failed:", err);
+        toast.error("⚠️ Failed to copy summary.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      });
+  };
+
   return (
     <div className={styles.previewContainer}>
+      {/* Left Pane: Original Document */}
       <div className={styles.paneLeft}>
         <div className={styles.originalFileHeader}>
           <h3>Original Document</h3>
@@ -117,6 +162,7 @@ export default function Preview() {
               )}
             </div>
           )}
+
           {ext === "txt" && (
             <div className={styles.pdfContainer}>
               <pre className={styles.textPreview}>{text}</pre>
@@ -124,10 +170,21 @@ export default function Preview() {
           )}
         </div>
       </div>
+
+      {/* Right Pane: Summary */}
       <div className={styles.summaryBox}>
         <div className={styles.summaryTitle}>
           <h3>Analysis & Summary</h3>
+          <button
+            onClick={handleCopySummary}
+            className={styles.btnCopy}
+            aria-label="Copy summary to clipboard"
+            title="Copy summary to clipboard"
+          >
+            📋 Copy
+          </button>
         </div>
+
         <div className={styles.summaryContent}>
           {summary
             ?.split("\n")
@@ -140,6 +197,7 @@ export default function Preview() {
               <button
                 className={`${styles.btn} ${styles.btnPrimary}`}
                 onClick={() => setShowModal(true)}
+                title="Save these notes to your library"
               >
                 Save Notes
               </button>
@@ -164,6 +222,9 @@ export default function Preview() {
           )}
         </div>
       </div>
+
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 }

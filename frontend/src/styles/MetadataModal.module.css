@@ -71,6 +71,14 @@
   gap: 0.5rem;
 }
 
+.helpText {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
 /* Error text */
 .errorText {
   color: #cc0000;

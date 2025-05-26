@@ -38,9 +38,13 @@ const UploadNotes = () => {
         },
       });
 
-      const { fileUrl, summary } = response.note;
+      const { fileUrl, summary } = response?.note || {};
+      if (!fileUrl || !summary) {
+        throw new Error("Incomplete data received from server.");
+      }
       navigate("/summary", { state: { fileUrl, summary } });
     } catch (err) {
+      console.error("Upload error:", err.message);
       setError(err.response?.data?.error || "Upload failed");
     } finally {
       setLoading(false);
@@ -50,13 +54,16 @@ const UploadNotes = () => {
   if (loading) {
     return (
       <div className={styles.loadingOverlay}>
+        <div className={styles.spinner}></div>
         <div className={styles.loadingBar}>
           <div
             className={styles.loadingFill}
             style={{ width: `${percent}%` }}
           />
         </div>
-        <p>Uploading... {percent}%</p>
+        <p className={styles.loadingText}>
+          🧠 Analyzing notes<span className={styles.loadingDots}>...</span>
+        </p>
       </div>
     );
   }

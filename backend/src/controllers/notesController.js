@@ -8,6 +8,24 @@ import pool from "../db.js";
 
 const convertAsync = promisify(libre.convert);
 
+/**
+ * Post-process summary to clean up output before returning.
+ * @param {string} summary - Raw summary text
+ * @returns {string} Cleaned summary
+ */
+function postProcessSummary(summary) {
+  // Remove leftover markers like === CONTINUED ===
+  let cleaned = summary.replace(/=== CONTINUED ===\s*/g, "");
+
+  // Remove extra blank lines
+  cleaned = cleaned.replace(/\n{3,}/g, "\n\n");
+
+  // Fix broken sentences split across newlines
+  cleaned = cleaned.replace(/([a-z])\n([a-z])/g, "$1 $2");
+
+  return cleaned.trim();
+}
+
 export const uploadNote = async (req, res) => {
   try {
     if (!req.file) {
@@ -34,13 +52,47 @@ export const uploadNote = async (req, res) => {
       fileUrl = `${baseUrl}/uploads/${encodeURIComponent(outputFileName)}`;
     }
 
-    const text = await extractTextFromFile(outputPath);
-    const summary = await summarizeWithDeepSeek(text);
+    // Step 1: Extract full text from file
+    const fullText = await extractTextFromFile(outputPath);
 
+    // Step 2: Split into chunks (improved logic below)
+    const CHUNK_SIZE = 3800; // Reduced from 4000 for faster processing
+    const OVERLAP = 300;
+
+    const chunks = [];
+
+    let index = 0;
+    while (index < fullText.length) {
+      const end = index + CHUNK_SIZE;
+      chunks.push(fullText.slice(index, end));
+      index = end - OVERLAP;
+    }
+
+    console.log(`Split into ${chunks.length} chunks`);
+
+    // Step 3: Summarize each chunk in parallel
+    const partialSummaries = await Promise.all(
+      chunks.map(async (chunk) => {
+        try {
+          return await summarizeWithDeepSeek(chunk);
+        } catch (err) {
+          console.error("Error summarizing chunk:", err.message);
+          return "";
+        }
+      })
+    );
+
+    // Step 4: Combine all summaries and clean up
+    const combinedSummary = partialSummaries.join("\n\n");
+
+    // Step 5: Post-process final summary
+    const finalSummary = postProcessSummary(combinedSummary);
+
+    // Step 6: Return final cleaned summary
     res.status(201).json({
       note: {
         fileUrl,
-        summary,
+        summary: finalSummary,
       },
     });
   } catch (error) {
