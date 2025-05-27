@@ -15,6 +15,7 @@ const ProtectedNavBar = () => {
       <ul>
         {[
           ["Home", "/home"],
+          ["Search Notes", "/search"],
           ["Upload Notes", "/upload"],
           ["Generate Quiz", "/quiz"],
           ["Profile", "/profile"],

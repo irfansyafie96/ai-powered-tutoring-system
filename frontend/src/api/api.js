@@ -74,6 +74,18 @@ export const saveNote = async (body) => {
   return res.data.note;
 };
 
+// Search notes function
+export const searchNotes = async ({
+  subject = "",
+  topic = "",
+  keyword = "",
+}) => {
+  const res = await api.get("/notes/search", {
+    params: { subject, topic, keyword },
+  });
+  return res.data.notes;
+};
+
 // Generate quiz function
 export const quizCreation = async (noteId, difficulty) => {
   try {

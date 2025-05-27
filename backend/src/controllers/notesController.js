@@ -125,3 +125,51 @@ export const saveNoteMetadata = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const searchNotes = async (req, res) => {
+  const { subject, topic, keyword } = req.query;
+
+  try {
+    let query = `
+      SELECT 
+        n.id,
+        n.summary,
+        n.subject,
+        n.topic,
+        u.username AS uploader_username,
+        n.created_at
+      FROM notes n
+      JOIN users u ON n.user_id = u.id
+      WHERE TRUE
+    `;
+    const params = [];
+
+    // Optional: filter by subject
+    if (subject) {
+      query += ` AND n.subject ILIKE $${params.length + 1}`;
+      params.push(`%${subject}%`);
+    }
+
+    // Optional: filter by topic
+    if (topic) {
+      query += ` AND n.topic ILIKE $${params.length + 1}`;
+      params.push(`%${topic}%`);
+    }
+
+    // Optional: filter by keyword in summary
+    if (keyword) {
+      query += ` AND to_tsvector(n.summary) @@ to_tsquery($${
+        params.length + 1
+      })`;
+      params.push(`${keyword.replace(/\s+/g, " & ")}`);
+    }
+
+    query += ` ORDER BY n.created_at DESC`;
+
+    const { rows } = await pool.query(query, params);
+    res.json({ notes: rows });
+  } catch (err) {
+    console.error("Search error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};

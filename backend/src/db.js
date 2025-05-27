@@ -11,4 +11,11 @@ export const pool = new Pool({
   host: process.env.DB_HOST,
 });
 
+console.log({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASS ? "******" : "(no password)",
+});
+
 export default pool;

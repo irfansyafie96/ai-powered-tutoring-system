@@ -4,6 +4,7 @@ import { authenticateJWT } from "../middleware/authenticateJWT.js";
 import {
   uploadNote,
   saveNoteMetadata,
+  searchNotes,
 } from "../controllers/notesController.js";
 
 // Multer setup
@@ -26,5 +27,7 @@ notesRoutes.post("/upload", authenticateJWT, upload.single("file"), uploadNote);
 
 // 2️⃣ Save metadata (fileUrl, summary, subject, topic) to notes table
 notesRoutes.post("/", authenticateJWT, saveNoteMetadata);
+
+notesRoutes.get("/search", authenticateJWT, searchNotes);
 
 export default notesRoutes;

@@ -11,6 +11,7 @@ import UploadNotes from "./pages/UploadNote";
 import GenerateQuiz from "./pages/GenerateQuiz";
 import Preview from "./pages/Preview";
 import Profile from "./pages/Profile.js";
+import SearchNotes from "./pages/SearchNotes.js";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/quiz" element={<GenerateQuiz />}></Route>
           <Route path="/summary" element={<Preview />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
+          <Route path="/search" element={<SearchNotes />}></Route>
         </Route>
       </Routes>
     </Router>
