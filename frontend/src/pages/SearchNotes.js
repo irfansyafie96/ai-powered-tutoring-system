@@ -33,8 +33,7 @@ export default function SearchNotes() {
 
   const handleSave = async (noteId) => {
     try {
-      const response = await saveToLibrary("/notes/save", { noteId });
-
+      const response = await saveToLibrary(noteId);
       if (response.data.saved === false) {
         toast.info("📘 Note already in your library");
       } else {
