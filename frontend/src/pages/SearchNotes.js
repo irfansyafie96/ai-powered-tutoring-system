@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { searchNotes } from "../api/api";
+import { searchNotes, saveToLibrary } from "../api/api";
 import styles from "../styles/SearchNotes.module.css";
+import { toast } from "react-toastify";
 
 export default function SearchNotes() {
   const [subject, setSubject] = useState("");
@@ -27,6 +28,21 @@ export default function SearchNotes() {
       setResults([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSave = async (noteId) => {
+    try {
+      const response = await saveToLibrary("/notes/save", { noteId });
+
+      if (response.data.saved === false) {
+        toast.info("📘 Note already in your library");
+      } else {
+        toast.success("✅ Note saved to your library");
+      }
+    } catch (err) {
+      console.error("Save failed:", err);
+      toast.error("❌ Failed to save note");
     }
   };
 
@@ -75,7 +91,10 @@ export default function SearchNotes() {
               {note.summary.split("\n").slice(0, 3).join("\n")}
             </p>
             <div className={styles.actions}>
-              <button onClick={() => alert("Feature coming soon!")}>
+              <button
+                onClick={() => handleSave(note.id)}
+                className={styles.saveButton}
+              >
                 💾 Save to My Library
               </button>
               <small className={styles.uploadedBy}>

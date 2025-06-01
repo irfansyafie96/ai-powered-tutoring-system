@@ -5,6 +5,8 @@ import {
   uploadNote,
   saveNoteMetadata,
   searchNotes,
+  getUserNotes,
+  saveToLibrary,
 } from "../controllers/notesController.js";
 
 // Multer setup
@@ -22,12 +24,10 @@ const upload = multer({ storage });
 
 const notesRoutes = Router();
 
-// 1️⃣ Upload & summarize (no DB write yet)
 notesRoutes.post("/upload", authenticateJWT, upload.single("file"), uploadNote);
-
-// 2️⃣ Save metadata (fileUrl, summary, subject, topic) to notes table
 notesRoutes.post("/", authenticateJWT, saveNoteMetadata);
-
 notesRoutes.get("/search", authenticateJWT, searchNotes);
+notesRoutes.get("/my", authenticateJWT, getUserNotes);
+notesRoutes.post("/save", authenticateJWT, saveToLibrary);
 
 export default notesRoutes;

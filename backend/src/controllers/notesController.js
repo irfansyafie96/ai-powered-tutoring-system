@@ -173,3 +173,60 @@ export const searchNotes = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+export const getUserNotes = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, summary, subject, topic, created_at
+       FROM notes
+       WHERE user_id = $1
+       ORDER BY created_at DESC`,
+      [userId]
+    );
+    res.json({ notes: rows });
+  } catch (err) {
+    console.error("Get user notes error:", err.message);
+    res.status(500).json({ error: "Failed to load your library" });
+  }
+};
+
+export const saveToLibrary = async (req, res) => {
+  const userId = req.user.id;
+  const { noteId } = req.body;
+
+  try {
+    // Check if note exists
+    const noteExists = await pool.query("SELECT 1 FROM notes WHERE id = $1", [
+      noteId,
+    ]);
+    if (!noteExists.rows.length) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    // Try to insert into saved_notes
+    const result = await pool.query(
+      `INSERT INTO saved_notes (user_id, note_id)
+       VALUES ($1, $2)
+       ON CONFLICT (user_id, note_id) DO NOTHING
+       RETURNING *`,
+      [userId, noteId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.json({
+        message: "Note already saved",
+        saved: false,
+      });
+    }
+
+    res.json({
+      message: "Note saved to library",
+      saved: true,
+    });
+  } catch (err) {
+    console.error("Save to library error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};

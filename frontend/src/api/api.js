@@ -86,6 +86,25 @@ export const searchNotes = async ({
   return res.data.notes;
 };
 
+export const getMyNotes = async () => {
+  const res = await api.get("/notes/my");
+  return res.data.notes;
+};
+
+/**
+ * Save a note to the current user's library.
+ * @param {number} noteId - The ID of the note to save
+ */
+export const saveToLibrary = async (noteId) => {
+  try {
+    const response = await api.post("/notes/save", { noteId });
+    return response.data;
+  } catch (error) {
+    console.error("Save to library error:", error);
+    throw error;
+  }
+};
+
 // Generate quiz function
 export const quizCreation = async (noteId, difficulty) => {
   try {
