@@ -34,10 +34,13 @@ export default function SearchNotes() {
   const handleSave = async (noteId) => {
     try {
       const response = await saveToLibrary(noteId);
-      if (response.data.saved === false) {
+      console.log("Server response: ", response);
+      if (response?.data?.saved === false) {
         toast.info("📘 Note already in your library");
-      } else {
+      } else if (response?.data?.saved === true) {
         toast.success("✅ Note saved to your library");
+      } else {
+        toast.warn("⚠️ Unexpected response from server");
       }
     } catch (err) {
       console.error("Save failed:", err);

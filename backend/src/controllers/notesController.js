@@ -192,6 +192,48 @@ export const getUserNotes = async (req, res) => {
   }
 };
 
+export const getFullLibrary = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+  n.id, 
+  n.summary, 
+  n.subject, 
+  n.topic, 
+  n.created_at, 
+  'uploaded' AS type,
+  u.username AS uploader_username
+FROM notes n
+JOIN users u ON n.user_id = u.id
+WHERE n.user_id = $1
+UNION ALL
+SELECT 
+  n.id, 
+  n.summary, 
+  n.subject, 
+  n.topic, 
+  sn.saved_at AS created_at, 
+  'saved' AS type,
+  u.username AS uploader_username
+FROM saved_notes sn
+JOIN notes n ON sn.note_id = n.id
+JOIN users u ON n.user_id = u.id
+WHERE sn.user_id = $1
+ORDER BY created_at DESC
+      `,
+      [userId]
+    );
+
+    res.json({ notes: result.rows });
+  } catch (err) {
+    console.error("Load library error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 export const saveToLibrary = async (req, res) => {
   const userId = req.user.id;
   const { noteId } = req.body;

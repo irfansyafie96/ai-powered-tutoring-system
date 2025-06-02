@@ -105,6 +105,11 @@ export const saveToLibrary = async (noteId) => {
   }
 };
 
+export const getFullLibrary = async () => {
+  const res = await api.get("/notes/library");
+  return res.data.notes;
+};
+
 // Generate quiz function
 export const quizCreation = async (noteId, difficulty) => {
   try {

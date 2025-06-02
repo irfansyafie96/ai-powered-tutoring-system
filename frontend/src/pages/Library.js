@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getMyNotes } from "../api/api";
+import { getFullLibrary } from "../api/api";
 import styles from "../styles/Library.module.css";
 
 export default function Library() {
@@ -10,7 +10,7 @@ export default function Library() {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const data = await getMyNotes();
+        const data = await getFullLibrary();
         setNotes(data || []);
       } catch (err) {
         setError(err.response?.data?.error || "Failed to load your library");
@@ -48,7 +48,9 @@ export default function Library() {
                   📄 View Summary
                 </button>
                 <small className={styles.uploadedBy}>
-                  Uploaded on: {new Date(note.created_at).toLocaleDateString()}
+                  {note.type === "uploaded"
+                    ? "You"
+                    : `Saved from ${note.uploader_username}`}
                 </small>
               </div>
             </div>
