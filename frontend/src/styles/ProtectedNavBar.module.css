@@ -35,8 +35,28 @@
 }
 
 /* Active link underline */
-.active {
-  text-decoration: underline;
+/* Better active link styling */
+.protectedNavBar a.active,
+.protectedNavBar a.active:hover {
+  color: #8b5e3c;
+  text-decoration: none;
+  position: relative;
+}
+
+.protectedNavBar a.active {
+  color: #8b5e3c;
+  font-weight: 900;
+  position: relative;
+}
+
+.protectedNavBar a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background-color: #8b5e3c;
 }
 
 /* Logout button styling */
