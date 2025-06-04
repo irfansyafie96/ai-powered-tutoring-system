@@ -1,4 +1,3 @@
-// D:\Projects\fyp\frontend\src\pages\SearchNotes.js
 import React, { useState } from "react";
 import { searchNotes, saveToLibrary } from "../api/api";
 import styles from "../styles/SearchNotes.module.css";
@@ -36,9 +35,8 @@ export default function SearchNotes() {
   const handleSave = async (noteId) => {
     try {
       const response = await saveToLibrary(noteId);
-      console.log("Server response:", response);
 
-      if (response?.data?.saved === false) {
+      if (response.saved === false) {
         toast.info("📘 Note already in your library", {
           position: "top-right",
           autoClose: 3000,
@@ -47,7 +45,7 @@ export default function SearchNotes() {
           pauseOnHover: true,
           draggable: true,
         });
-      } else if (response?.data?.saved === true) {
+      } else if (response.saved === true) {
         toast.success("✅ Note saved to your library", {
           position: "top-right",
           autoClose: 2000,
@@ -57,7 +55,7 @@ export default function SearchNotes() {
           draggable: true,
         });
       } else {
-        toast.warn("⚠️ Unexpected response from server", {
+        toast.warn("⚠️ Unknown response from server", {
           position: "top-right",
           autoClose: 4000,
           hideProgressBar: true,
@@ -132,12 +130,12 @@ export default function SearchNotes() {
         ))}
       </div>
 
-      {/* ✅ Toast container added here */}
+      {/* ✅ Local Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
-        newestOnTop={true}
+        newestOnTop={false}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss

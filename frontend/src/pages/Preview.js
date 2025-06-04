@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
-import { saveNote } from "../api/api";
+import { saveNote, checkIfSaved } from "../api/api";
 import styles from "../styles/Preview.module.css";
 import MetadataModal from "../components/MetadataModal";
 import { toast, ToastContainer } from "react-toastify";
@@ -18,10 +18,10 @@ export default function Preview() {
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const [alreadySaved, setIsAlreadySaved] = useState(false);
 
   // Load text content if file is .txt
   useEffect(() => {
-    console.log("Received state: ", state);
     if (!fileUrl?.toLowerCase().endsWith(".txt")) {
       setText("");
       return;
@@ -34,15 +34,30 @@ export default function Preview() {
       })
       .then(setText)
       .catch(() => setText("Error loading text content"));
-  }, [fileUrl, state]);
+  }, [fileUrl]);
 
   const handlePdfError = (err) => {
-    console.error("PDF Error:", err);
+    console.error("PDF Error:", err.message);
     setError("Failed to load PDF document");
   };
 
   const cleanUrl = fileUrl ? fileUrl.split(/[#?]/)[0] : null;
   const ext = cleanUrl ? cleanUrl.split(".").pop().toLowerCase() : "";
+
+  // Check if this note was already saved
+  useEffect(() => {
+    const checkSavedStatus = async () => {
+      if (!fileUrl?.id) return;
+
+      try {
+        const isSaved = await checkIfSaved(fileUrl.id);
+        setIsAlreadySaved(isSaved);
+      } catch (err) {
+        console.error("Check saved status failed:", err);
+      }
+    };
+    checkSavedStatus();
+  }, [fileUrl]);
 
   const handleSave = async () => {
     if (!subject.trim() || !topic.trim()) {
@@ -52,24 +67,34 @@ export default function Preview() {
 
     setSaving(true);
     try {
-      await saveNote({ fileUrl, summary, subject, topic });
-      setSaveError(null);
-      setShowModal(false);
+      const response = await saveNote({ fileUrl, summary, subject, topic });
 
-      toast.success("✅ Notes saved to your collection!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      if (response.saved === false) {
+        toast.info("📘 This note is already in your library", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+        });
+      } else {
+        toast.success("✅ Note saved to your collection!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+        });
+      }
+
+      // ✅ Always close modal after saving attempt
+      setShowModal(false);
+      setIsAlreadySaved(true); // Prevent future saves
+      setSaveError(null);
     } catch (err) {
+      console.error("Save failed:", err.message);
       toast.error("❌ Failed to save note", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
       });
+      // setShowModal(true); // Uncomment if want to keep it open
     } finally {
       setSaving(false);
     }
@@ -153,18 +178,37 @@ export default function Preview() {
         </div>
       )}
 
-      {/* Right Pane: Summary */}
+      {/* Right Pane: AI Summary */}
       <div className={styles.summaryBox}>
         <div className={styles.summaryTitle}>
-          <h3>📘 AI Summary</h3>
-          <button
-            onClick={handleCopySummary}
-            className={styles.btnCopy}
-            aria-label="Copy summary to clipboard"
-            title="Copy summary to clipboard"
-          >
-            📋 Copy
-          </button>
+          <h3>📘 Summary</h3>
+
+          <div className={styles.summaryActions}>
+            <button
+              onClick={handleCopySummary}
+              title="Copy summary to clipboard"
+              className={styles.btnAction}
+            >
+              📋 Copy
+            </button>
+
+            <button
+              onClick={() => {
+                if (alreadySaved) {
+                  toast.info("📘 This note is already in your library", {
+                    position: "top-right",
+                    autoClose: 3000,
+                  });
+                  return;
+                }
+                setShowModal(true);
+              }}
+              title="Save these notes to your library"
+              className={styles.btnAction}
+            >
+              💾 Save
+            </button>
+          </div>
         </div>
 
         <div className={styles.summaryContent}>
@@ -177,39 +221,38 @@ export default function Preview() {
           ) : (
             <p className={styles.pdfLoading}>No analysis available</p>
           )}
-
-          {!showModal && !summary && (
-            <div className={styles.saveButtonContainer}>
-              <button
-                className={`${styles.btn} ${styles.btnPrimary}`}
-                onClick={() => setShowModal(true)}
-                title="Save these notes to your library"
-              >
-                Save Notes
-              </button>
-            </div>
-          )}
-
-          {/* Modal for saving */}
-          {showModal && (
-            <MetadataModal
-              subject={subject}
-              topic={topic}
-              saving={saving}
-              error={saveError}
-              onSubjectChange={setSubject}
-              onTopicChange={setTopic}
-              onSave={handleSave}
-              onCancel={() => {
-                setShowModal(false);
-                setSaveError(null);
-              }}
-            />
-          )}
         </div>
-      </div>
 
-      <ToastContainer />
+        {/* Modal for saving */}
+        {showModal && (
+          <MetadataModal
+            subject={subject}
+            topic={topic}
+            saving={saving}
+            error={saveError}
+            onSubjectChange={setSubject}
+            onTopicChange={setTopic}
+            onSave={handleSave}
+            onCancel={() => {
+              setShowModal(false);
+              setSaveError(null);
+            }}
+          />
+        )}
+
+        {/* ✅ Toast Container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </div>
     </div>
   );
 }

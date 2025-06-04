@@ -8,6 +8,7 @@ import {
   getUserNotes,
   saveToLibrary,
   getFullLibrary,
+  isNoteSaved,
 } from "../controllers/notesController.js";
 
 // Multer setup
@@ -31,5 +32,6 @@ notesRoutes.get("/search", authenticateJWT, searchNotes);
 notesRoutes.get("/my", authenticateJWT, getUserNotes);
 notesRoutes.post("/save", authenticateJWT, saveToLibrary);
 notesRoutes.get("/library", authenticateJWT, getFullLibrary);
+notesRoutes.get("/notes/saved", authenticateJWT, isNoteSaved);
 
 export default notesRoutes;

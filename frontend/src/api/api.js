@@ -71,7 +71,19 @@ export const generateSummary = async (noteId) => {
 
 export const saveNote = async (body) => {
   const res = await api.post("/notes", body);
-  return res.data.note;
+  return res.data;
+};
+
+export const checkIfSaved = async (noteId) => {
+  try {
+    const response = await api.get("/notes/saved", {
+      params: { noteId },
+    });
+    return response.data.saved === true;
+  } catch (error) {
+    console.error("Check saved error:", error.message);
+    return false;
+  }
 };
 
 // Search notes function

@@ -126,6 +126,23 @@ export const saveNoteMetadata = async (req, res) => {
   }
 };
 
+export const isNoteSaved = async (req, res) => {
+  const userId = req.user.id;
+  const { noteId } = req.query;
+
+  try {
+    const result = await pool.query(
+      "SELECT 1 FROM saved_notes WHERE user_id = $1 AND note_id = $2",
+      [userId, noteId]
+    );
+
+    res.json({ saved: result.rows.length > 0 });
+  } catch (err) {
+    console.error("Check saved error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 export const searchNotes = async (req, res) => {
   const { subject, topic, keyword } = req.query;
 
@@ -230,7 +247,6 @@ ORDER BY createdAt DESC;
       [userId]
     );
     res.json({ notes: result.rows });
-    console.log("Full library response:", result.rows);
   } catch (err) {
     console.error("Load library error:", err.message);
     res.status(500).json({ error: "Server error" });

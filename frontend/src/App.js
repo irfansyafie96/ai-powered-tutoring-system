@@ -13,21 +13,20 @@ import Preview from "./pages/Preview";
 import Profile from "./pages/Profile.js";
 import SearchNotes from "./pages/SearchNotes.js";
 import Library from "./pages/Library.js";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import toastStyles from "./styles/Toast.module.css";
 
 function App() {
   return (
     <Router>
       <div className="app">
         <Routes>
+          {/* Public routes */}
           <Route element={<PublicLayout />}>
             <Route path="/signup" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Dashboard />} />
           </Route>
 
+          {/* Protected routes */}
           <Route element={<ProtectedLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/upload" element={<UploadNotes />} />
@@ -38,32 +37,6 @@ function App() {
             <Route path="/library" element={<Library />} />
           </Route>
         </Routes>
-
-        {/* ✅ Global Toast Container */}
-        <ToastContainer
-          className={toastStyles.container}
-          toastClassName={({ type }) => {
-            switch (type) {
-              case "info":
-                return toastStyles.info;
-              case "success":
-                return toastStyles.success;
-              case "error":
-                return toastStyles.error;
-              default:
-                return "";
-            }
-          }}
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
       </div>
     </Router>
   );
