@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getMyNotes } from "../api/api";
+import { getFullLibrary } from "../api/api";
 import styles from "../styles/Home.module.css";
 import { useNavigate } from "react-router-dom";
 
@@ -11,8 +11,8 @@ export default function Home() {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const notes = await getMyNotes();
-        setRecentNotes(notes.slice(0, 4)); // Show up to 4 notes
+        const data = await getFullLibrary();
+        setRecentNotes(data.slice(0, 3)); // Show only 3 recent notes
       } catch (err) {
         console.error("Failed to load recent notes:", err);
       } finally {
@@ -21,6 +21,17 @@ export default function Home() {
     };
     fetchNotes();
   }, []);
+
+  const handleViewSummary = (note) => {
+    navigate("/summary", {
+      state: {
+        fileUrl: note.fileurl,
+        summary: note.summary,
+        subject: note.subject,
+        topic: note.topic,
+      },
+    });
+  };
 
   if (loading) {
     return <p>Loading your library...</p>;
@@ -52,27 +63,25 @@ export default function Home() {
 
         <div className={styles.notePreviewGrid}>
           {recentNotes.length === 0 ? (
-            <p>You haven’t uploaded any notes yet.</p>
+            <p>You don’t have any notes yet.</p>
           ) : (
-            <div className={styles.notePreviewGrid}>
-              {recentNotes.slice(0, 3).map((note) => (
-                <div key={note.id} className={styles.notePreviewCard}>
-                  <h3>{note.subject || "Untitled Note"}</h3>
-                  <p>
-                    <strong>Topic:</strong> {note.topic || "—"}
-                  </p>
-                  <p className={styles.summaryPreview}>
-                    {note.summary.split("\n").slice(0, 3).join("\n")}
-                  </p>
-                  <button
-                    onClick={() => navigate("/summary", { state: note })}
-                    className={styles.viewSummaryButton}
-                  >
-                    📄 View Summary
-                  </button>
-                </div>
-              ))}
-            </div>
+            recentNotes.map((note) => (
+              <div key={note.id} className={styles.notePreviewCard}>
+                <h3>{note.subject || "Untitled Note"}</h3>
+                <p>
+                  <strong>Topic:</strong> {note.topic || "—"}
+                </p>
+                <p className={styles.summaryPreview}>
+                  {note.summary.split("\n").slice(0, 3).join("\n")}{" "}
+                </p>
+                <button
+                  onClick={() => handleViewSummary(note)}
+                  className={styles.viewSummaryButton}
+                >
+                  📄 View Summary
+                </button>
+              </div>
+            ))
           )}
         </div>
       </section>

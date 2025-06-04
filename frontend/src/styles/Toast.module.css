@@ -1,0 +1,23 @@
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+.Toastify__toast--success {
+  background-color: #fefae0;
+  color: #2d2d2d;
+  border-left: 4px solid #d4a373;
+}
+
+.Toastify__toast--info {
+  background-color: #d4a373;
+  color: white;
+}
+
+.Toastify__toast--error {
+  background-color: #cc0000;
+  color: white;
+}
+
+.Toastify__progress-bar {
+  background-color: #d4a373;
+}
