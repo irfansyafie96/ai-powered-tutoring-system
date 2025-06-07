@@ -13,30 +13,36 @@ import Preview from "./pages/Preview";
 import Profile from "./pages/Profile.js";
 import SearchNotes from "./pages/SearchNotes.js";
 import Library from "./pages/Library.js";
+import QuizPage from "./pages/QuizPage.js";
+import { LoadingProvider } from "./contexts/LoadingContext.js"; // Import the provider
 
 function App() {
   return (
     <Router>
       <div className="app">
-        <Routes>
-          {/* Public routes */}
-          <Route element={<PublicLayout />}>
-            <Route path="/signup" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Dashboard />} />
-          </Route>
+        {/* Wrap your entire application with LoadingProvider */}
+        <LoadingProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route element={<PublicLayout />}>
+              <Route path="/signup" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Dashboard />} />
+            </Route>
 
-          {/* Protected routes */}
-          <Route element={<ProtectedLayout />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/upload" element={<UploadNotes />} />
-            <Route path="/quiz" element={<GenerateQuiz />} />
-            <Route path="/summary" element={<Preview />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/search" element={<SearchNotes />} />
-            <Route path="/library" element={<Library />} />
-          </Route>
-        </Routes>
+            {/* Protected routes */}
+            <Route element={<ProtectedLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/upload" element={<UploadNotes />} />
+              <Route path="/quiz" element={<GenerateQuiz />} />
+              <Route path="/summary" element={<Preview />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/search" element={<SearchNotes />} />
+              <Route path="/library" element={<Library />} />
+              <Route path="/quizAnswer" element={<QuizPage />} />
+            </Route>
+          </Routes>
+        </LoadingProvider>
       </div>
     </Router>
   );

@@ -1,14 +1,15 @@
+// D:\Projects\fyp\frontend\src\pages\UploadNote.js
 import React, { useState } from "react";
 import { uploadNote } from "../api/api";
 import { useNavigate } from "react-router-dom";
-import styles from "../styles/UploadNote.module.css";
+import styles from "../styles/UploadNote.module.css"; // Keep page-specific styles
+import { useLoading } from "../contexts/LoadingContext"; // Import the hook
 
 const UploadNotes = () => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [percent, setPercent] = useState(0);
   const navigate = useNavigate();
+  const { startLoading, stopLoading, updateProgress } = useLoading(); // Use the loading context
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -22,8 +23,8 @@ const UploadNotes = () => {
       return;
     }
 
-    setLoading(true);
-    setPercent(0);
+    // Start loading via context
+    startLoading("🧠 Analyzing notes...", 0); // Set initial message and 0%
 
     try {
       const formData = new FormData();
@@ -34,7 +35,7 @@ const UploadNotes = () => {
           const pct = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
           );
-          setPercent(pct);
+          updateProgress(pct); // Update progress via context
         },
       });
 
@@ -42,31 +43,17 @@ const UploadNotes = () => {
       if (!fileUrl || !summary) {
         throw new Error("Incomplete data received from server.");
       }
+      stopLoading(); // Stop loading on success
       navigate("/summary", { state: { fileUrl, summary } });
     } catch (err) {
       console.error("Upload error:", err.message);
+      stopLoading(); // Stop loading on error
       setError(err.response?.data?.error || "Upload failed");
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className={styles.loadingOverlay}>
-        <div className={styles.spinner}></div>
-        <div className={styles.loadingBar}>
-          <div
-            className={styles.loadingFill}
-            style={{ width: `${percent}%` }}
-          />
-        </div>
-        <p className={styles.loadingText}>
-          🧠 Analyzing notes<span className={styles.loadingDots}>...</span>
-        </p>
-      </div>
-    );
-  }
+  // The `if (loading)` block is completely removed from here.
+  // The loading overlay is now handled by ProtectedLayout.
 
   return (
     <div className={styles.uploadContainer}>
@@ -87,10 +74,10 @@ const UploadNotes = () => {
         </div>
         <button
           type="submit"
-          disabled={loading}
+          disabled={false} // `loading` state is now handled by context and the overlay in ProtectedLayout
           className={styles.uploadButton}
         >
-          {loading ? "Uploading..." : "Upload"}
+          Upload
         </button>
       </form>
     </div>

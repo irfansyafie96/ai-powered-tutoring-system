@@ -122,13 +122,32 @@ export const getFullLibrary = async () => {
   return res.data.notes;
 };
 
-// Generate quiz function
+// Generate quiz
 export const quizCreation = async (noteId, difficulty) => {
   try {
-    const response = await api.post("/quizzes/create", { noteId, difficulty });
+    const response = await api.post("/quizzes/create", {
+      noteId,
+      difficulty,
+    });
     return response.data;
   } catch (error) {
-    console.error("Generate quiz error:", error);
+    console.error("Quiz creation failed:", error.message);
+    throw error;
+  }
+};
+
+// Save quiz score (optional)
+export const saveQuizScore = async (noteId, correct, total, difficulty) => {
+  try {
+    const response = await api.post("/quizzes/score", {
+      noteId,
+      correct,
+      total,
+      difficulty,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Save quiz score failed:", error.message);
     throw error;
   }
 };

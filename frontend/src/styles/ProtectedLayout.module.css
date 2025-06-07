@@ -1,11 +1,17 @@
 .protectedLayoutMain {
   padding-left: 125px;
   box-sizing: border-box;
+  /* Keep min-height: 100vh if you want the overlay to always cover the entire viewport height below the nav */
+  /* OR adjust it if your layout means it should only cover the available space after the nav */
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  position: relative; /* <-- CRUCIAL ADDITION */
+  overflow: hidden; /* <-- Recommended to prevent any potential overflow issues when overlay is active */
 }
 
 /* On small screens, stack full width (no left padding) */
@@ -15,3 +21,12 @@
     padding-top: 1rem;
   }
 }
+
+/*
+   IMPORTANT:
+   The .loadingOverlay styles (spinner, loadingBar, etc.) should also be
+   present either directly in this file, or imported from a shared file.
+   If you have them only in GenerateQuiz.module.css and ProtectedLayout.js
+   is importing them from there (as shown in my previous example), then
+   that's fine. Just ensure they are accessible.
+*/

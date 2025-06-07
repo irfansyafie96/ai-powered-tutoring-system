@@ -1,0 +1,245 @@
+/* D:\Projects\fyp\frontend\src\styles\GenerateQuiz.module.css */
+.container {
+  padding: 2rem;
+  background-color: #fefae0;
+  min-height: 100vh;
+}
+
+.title {
+  margin-bottom: 1.5rem;
+  color: #2d2d2d;
+}
+
+/* Note Cards */
+.noteGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.noteCard {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.noteCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.noteCard.selected {
+  border-left: 4px solid #d4a373;
+  background-color: #fffbe6;
+}
+
+/* Difficulty & Generate Button - These are largely handled by DifficultyModal now,
+   but keeping the classes if they are reused elsewhere for context. */
+.quizControls {
+  margin-bottom: 2rem;
+  background: #ffffff;
+  padding: 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.difficultySelector {
+  margin-bottom: 1rem;
+}
+
+.difficultySelector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.generateButton {
+  background-color: #d4a373;
+  color: #2d2d2d;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.generateButton:hover {
+  background-color: #c59666;
+}
+
+/* Removed old .loading style */
+/* .loading {
+  font-style: italic;
+  color: #718096;
+  margin-top: 1rem;
+} */
+
+/* Quiz Output - These are probably for QuizPage.js but exist here too. */
+.quizOutput {
+  margin-top: 2rem;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.questionCard {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #fcfcfc;
+  border-radius: 6px;
+  border-left: 4px solid #d4a373;
+}
+
+.optionLabel {
+  display: block;
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.optionLabel input[type="radio"] {
+  margin-right: 0.5rem;
+}
+
+/* Submit Button */
+.submitButton {
+  background-color: #8b5e3c;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submitButton:hover {
+  background-color: #784b2f;
+}
+
+/* Results Box */
+.resultsBox {
+  margin-top: 2rem;
+  background: #fffbe6;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #d4a373;
+}
+
+.quizActions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.copyButton,
+.regenerateButton {
+  background-color: #d4a373;
+  color: #2d2d2d;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.copyButton:hover,
+.regenerateButton:hover {
+  background-color: #c59666;
+}
+
+/* --- NEW STYLES COPIED FROM UPLOADNOTE.MODULE.CSS --- */
+
+/* Loading overlay */
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fefae0; /* Match your overall page background */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  z-index: 999; /* Ensure it's on top of everything */
+}
+
+.loadingBar {
+  width: 80%;
+  max-width: 400px;
+  height: 12px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.loadingFill {
+  height: 100%;
+  background: #d4a373;
+  width: 0%; /* Start at 0% for quiz generation, as there's no specific progress. */
+  transition: width 0.2s ease; /* Keep transition even if width is static for a moment */
+}
+
+.loadingText {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.loadingDots::after {
+  content: "";
+  display: inline-block;
+  animation: dots 1.4s infinite;
+}
+
+@keyframes dots {
+  0% {
+    content: ".";
+  }
+  33% {
+    content: "..";
+  }
+  66% {
+    content: "...";
+  }
+  100% {
+    content: "";
+  }
+}
+
+.spinner {
+  border: 4px solid rgba(212, 163, 115, 0.2);
+  border-left-color: #d4a373;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive styles from UploadNote.module.css (adjust if needed for GenerateQuiz context) */
+@media (max-width: 600px) {
+  /* No direct equivalents from UploadNote's container/form here, but keep general responsive patterns */
+  /* If .loadingOverlay needs adjustments on small screens, add them here */
+}

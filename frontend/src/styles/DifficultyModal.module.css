@@ -1,0 +1,89 @@
+/* Overlay covers the entire screen */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* Centered modal box */
+.modal {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Modal title */
+.modal h3 {
+  margin-top: 0;
+  color: #2d2d2d;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Inputs inside modal */
+.modal input,
+.modal select,
+.modal textarea {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Button base class */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Primary button - Save / Answer Quiz */
+.btnPrimary {
+  background-color: #d4a373;
+  color: #2d2d2d;
+}
+
+.btnPrimary:hover {
+  background-color: #c59666;
+  transform: translateY(-1px);
+}
+
+.btnPrimary:active {
+  transform: translateY(0);
+}
+
+/* Secondary button - Cancel */
+.btnSecondary {
+  background-color: #ccd5ae;
+  color: #2d2d2d;
+}
+
+.btnSecondary:hover {
+  background-color: #b4b596;
+}
+
+/* Action buttons in one row */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
