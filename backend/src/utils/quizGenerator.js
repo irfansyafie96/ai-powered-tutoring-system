@@ -42,7 +42,7 @@ Please generate the quiz following the strict format defined in the system promp
     const response = await generateWithDeepSeek(
       systemPromptContent,
       userPromptContent
-    ); // <--- KEY CHANGE
+    );
 
     // Add a check for minimal response content before parsing
     if (!response || response.trim().length < 50) {

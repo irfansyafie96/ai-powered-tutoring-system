@@ -1,28 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import styles from "../styles/QuizPage.module.css"; // Ensure this file exists and contains quiz-related styles
+import styles from "../styles/QuizPage.module.css";
 
 export default function QuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Ensure quiz is safely accessed, defaulting to an empty array if not present
+  // Ensure quiz is safely accessed
   const quiz = location.state?.quiz || [];
 
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
-  const [score, setScore] = useState({
-    correct: 0,
-    total: quiz.length, // Initialize total based on quiz length
-  });
+  const [score, setScore] = useState({ correct: 0, total: quiz.length });
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-  // Effect to update total score if quiz data changes (e.g., if re-generated in place, though not likely here)
-  React.useEffect(() => {
-    setScore((prevScore) => ({ ...prevScore, total: quiz.length }));
+  // Effect to update score total if quiz changes
+  useEffect(() => {
+    setScore((prev) => ({ ...prev, total: quiz.length }));
   }, [quiz.length]);
 
+  // If no quiz data found
   if (quiz.length === 0 && !showResults) {
-    // Added quiz.length === 0 check
     return (
       <div className={styles.container}>
         <p>⚠️ No quiz data found. Please generate a quiz first.</p>
@@ -40,14 +38,24 @@ export default function QuizPage() {
     });
   };
 
+  const goToNextQuestion = () => {
+    if (currentQuestionIndex < quiz.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      submitQuiz();
+    }
+  };
+
+  const goToPreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
   const submitQuiz = () => {
     let correct = 0;
     quiz.forEach((q, index) => {
-      // Check if the question was answered and if the answer is correct
-      if (
-        userAnswers[index] !== undefined &&
-        userAnswers[index] === q.correctAnswer
-      ) {
+      if (userAnswers[index] === q.correctAnswer) {
         correct++;
       }
     });
@@ -55,72 +63,138 @@ export default function QuizPage() {
     setShowResults(true);
   };
 
+  const currentQuestion = quiz[currentQuestionIndex];
+  const accuracyPercentage =
+    score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+
+  const getFeedbackMessage = () => {
+    if (accuracyPercentage >= 90) {
+      return "🎊 Excellent job! You're a quiz master!";
+    } else if (accuracyPercentage >= 70) {
+      return "👍 Great effort! You're doing well!";
+    } else if (accuracyPercentage >= 50) {
+      return "✍️ Good start! A little more practice will get you there.";
+    } else {
+      return "📚 Keep studying! You'll improve with practice.";
+    }
+  };
+
+  const getAccuracyClass = () => {
+    if (accuracyPercentage >= 70) {
+      return styles.highAccuracy;
+    } else if (accuracyPercentage >= 50) {
+      return styles.mediumAccuracy;
+    } else {
+      return styles.lowAccuracy;
+    }
+  };
+
   return (
     <div className={styles.container}>
-      <h2>📝 Quiz</h2>
-
       {!showResults ? (
-        // Add a div with styles.quizOutput here to wrap the questions
         <div className={styles.quizOutput}>
-          {quiz.map((q, index) => (
-            <div key={index} className={styles.questionCard}>
-              <strong>{`${index + 1}. ${q.question}`}</strong>
+          <div className={styles.quizHeader}>
+            <h2>📝 Quiz</h2>
+          </div>
+
+          {/* Single Question Card */}
+          <div className={styles.questionCardWrapper}>
+            <div className={styles.questionCard}>
+              <strong>{`${currentQuestionIndex + 1}. ${
+                currentQuestion.question
+              }`}</strong>
               <div className={styles.options}>
-                {["A", "B", "C", "D"].map((letter, idx) => (
-                  <label key={idx} className={styles.optionLabel}>
-                    <input
-                      type="radio"
-                      name={`question-${index}`}
-                      value={letter}
-                      onChange={() => handleAnswerChange(index, letter)}
-                      // Set checked property based on userAnswers
-                      checked={userAnswers[index] === letter}
-                    />
-                    <span>{`${letter}. ${q.options[idx]}`}</span>
-                  </label>
-                ))}
+                <div className={styles.answerGrid}>
+                  {["A", "B", "C", "D"].map((letter, idx) => (
+                    <div
+                      key={idx}
+                      className={`${styles.answerBox} ${
+                        userAnswers[currentQuestionIndex] === letter
+                          ? styles.selectedAnswer
+                          : ""
+                      }`}
+                      onClick={() =>
+                        handleAnswerChange(currentQuestionIndex, letter)
+                      }
+                    >
+                      <strong>{letter}.</strong> {currentQuestion.options[idx]}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          ))}
+          </div>
 
-          <button className={styles.submitButton} onClick={submitQuiz}>
-            ✅ Submit Answers
-          </button>
+          {/* Navigation Buttons */}
+          <div className={styles.navigationContainer}>
+            <button
+              className={styles.backButton}
+              onClick={goToPreviousQuestion}
+              disabled={currentQuestionIndex === 0}
+            >
+              ← Previous
+            </button>
 
-          {/* This button might be better placed within a separate div or styled to be below the submit button */}
+            <button className={styles.submitButton} onClick={goToNextQuestion}>
+              {currentQuestionIndex === quiz.length - 1
+                ? "✅ Finish Quiz"
+                : "Next →"}
+            </button>
+          </div>
+
+          {/* Back to Generator Button */}
           <button
             className={styles.backButton}
+            style={{
+              marginTop: "2rem",
+              display: "block",
+              marginInline: "auto",
+            }}
             onClick={() => navigate("/quiz")}
           >
             ← Back to Generator
           </button>
-        </div> // Closing div for quizOutput
+        </div>
       ) : (
         <div className={styles.resultsBox}>
-          <h3>📈 Your Score</h3>
-          <p>
-            You got{" "}
-            <strong>
-              {score.correct}/{score.total}
-            </strong>{" "}
-            correct
-          </p>
-          <p>
-            Accuracy:{" "}
-            <strong>
-              {score.total > 0
-                ? Math.round((score.correct / score.total) * 100)
-                : 0}
-              %
-            </strong>
-          </p>
+          <div className={styles.resultsHeader}>
+            <span role="img" aria-label="trophy" className={styles.trophyIcon}>
+              🏆
+            </span>
+            <h3>Quiz Completed!</h3>
+          </div>
 
-          <button
-            className={styles.backButton} // Reusing backButton style for Regenerate
-            onClick={() => navigate("/quiz")}
-          >
-            🔁 Regenerate Quiz
-          </button>
+          <div className={styles.scoreSummary}>
+            <p className={styles.scoreText}>
+              You got{" "}
+              <span className={styles.scoreHighlight}>
+                {score.correct}/{score.total}
+              </span>{" "}
+              correct
+            </p>
+            <p className={`${styles.accuracyText} ${getAccuracyClass()}`}>
+              Accuracy: <strong>{accuracyPercentage}%</strong>
+            </p>
+
+            <div className={styles.progressBarContainer}>
+              <div
+                className={styles.progressBarFill}
+                style={{ width: `${accuracyPercentage}%` }}
+              ></div>
+            </div>
+
+            <p className={styles.feedbackMessage}>{getFeedbackMessage()}</p>
+          </div>
+
+          <div className={styles.resultsActions}>
+            <button
+              className={styles.regenerateButton}
+              onClick={() => navigate("/quiz")}
+            >
+              🔁 Regenerate Quiz
+            </button>
+            {/* You could add a "Review Answers" button here later if you implement that functionality */}
+          </div>
         </div>
       )}
     </div>
