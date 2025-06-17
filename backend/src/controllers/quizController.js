@@ -11,12 +11,14 @@ export const createQuizFromSummary = async (req, res) => {
   try {
     // Fetch summary from note
     const result = await pool.query(
-      `SELECT summary FROM notes n
-        JOIN saved_notes sn ON n.id = sn.note_id AND sn.user_id = $1
-        WHERE n.id = $2`,
+      `SELECT n.summary
+       FROM notes n
+       LEFT JOIN saved_notes sn ON n.id = sn.note_id
+       WHERE (n.id = $2 AND n.user_id = $1) -- Case 1: It's their own uploaded note
+          OR (sn.note_id = $2 AND sn.user_id = $1); -- Case 2: It's a note saved from another user
+      `,
       [userId, noteId]
     );
-
     if (!result.rows.length) {
       return res.status(404).json({ error: "Note not found in your library" });
     }
@@ -49,7 +51,7 @@ export const recordQuizScore = async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("Save quiz score failed:", err.message);
+    console.error("Save quiz score failed:", err);
     res.status(500).json({ error: "Failed to save quiz results" });
   }
 };

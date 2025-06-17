@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../styles/QuizPage.module.css";
+import { saveQuizScore } from "../api/api";
+import { toast } from "react-toastify";
 
 export default function QuizPage() {
   const location = useLocation();
@@ -8,6 +10,8 @@ export default function QuizPage() {
 
   // Ensure quiz is safely accessed
   const quiz = location.state?.quiz || [];
+  const noteId = location.state?.noteId;
+  const difficulty = location.state?.difficulty;
 
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
@@ -20,7 +24,7 @@ export default function QuizPage() {
   }, [quiz.length]);
 
   // If no quiz data found
-  if (quiz.length === 0 && !showResults) {
+  if (quiz.length === 0 || !noteId || !difficulty) {
     return (
       <div className={styles.container}>
         <p>⚠️ No quiz data found. Please generate a quiz first.</p>
@@ -52,15 +56,31 @@ export default function QuizPage() {
     }
   };
 
-  const submitQuiz = () => {
+  const submitQuiz = async () => {
     let correct = 0;
     quiz.forEach((q, index) => {
-      if (userAnswers[index] === q.correctAnswer) {
+      if (
+        userAnswers[index] !== undefined &&
+        userAnswers[index] === q.correctAnswer
+      ) {
         correct++;
       }
     });
-    setScore({ correct, total: quiz.length });
+    const finalScore = { correct, total: quiz.length };
+    setScore(finalScore);
     setShowResults(true);
+    try {
+      await saveQuizScore(
+        noteId,
+        finalScore.correct,
+        finalScore.total,
+        difficulty
+      );
+      toast.success("✅ Quiz score saved successfully!");
+    } catch (error) {
+      console.error("Failed to save quiz score:", error);
+      toast.error("❌ Failed to save quiz score.");
+    }
   };
 
   const currentQuestion = quiz[currentQuestionIndex];
@@ -95,6 +115,10 @@ export default function QuizPage() {
         <div className={styles.quizOutput}>
           <div className={styles.quizHeader}>
             <h2>📝 Quiz</h2>
+            {/* Display current question number out of total */}
+            <p className={styles.questionCounter}>
+              Question {currentQuestionIndex + 1} of {quiz.length}
+            </p>
           </div>
 
           {/* Single Question Card */}

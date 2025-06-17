@@ -12,11 +12,11 @@ const quizRoutes = Router();
 quizRoutes.post("/create", authenticateJWT, createQuizFromSummary);
 
 // Get user's past quiz scores
-quizRoutes.get("/quizzes/my", authenticateJWT, getUserQuizScores);
+quizRoutes.get("/my", authenticateJWT, getUserQuizScores);
 
 // Optional: Get specific quiz
-// quizRoutes.get("/quizzes/:id", authenticateJWT, getQuizById);
+// quizRoutes.get("/:id", authenticateJWT, getQuizById);
 
-quizRoutes.post("/quizzes/score", authenticateJWT, recordQuizScore);
+quizRoutes.post("/score", authenticateJWT, recordQuizScore);
 
 export default quizRoutes;

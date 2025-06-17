@@ -45,26 +45,34 @@ export default function GenerateQuiz() {
 
     setShowDifficultyModal(false);
 
-    // Start loading via context
-    startLoading("🧠 Generating quiz..."); // Pass a message
+    // Start loading via context with an initial message
+    startLoading("🧠 Generating quiz..."); // This sets the initial loading state
 
     try {
+      // MODIFIED: quizCreation call - removed numQuestions
       const response = await quizCreation(selectedNote.id, difficulty);
 
       if (response.quiz && Array.isArray(response.quiz)) {
-        // Optional: you can update progress to 100% here if you want the bar to fill before navigating
-        // updateProgress(100);
-        // startLoading("✅ Quiz generated!"); // You could change message to "Quiz generated!"
+        updateProgress(100); // Set progress to 100%
+        startLoading("✅ Quiz generated!"); // Change message to success indicator
+
+        // Give the user a moment to see the "100% / success" message
         setTimeout(() => {
-          stopLoading(); // Stop loading before navigating
-          navigate("/quizAnswer", { state: { quiz: response.quiz } });
-        }, 800);
+          stopLoading(); // Now, hide the loading bar
+          navigate("/quizAnswer", {
+            state: {
+              quiz: response.quiz,
+              noteId: selectedNote.id,
+              difficulty: difficulty,
+            },
+          });
+        }, 3000);
       } else {
         throw new Error("Invalid quiz format received");
       }
     } catch (err) {
       console.error("Quiz generation failed:", err.message);
-      stopLoading(); // Stop loading on error
+      stopLoading(); // Always stop loading on error
       toast.error("❌ Failed to generate quiz", { autoClose: 3000 });
     }
   };
@@ -95,22 +103,25 @@ export default function GenerateQuiz() {
       {/* Step 2: Difficulty Modal */}
       {showDifficultyModal && (
         <DifficultyModal
-          title="Choose Quiz Difficulty"
-          description="Select a difficulty level for your quiz."
+          title="Choose Quiz Options"
+          description="Select difficulty for your quiz."
           onCancel={() => setShowDifficultyModal(false)}
           onSave={handleGenerateQuiz}
         >
-          <label htmlFor="difficulty">Select Difficulty:</label>
-          <select
-            id="difficulty"
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-            className={styles.select}
-          >
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
+          {/* Existing Difficulty Selection */}
+          <div>
+            <label htmlFor="difficulty">Select Difficulty:</label>
+            <select
+              id="difficulty"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+              className={styles.select}
+            >
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
         </DifficultyModal>
       )}
 
