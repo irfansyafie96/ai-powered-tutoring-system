@@ -1,0 +1,195 @@
+.container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+  background-color: #fefae0; /* Base Background */
+  border-radius: 8px;
+  color: #2d2d2d; /* Dark Text */
+}
+
+.reviewHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #d4a373; /* Accent Brown for separator */
+}
+
+.reviewHeader h2 {
+  font-size: 2rem;
+  color: #2d2d2d; /* Dark Text */
+  margin-bottom: 0.5rem;
+}
+
+.difficulty {
+  font-size: 1.1rem;
+  color: #4a5568; /* Light Text */
+  margin-bottom: 0.5rem;
+}
+
+.difficulty span {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.difficulty.easy {
+  color: #4caf50;
+} /* Success Green */
+.difficulty.medium {
+  color: #d4a373;
+} /* Accent Brown */
+.difficulty.hard {
+  color: #cc0000;
+} /* Error Red */
+
+.scoreSummary {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #2d2d2d; /* Dark Text */
+}
+
+.scoreHighlight {
+  color: #4caf50; /* A vibrant green for score highlight */
+}
+
+.questionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.questionCard {
+  background-color: #fffbe6; /* Modal Background for card */
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e0e0e0; /* Muted gray for border */
+  position: relative; /* For icon positioning */
+}
+
+.questionText {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.questionText strong {
+  margin-right: 0.5rem;
+}
+
+.optionsReview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.optionItem {
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #ccc; /* Muted Gray */
+  background-color: #fcfcfc; /* PDF Container BG for options */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space out option text and icon */
+  font-size: 1rem;
+  color: #4a5568; /* Light Text for option text */
+}
+
+.optionItem strong {
+  margin-right: 0.5em;
+  color: #2d2d2d; /* Dark Text for option letter */
+}
+
+.icon {
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+}
+
+.correctOption {
+  border-color: #4caf50; /* Standard Green */
+  background-color: #d1f7d1; /* Success Green */
+  color: #2d2d2d; /* Ensure good contrast */
+}
+
+.incorrectOption {
+  border-color: #cc0000; /* Error Red */
+  background-color: #ffe0e0; /* Light red */
+  color: #2d2d2d; /* Ensure good contrast */
+}
+
+.selectedCorrectOption {
+  /* When user selected the correct option, combine styles */
+  border-color: #4caf50;
+  background-color: #d1f7d1;
+  color: #2d2d2d;
+  font-weight: bold; /* Make selected correct stand out */
+}
+
+.skippedMessage {
+  font-style: italic;
+  color: #4a5568; /* Light Text */
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.feedbackCorrect {
+  color: #4caf50; /* Standard Green */
+  font-weight: bold;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.feedbackIncorrect {
+  color: #cc0000; /* Error Red */
+  font-weight: bold;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.feedbackIncorrect strong {
+  color: #2d2d2d; /* Dark Text for the correct answer highlight */
+}
+
+.backButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #d4a373; /* Accent Brown */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 2rem;
+  display: block;
+  margin-inline: auto;
+  max-width: 200px;
+}
+
+.backButton:hover {
+  background-color: #c59666; /* Accent Hover */
+}
+
+/* Media Queries */
+@media (max-width: 600px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .reviewHeader h2 {
+    font-size: 1.6rem;
+  }
+
+  .scoreSummary {
+    font-size: 1.2rem;
+  }
+
+  .questionText {
+    font-size: 1rem;
+  }
+
+  .optionItem {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}

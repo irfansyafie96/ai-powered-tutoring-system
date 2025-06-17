@@ -14,6 +14,7 @@ import Profile from "./pages/Profile.js";
 import SearchNotes from "./pages/SearchNotes.js";
 import Library from "./pages/Library.js";
 import QuizPage from "./pages/QuizPage.js";
+import QuizReviewPage from "./pages/QuizReviewPage.js";
 import { LoadingProvider } from "./contexts/LoadingContext.js"; // Import the provider
 
 function App() {
@@ -40,6 +41,10 @@ function App() {
               <Route path="/search" element={<SearchNotes />} />
               <Route path="/library" element={<Library />} />
               <Route path="/quizAnswer" element={<QuizPage />} />
+              <Route
+                path="/quiz/:quizScoreId/review"
+                element={<QuizReviewPage />}
+              />
             </Route>
           </Routes>
         </LoadingProvider>

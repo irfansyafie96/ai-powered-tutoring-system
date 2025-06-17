@@ -2,21 +2,23 @@ import { Router } from "express";
 import { authenticateJWT } from "../middleware/authenticateJWT.js";
 import {
   createQuizFromSummary,
-  getUserQuizScores,
-  recordQuizScore,
+  saveCompletedQuiz,
+  getQuizHistory,
+  getQuizDetails,
 } from "../controllers/quizController.js";
 
 const quizRoutes = Router();
 
-// Generate quiz from note summary
+// Route to generate a quiz from note summary
 quizRoutes.post("/create", authenticateJWT, createQuizFromSummary);
 
-// Get user's past quiz scores
-quizRoutes.get("/my", authenticateJWT, getUserQuizScores);
+// Route to save a complete quiz session (summary, all questions, and user answers)
+quizRoutes.post("/complete", authenticateJWT, saveCompletedQuiz);
 
-// Optional: Get specific quiz
-// quizRoutes.get("/:id", authenticateJWT, getQuizById);
+// Route to get a user's comprehensive quiz history (all past quizzes)
+quizRoutes.get("/history", authenticateJWT, getQuizHistory);
 
-quizRoutes.post("/score", authenticateJWT, recordQuizScore);
+// Route to get detailed information for a specific quiz session (questions, user answers, correct answers)
+quizRoutes.get("/:quizScoreId/details", authenticateJWT, getQuizDetails);
 
 export default quizRoutes;

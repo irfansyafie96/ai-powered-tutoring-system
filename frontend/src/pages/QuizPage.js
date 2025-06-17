@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../styles/QuizPage.module.css";
-import { saveQuizScore } from "../api/api";
+import { saveCompletedQuiz } from "../api/api";
 import { toast } from "react-toastify";
 
 export default function QuizPage() {
@@ -13,10 +13,12 @@ export default function QuizPage() {
   const noteId = location.state?.noteId;
   const difficulty = location.state?.difficulty;
 
+  // Store user answers with their corresponding question details
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: quiz.length });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [savedQuizScoreId, setSavedQuizScoreId] = useState(null);
 
   // Effect to update score total if quiz changes
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function QuizPage() {
     if (currentQuestionIndex < quiz.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      submitQuiz();
+      submitQuiz(); // Submit quiz when user is on the last question and clicks next
     }
   };
 
@@ -57,29 +59,41 @@ export default function QuizPage() {
   };
 
   const submitQuiz = async () => {
-    let correct = 0;
-    quiz.forEach((q, index) => {
-      if (
-        userAnswers[index] !== undefined &&
-        userAnswers[index] === q.correctAnswer
-      ) {
-        correct++;
+    let correctCount = 0;
+    const quizDataForSaving = quiz.map((q, index) => {
+      const userSelectedAnswer = userAnswers[index];
+      const isCorrect =
+        userSelectedAnswer !== undefined &&
+        userSelectedAnswer === q.correctAnswer;
+      if (isCorrect) {
+        correctCount++;
       }
+      return {
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        userSelectedAnswer: userSelectedAnswer || null, // Ensure null if skipped
+        isCorrect: isCorrect,
+      };
     });
-    const finalScore = { correct, total: quiz.length };
+
+    const finalScore = { correct: correctCount, total: quiz.length };
     setScore(finalScore);
-    setShowResults(true);
+    setShowResults(true); // Show results immediately
+
     try {
-      await saveQuizScore(
+      const response = await saveCompletedQuiz({
         noteId,
-        finalScore.correct,
-        finalScore.total,
-        difficulty
-      );
-      toast.success("✅ Quiz score saved successfully!");
+        difficulty,
+        correctAnswers: finalScore.correct,
+        totalQuestions: finalScore.total,
+        quizData: quizDataForSaving,
+      });
+      setSavedQuizScoreId(response.quizScoreId); // Store the ID returned from the backend
+      toast.success("✅ Quiz session saved successfully!");
     } catch (error) {
-      console.error("Failed to save quiz score:", error);
-      toast.error("❌ Failed to save quiz score.");
+      console.error("Failed to save quiz session:", error);
+      toast.error("❌ Failed to save quiz session.");
     }
   };
 
@@ -106,6 +120,15 @@ export default function QuizPage() {
       return styles.mediumAccuracy;
     } else {
       return styles.lowAccuracy;
+    }
+  };
+
+  // Handler for "Review Answers" button
+  const handleReviewAnswers = () => {
+    if (savedQuizScoreId) {
+      navigate(`/quiz/${savedQuizScoreId}/review`);
+    } else {
+      toast.warn("Quiz score not saved yet. Please wait or try again.");
     }
   };
 
@@ -169,11 +192,6 @@ export default function QuizPage() {
           {/* Back to Generator Button */}
           <button
             className={styles.backButton}
-            style={{
-              marginTop: "2rem",
-              display: "block",
-              marginInline: "auto",
-            }}
             onClick={() => navigate("/quiz")}
           >
             ← Back to Generator
@@ -217,7 +235,14 @@ export default function QuizPage() {
             >
               🔁 Regenerate Quiz
             </button>
-            {/* You could add a "Review Answers" button here later if you implement that functionality */}
+            {/* Review Answers Button - Corrected class */}
+            <button
+              className={styles.reviewButton}
+              onClick={handleReviewAnswers}
+              disabled={!savedQuizScoreId}
+            >
+              📝 Review Answers
+            </button>
           </div>
         </div>
       )}

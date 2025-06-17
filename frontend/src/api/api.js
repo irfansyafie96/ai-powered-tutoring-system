@@ -68,7 +68,6 @@ export const generateSummary = async (noteId) => {
  * Save a note’s metadata (subject + topic) to the DB.
  * @param {{ fileUrl, summary, subject, topic }} body
  */
-
 export const saveNote = async (body) => {
   const res = await api.post("/notes", body);
   return res.data;
@@ -136,18 +135,71 @@ export const quizCreation = async (noteId, difficulty) => {
   }
 };
 
-// Save quiz score (optional)
-export const saveQuizScore = async (noteId, correct, total, difficulty) => {
+/**
+ * Saves a complete quiz session including all questions and user answers to the backend.
+ * This function replaces the old 'saveQuizScore' API call.
+ * @param {object} quizData - Object containing:
+ * - noteId: The ID of the note the quiz was generated from.
+ * - difficulty: The difficulty level of the quiz.
+ * - correctAnswers: The total number of correct answers.
+ * - totalQuestions: The total number of questions in the quiz.
+ * - quizData: An array of objects, where each object represents a question and includes:
+ * - question (string): The question text.
+ * - options (string[]): An array of answer options (e.g., ["Option A", "Option B", ...]).
+ * - correctAnswer (string): The correct option letter (e.g., "A", "B").
+ * - userSelectedAnswer (string | null): The option letter the user selected (or null if skipped).
+ * - isCorrect (boolean): True if userSelectedAnswer matches correctAnswer.
+ */
+export const saveCompletedQuiz = async ({
+  noteId,
+  difficulty,
+  correctAnswers,
+  totalQuestions,
+  quizData,
+}) => {
   try {
-    const response = await api.post("/quizzes/score", {
+    const response = await api.post("/quizzes/complete", {
       noteId,
-      correct,
-      total,
       difficulty,
+      correctAnswers,
+      totalQuestions,
+      quizData, // This array holds all question details and user's answers
     });
     return response.data;
   } catch (error) {
-    console.error("Save quiz score failed:", error.message);
+    console.error("Save completed quiz failed:", error.message);
+    throw error;
+  }
+};
+
+/**
+ * Fetches the current user's quiz history (summaries of past quizzes).
+ * @returns {Promise<Array>} A promise that resolves to an array of quiz score summaries.
+ */
+export const getQuizHistory = async () => {
+  try {
+    const response = await api.get("/quizzes/history");
+    return response.data; // This will be an array of quiz score summaries
+  } catch (error) {
+    console.error("Fetch quiz history failed:", error.message);
+    throw error;
+  }
+};
+
+/**
+ * Fetches detailed questions and answers for a specific past quiz session.
+ * @param {string} quizScoreId - The ID of the specific quiz session to fetch details for.
+ * @returns {Promise<object>} A promise that resolves to an object containing quizSummary and an array of detailed questions.
+ */
+export const getQuizDetails = async (quizScoreId) => {
+  try {
+    const response = await api.get(`/quizzes/${quizScoreId}/details`);
+    return response.data; // This will contain quizSummary and an array of questions with answers
+  } catch (error) {
+    console.error(
+      `Fetch quiz details for ${quizScoreId} failed:`,
+      error.message
+    );
     throw error;
   }
 };

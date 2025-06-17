@@ -1,3 +1,4 @@
+/* D:\Projects\fyp\frontend\src\styles\Home.module.css */
 .homeContainer {
   padding: 2rem;
   background-color: #fefae0;
@@ -109,10 +110,90 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-top: 1rem; /* Added margin to separate from summary */
+}
+
+/* --- NEW STYLES FOR QUIZ ATTEMPTS --- */
+
+.quizAttemptsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.2rem;
+  justify-content: center;
+}
+
+.quizAttemptCard {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+  display: flex; /* Using flex to align content within the card */
+  flex-direction: column;
+  justify-content: space-between; /* Pushes button to bottom */
+}
+
+.quizAttemptCard:hover {
+  transform: translateY(-2px);
+}
+
+.quizAttemptCard h4 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #2d2d2d;
+  margin-bottom: 0.5rem;
+}
+
+.quizAttemptCard p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.dateText {
+  font-size: 0.85rem;
+  color: #6c757d; /* Slightly darker grey for less prominence */
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem; /* Space before the button */
+}
+
+.reviewQuizButton {
+  background-color: #d4a373;
+  color: #2d2d2d;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: flex-start; /* Aligns button to the left within the flex container */
+  width: auto; /* Ensure button doesn't stretch */
+}
+
+.reviewQuizButton:hover:not(:disabled) {
+  background-color: #d4a373; /* Hover same as ctaButton/viewSummaryButton for consistency */
+}
+
+/* Difficulty color styles (reusing logic from QuizReviewPage if available) */
+.easy {
+  color: #6a994e; /* A shade of green */
+  font-weight: bold;
+}
+
+.medium {
+  color: #e6b800; /* A shade of yellow/orange */
+  font-weight: bold;
+}
+
+.hard {
+  color: #c0392b; /* A shade of red */
+  font-weight: bold;
 }
 
 @media (max-width: 768px) {
-  .notePreviewGrid {
+  .notePreviewGrid,
+  .quizAttemptsGrid {
+    /* Apply stacking to both grids */
     grid-template-columns: 1fr; /* Stack vertically on small screens */
   }
 }

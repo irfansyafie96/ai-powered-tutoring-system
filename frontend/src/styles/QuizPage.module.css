@@ -2,6 +2,8 @@
   padding: 2rem;
   max-width: 800px;
   margin: auto;
+  background-color: #fefae0; /* Using your base background color */
+  border-radius: 8px; /* Slight rounding for the overall container */
 }
 
 .quizOutput {
@@ -26,9 +28,9 @@
   height: 100%; /* IMPORTANT: Make questionCard fill the height of its wrapper */
   padding: 2rem;
   border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e0e0e0;
+  background-color: #fffbe6; /* Using your Modal Background for cards */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Using your Shadow Overlay inspiration */
+  border: 1px solid #d4a373; /* Using Accent Brown for border for a themed look */
   word-wrap: break-word;
   overflow-y: auto; /* Add scroll if content overflows fixed height */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
@@ -36,6 +38,7 @@
   /* Flexbox for internal layout of question and options */
   display: flex;
   flex-direction: column; /* Stack question text and options vertically */
+  color: #2d2d2d; /* Dark Text */
 }
 
 .questionCard strong {
@@ -61,7 +64,7 @@
 .answerBox {
   padding: 1rem;
   border-radius: 8px;
-  border: 2px solid #ddd;
+  border: 2px solid #ccc; /* Muted Gray for borders */
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 1rem;
@@ -69,6 +72,7 @@
   align-items: center; /* Vertically centers content */
   justify-content: flex-start; /* ALIGNS CONTENT TO THE START (LEFT) */
   text-align: left; /* Ensures text inside is aligned to the left */
+  background-color: #fffbe6; /* Keeping consistency with card background */
 }
 
 .answerBox strong {
@@ -77,20 +81,20 @@
 }
 
 .answerBox:hover {
-  background-color: #f0f8ff;
-  border-color: #6a8dcd;
+  background-color: #fefae0; /* Lighter background on hover */
+  border-color: #d4a373; /* Accent Brown on hover */
 }
 
 .answerBox.selectedAnswer {
-  border-color: #4caf50;
-  background-color: #e8f5e9;
+  border-color: #4caf50; /* Keeping current green for selected, as it implies correctness */
+  background-color: #d1f7d1; /* Using your Success Green for background */
   outline: none;
 }
 
 /* Navigation Buttons (Common Styles) */
 .submitButton {
   padding: 0.75rem 1.5rem;
-  background-color: #4caf50;
+  background-color: #4caf50; /* Keeping existing green for primary submit */
   color: white;
   border: none;
   border-radius: 6px;
@@ -103,11 +107,11 @@
   background-color: #43a047;
 }
 
+/* Updated colors for back and regenerate buttons using theme */
 .backButton,
 .regenerateButton {
-  /* Apply blue style to both back and regenerate */
   padding: 0.75rem 1.5rem;
-  background-color: #2196f3; /* A friendly blue */
+  background-color: #d4a373; /* Accent Brown */
   color: white;
   border: none;
   border-radius: 6px;
@@ -118,12 +122,14 @@
 
 .backButton:hover,
 .regenerateButton:hover {
-  background-color: #1976d2;
+  background-color: #c59666; /* Accent Hover */
 }
 
 .backButton:disabled {
-  background-color: #bdbdbd;
+  background-color: rgba(0, 0, 0, 0.1); /* Disabled Button from palette */
+  color: #4a5568; /* Light Text for disabled text */
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* Navigation Layout */
@@ -137,7 +143,7 @@
 
 /* Specific styles for the "Back to Generator" button at the bottom (main quiz view) */
 .quizOutput > .backButton {
-  margin-top: 1.5rem !important;
+  margin-top: 1.5rem; /* Standardized margin */
   display: block;
   margin-inline: auto;
   max-width: 250px;
@@ -159,13 +165,14 @@
 .resultsBox {
   padding: 2.5rem;
   border-radius: 15px;
-  background-color: #ffffff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
+  background-color: #fffbe6; /* Modal Background for results box */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Shadow Overlay */
+  border: 1px solid #d4a373; /* Accent Brown border for consistency */
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 1.5rem; /* Space between sections inside results box */
+  color: #2d2d2d; /* Dark Text */
 }
 
 .resultsHeader {
@@ -179,7 +186,7 @@
 .resultsHeader h3 {
   margin: 0; /* Remove default margin */
   font-size: 1.8rem;
-  color: #333;
+  color: #2d2d2d; /* Dark Text */
 }
 
 .trophyIcon {
@@ -195,14 +202,14 @@
 
 .scoreText {
   font-size: 1.3rem;
-  color: #555;
+  color: #4a5568; /* Light Text */
   margin: 0;
 }
 
 .scoreHighlight {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #4caf50; /* Green for correct answers */
+  color: #4caf50; /* Keeping current green for score highlight */
 }
 
 .accuracyText {
@@ -212,23 +219,23 @@
   transition: color 0.3s ease; /* Smooth color transition */
 }
 
-/* Accuracy color coding */
+/* Accuracy color coding - using your suggested status colors */
 .accuracyText.highAccuracy {
-  color: #28a745; /* Darker green */
+  color: #4caf50; /* Using your success green for high accuracy, can be #d1f7d1 if you want lighter */
 }
 
 .accuracyText.mediumAccuracy {
-  color: #ffc107; /* Orange/Yellow */
+  color: #d4a373; /* Accent Brown for medium accuracy */
 }
 
 .accuracyText.lowAccuracy {
-  color: #dc3545; /* Red */
+  color: #cc0000; /* Error Red for low accuracy */
 }
 
 .progressBarContainer {
   width: 100%;
   height: 12px;
-  background-color: #e0e0e0;
+  background-color: #eee; /* Light neutral for container, from your summary */
   border-radius: 6px;
   overflow: hidden; /* Ensures fill stays within bounds */
   margin-top: 1rem;
@@ -236,23 +243,21 @@
 
 .progressBarFill {
   height: 100%;
-  background-color: #4caf50; /* Green progress */
+  background-color: #4caf50; /* Green progress - keeping for visual impact */
   border-radius: 6px;
   transition: width 0.5s ease-in-out; /* Smooth transition for width change */
-  /* You can add more conditional styling here if accuracy is low/medium/high */
-  /* For example, for low accuracy, change to red; for medium, orange */
 }
 
 .accuracyText.lowAccuracy + .progressBarContainer .progressBarFill {
-  background-color: #dc3545; /* Red for low accuracy bar */
+  background-color: #cc0000; /* Error Red for low accuracy bar */
 }
 .accuracyText.mediumAccuracy + .progressBarContainer .progressBarFill {
-  background-color: #ffc107; /* Orange for medium accuracy bar */
+  background-color: #d4a373; /* Accent Brown for medium accuracy bar */
 }
 
 .feedbackMessage {
   font-size: 1.2rem;
-  color: #333;
+  color: #4a5568; /* Light Text */
   margin-top: 1.5rem;
   font-style: italic;
 }
@@ -261,19 +266,55 @@
   margin-top: 1.5rem;
   display: flex;
   justify-content: center; /* Center the buttons */
-  gap: 1rem;
+  gap: 1rem; /* Adds space between buttons */
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
 }
 
-/* Regenerate button uses the blue style from backButton, renamed for clarity */
+/* Common button styling for actions in the results box */
+.resultsActions button {
+  /* Target all buttons inside resultsActions */
+  padding: 0.8rem 1.8rem; /* Uniform padding */
+  font-size: 1.1rem; /* Uniform font size */
+  flex: 1 1 auto; /* Allow them to grow/shrink, max-width will control final size */
+  max-width: 220px; /* Set a consistent max-width for both buttons */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 6px; /* Ensure consistent border-radius */
+  font-weight: bold; /* Ensure consistent font-weight */
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: none; /* Ensure no border by default */
+}
+
+/* Regenerate button uses Accent Brown theme */
 .regenerateButton {
-  /* Inherits from .backButton styles defined above */
-  padding: 0.8rem 1.8rem; /* Slightly larger for main action */
-  font-size: 1.1rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for interaction */
+  background-color: #d4a373; /* Accent Brown */
+  color: white;
 }
 
 .regenerateButton:hover {
+  background-color: #c59666; /* Accent Hover */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* NEW: Style for the "Review Answers" button using Secondary Accent */
+.reviewButton {
+  background-color: #ccd5ae; /* Secondary Accent */
+  color: #2d2d2d; /* Dark Text for better contrast on light background */
+}
+
+.reviewButton:hover {
+  background-color: #b9c19b; /* Slightly darker shade for hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Disabled states for both regenerate and review buttons */
+.regenerateButton:disabled,
+.reviewButton:disabled {
+  background-color: rgba(0, 0, 0, 0.1); /* Disabled Button from palette */
+  color: #4a5568; /* Light Text for disabled text */
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7; /* Make it slightly transparent when disabled */
 }
 
 /* Media Queries (already existing, just ensure they are at the bottom) */
@@ -317,8 +358,18 @@
     font-size: 1rem;
   }
 
-  .regenerateButton {
+  .regenerateButton,
+  .reviewButton {
+    /* Apply responsive styles to the new button as well */
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
+  }
+
+  .resultsActions button {
+    /* Target all buttons inside resultsActions for smaller screens */
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    max-width: none; /* Remove max-width on small screens to let them take full width */
+    width: 100%; /* Make them full width */
   }
 }
