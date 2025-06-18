@@ -181,11 +181,8 @@ export default function QuizReviewPage() {
         ))}
       </div>
 
-      <button
-        className={styles.backButton}
-        onClick={() => navigate("/library")}
-      >
-        ← Back to Library
+      <button className={styles.backButton} onClick={() => navigate("/home")}>
+        ← Back to Home
       </button>
     </div>
   );

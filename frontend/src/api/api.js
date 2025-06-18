@@ -14,7 +14,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Sign up function
 export const signUp = async ({ username, email, password }) => {
   const response = await api.post("/auth/signup", {
     username,
@@ -24,13 +23,11 @@ export const signUp = async ({ username, email, password }) => {
   return response.data;
 };
 
-// Login function
 export const login = async ({ username, password }) => {
   const response = await api.post("/auth/login", { username, password });
   return response.data;
 };
 
-// Profile endpoints
 export const getProfile = async () => {
   const res = await api.get("/auth/me");
   return res.data.user;
@@ -41,7 +38,6 @@ export const updateProfile = async (body) => {
   return res.data.user;
 };
 
-// Note upload function
 export const uploadNote = async (formData, config = {}) => {
   const response = await api.post("/notes/upload", formData, {
     ...config,
@@ -53,7 +49,6 @@ export const uploadNote = async (formData, config = {}) => {
   return response.data;
 };
 
-// Generate summary function
 export const generateSummary = async (noteId) => {
   try {
     const response = await api.post("/notes/summary", { noteId });
@@ -85,7 +80,6 @@ export const checkIfSaved = async (noteId) => {
   }
 };
 
-// Search notes function
 export const searchNotes = async ({
   subject = "",
   topic = "",
@@ -122,11 +116,12 @@ export const getFullLibrary = async () => {
 };
 
 // Generate quiz
-export const quizCreation = async (noteId, difficulty) => {
+export const quizCreation = async (noteId, difficulty, numQuestions) => {
   try {
     const response = await api.post("/quizzes/create", {
       noteId,
       difficulty,
+      numQuestions,
     });
     return response.data;
   } catch (error) {
@@ -137,7 +132,6 @@ export const quizCreation = async (noteId, difficulty) => {
 
 /**
  * Saves a complete quiz session including all questions and user answers to the backend.
- * This function replaces the old 'saveQuizScore' API call.
  * @param {object} quizData - Object containing:
  * - noteId: The ID of the note the quiz was generated from.
  * - difficulty: The difficulty level of the quiz.
@@ -163,7 +157,7 @@ export const saveCompletedQuiz = async ({
       difficulty,
       correctAnswers,
       totalQuestions,
-      quizData, // This array holds all question details and user's answers
+      quizData,
     });
     return response.data;
   } catch (error) {
@@ -179,7 +173,7 @@ export const saveCompletedQuiz = async ({
 export const getQuizHistory = async () => {
   try {
     const response = await api.get("/quizzes/history");
-    return response.data; // This will be an array of quiz score summaries
+    return response.data;
   } catch (error) {
     console.error("Fetch quiz history failed:", error.message);
     throw error;
@@ -194,7 +188,7 @@ export const getQuizHistory = async () => {
 export const getQuizDetails = async (quizScoreId) => {
   try {
     const response = await api.get(`/quizzes/${quizScoreId}/details`);
-    return response.data; // This will contain quizSummary and an array of questions with answers
+    return response.data;
   } catch (error) {
     console.error(
       `Fetch quiz details for ${quizScoreId} failed:`,

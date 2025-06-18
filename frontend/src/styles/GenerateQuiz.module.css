@@ -1,4 +1,3 @@
-/* D:\Projects\fyp\frontend\src\styles\GenerateQuiz.module.css */
 .container {
   padding: 2rem;
   background-color: #fefae0;
@@ -37,26 +36,27 @@
   background-color: #fffbe6;
 }
 
-/* Difficulty & Generate Button - These are largely handled by DifficultyModal now,
-   but keeping the classes if they are reused elsewhere for context. */
-.quizControls {
-  margin-bottom: 2rem;
-  background: #ffffff;
-  padding: 1.25rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.difficultySelector {
+/* Styles for Form Groups and Number Input (used inside DifficultyModal) */
+.formGroup {
   margin-bottom: 1rem;
 }
 
-.difficultySelector label {
+.formGroup label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: #2d2d2d;
 }
 
+.inputNumber {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Styles for select element (difficulty dropdown) */
 .select {
   width: 100%;
   padding: 0.75rem;
@@ -65,119 +65,20 @@
   font-size: 1rem;
 }
 
-.generateButton {
-  background-color: #d4a373;
-  color: #2d2d2d;
-  border: none;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.generateButton:hover {
-  background-color: #c59666;
-}
-
-/* Removed old .loading style */
-/* .loading {
-  font-style: italic;
-  color: #718096;
-  margin-top: 1rem;
-} */
-
-/* Quiz Output - These are probably for QuizPage.js but exist here too. */
-.quizOutput {
-  margin-top: 2rem;
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.questionCard {
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: #fcfcfc;
-  border-radius: 6px;
-  border-left: 4px solid #d4a373;
-}
-
-.optionLabel {
-  display: block;
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-.optionLabel input[type="radio"] {
-  margin-right: 0.5rem;
-}
-
-/* Submit Button */
-.submitButton {
-  background-color: #8b5e3c;
-  color: white;
-  border: none;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.submitButton:hover {
-  background-color: #784b2f;
-}
-
-/* Results Box */
-.resultsBox {
-  margin-top: 2rem;
-  background: #fffbe6;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border-left: 4px solid #d4a373;
-}
-
-.quizActions {
-  margin-top: 1.5rem;
-  display: flex;
-  gap: 1rem;
-}
-
-.copyButton,
-.regenerateButton {
-  background-color: #d4a373;
-  color: #2d2d2d;
-  border: none;
-  padding: 0.6rem 1rem;
-  font-size: 0.95rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.copyButton:hover,
-.regenerateButton:hover {
-  background-color: #c59666;
-}
-
-/* --- NEW STYLES COPIED FROM UPLOADNOTE.MODULE.CSS --- */
-
-/* Loading overlay */
+/* Loading overlay (if it's rendered by GenerateQuiz component, otherwise move to global or context CSS) */
 .loadingOverlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: #fefae0; /* Match your overall page background */
+  background: #fefae0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  z-index: 999; /* Ensure it's on top of everything */
+  z-index: 999;
 }
 
 .loadingBar {
@@ -192,8 +93,8 @@
 .loadingFill {
   height: 100%;
   background: #d4a373;
-  width: 0%; /* Start at 0% for quiz generation, as there's no specific progress. */
-  transition: width 0.2s ease; /* Keep transition even if width is static for a moment */
+  width: 0%;
+  transition: width 0.2s ease;
 }
 
 .loadingText {
@@ -238,8 +139,6 @@
   }
 }
 
-/* Responsive styles from UploadNote.module.css (adjust if needed for GenerateQuiz context) */
 @media (max-width: 600px) {
-  /* No direct equivalents from UploadNote's container/form here, but keep general responsive patterns */
-  /* If .loadingOverlay needs adjustments on small screens, add them here */
+  /* Add responsive styles specific to GenerateQuiz.js if needed */
 }

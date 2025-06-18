@@ -1,33 +1,50 @@
 import { pool } from "../db.js";
 import { generateQuiz } from "../utils/quizGenerator.js";
 
-/**
- * Generate quiz from note summary
- * (This function remains as is, as its purpose is quiz generation, not saving results)
- */
 export const createQuizFromSummary = async (req, res) => {
   const userId = req.user.id;
-  const { noteId, difficulty } = req.body;
+  const { noteId, difficulty, numQuestions } = req.body;
+
+  if (
+    typeof numQuestions !== "number" ||
+    numQuestions < 1 ||
+    numQuestions > 20
+  ) {
+    return res
+      .status(400)
+      .json({
+        error:
+          "Invalid number of questions provided. Please choose between 1 and 20.",
+      });
+  }
 
   try {
-    // Fetch summary from note
     const result = await pool.query(
       `SELECT n.summary
-            FROM notes n
-            LEFT JOIN saved_notes sn ON n.id = sn.note_id
-            WHERE (n.id = $2 AND n.user_id = $1) -- Case 1: It's their own uploaded note
-              OR (sn.note_id = $2 AND sn.user_id = $1); -- Case 2: It's a note saved from another user
-            `,
+         FROM notes n
+         LEFT JOIN saved_notes sn ON n.id = sn.note_id
+         WHERE (n.id = $2 AND n.user_id = $1)
+           OR (sn.note_id = $2 AND sn.user_id = $1);`,
       [userId, noteId]
     );
+
     if (!result.rows.length) {
       return res.status(404).json({ error: "Note not found in your library" });
     }
 
     const summary = result.rows[0].summary;
+    const rawQuiz = await generateQuiz(summary, difficulty, numQuestions);
+    const quiz = rawQuiz.slice(0, numQuestions);
 
-    // Send to AI for quiz generation
-    const quiz = await generateQuiz(summary, difficulty);
+    if (quiz.length === 0) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Could not generate a quiz with the specified parameters. Please try again or with different options.",
+        });
+    }
+
     res.json({ quiz });
   } catch (err) {
     console.error("Quiz generation failed:", err.message);
@@ -37,44 +54,29 @@ export const createQuizFromSummary = async (req, res) => {
 
 /**
  * Saves a complete quiz session (summary, questions, and user answers) to the database.
- * This function replaces the previous 'recordQuizScore' by handling all quiz data persistence.
  * @param {object} req.body - Contains noteId, difficulty, correctAnswers, totalQuestions, and quizData (array of questions with user answers).
- * Example quizData structure:
- * [
- * {
- * question: "Question text",
- * options: ["Option A", "Option B", "Option C", "Option D"],
- * correctAnswer: "A", // 'A', 'B', 'C', or 'D' (The actual correct option letter)
- * userSelectedAnswer: "B", // 'A', 'B', 'C', 'D' or null if skipped
- * isCorrect: false // Boolean indicating if userSelectedAnswer was correct
- * },
- * // ... more questions
- * ]
  */
 export const saveCompletedQuiz = async (req, res) => {
   const { noteId, difficulty, correctAnswers, totalQuestions, quizData } =
     req.body;
-  const userId = req.user.id; // Confirmed: User ID is available from authentication middleware
+  const userId = req.user.id;
 
   try {
-    await pool.query("BEGIN"); // Start a database transaction for atomicity
+    await pool.query("BEGIN");
 
-    // 1. Insert into quiz_scores table (summary of the quiz attempt)
     const scoreResult = await pool.query(
       `INSERT INTO quiz_scores (user_id, note_id, difficulty, correct_answers, total_questions, created_at)
              VALUES ($1, $2, $3, $4, $5, NOW())
-             RETURNING id`, // RETURNING id is crucial to link other tables
+             RETURNING id`,
       [userId, noteId, difficulty, correctAnswers, totalQuestions]
     );
-    const quizScoreId = scoreResult.rows[0].id; // Get the ID of the newly created quiz score
+    const quizScoreId = scoreResult.rows[0].id;
 
-    // 2. Loop through each question in the quizData array
     for (const q of quizData) {
-      // 2a. Insert the question details into quiz_questions table
       const questionResult = await pool.query(
         `INSERT INTO quiz_questions (quiz_score_id, question_text, option_a, option_b, option_c, option_d, correct_answer)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7)
-                 RETURNING id`, // Get the ID of the newly created question
+                   VALUES ($1, $2, $3, $4, $5, $6, $7)
+                   RETURNING id`,
         [
           quizScoreId,
           q.question,
@@ -87,20 +89,19 @@ export const saveCompletedQuiz = async (req, res) => {
       );
       const quizQuestionId = questionResult.rows[0].id;
 
-      // 2b. Insert the user's answer for this question into user_answers table
       await pool.query(
         `INSERT INTO user_answers (quiz_question_id, user_selected_option, is_correct)
-                 VALUES ($1, $2, $3)`,
+                   VALUES ($1, $2, $3)`,
         [quizQuestionId, q.userSelectedAnswer, q.isCorrect]
       );
     }
 
-    await pool.query("COMMIT"); // Commit the transaction if all operations succeed
+    await pool.query("COMMIT");
     res
       .status(201)
       .json({ message: "Quiz session saved successfully!", quizScoreId });
   } catch (error) {
-    await pool.query("ROLLBACK"); // Rollback the transaction if any error occurs
+    await pool.query("ROLLBACK");
     console.error("Error saving complete quiz session:", error);
     res.status(500).json({ error: "Failed to save quiz session." });
   }
@@ -108,8 +109,6 @@ export const saveCompletedQuiz = async (req, res) => {
 
 /**
  * Fetches a list of all quiz attempts (history) for the authenticated user.
- * This function replaces 'getUserQuizScores' and fetches all history, not just 5.
- * Includes summary data and linked note subject/topic.
  */
 export const getQuizHistory = async (req, res) => {
   const userId = req.user.id;
@@ -117,18 +116,18 @@ export const getQuizHistory = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT
-                qs.id AS quiz_score_id,
-                qs.note_id,
-                n.subject AS note_subject, 
-                n.topic AS note_topic,     
-                qs.difficulty,
-                qs.correct_answers,
-                qs.total_questions,
-                qs.created_at
-             FROM quiz_scores qs
-             JOIN notes n ON qs.note_id = n.id
-             WHERE qs.user_id = $1
-             ORDER BY qs.created_at DESC`,
+          qs.id AS quiz_score_id,
+          qs.note_id,
+          n.subject AS note_subject,
+          n.topic AS note_topic,
+          qs.difficulty,
+          qs.correct_answers,
+          qs.total_questions,
+          qs.created_at
+        FROM quiz_scores qs
+        JOIN notes n ON qs.note_id = n.id
+        WHERE qs.user_id = $1
+        ORDER BY qs.created_at DESC`,
       [userId]
     );
     res.status(200).json(result.rows);
@@ -144,22 +143,21 @@ export const getQuizHistory = async (req, res) => {
  */
 export const getQuizDetails = async (req, res) => {
   const { quizScoreId } = req.params;
-  const userId = req.user.id; // Ensure the user can only view their own quiz details
+  const userId = req.user.id;
 
   try {
-    // Modify this query to also fetch the note's topic (title)
     const quizSummaryResult = await pool.query(
       `SELECT
-                qs.id,
-                qs.note_id,
-                n.topic AS note_title, -- <<< ADDED THIS LINE
-                qs.difficulty,
-                qs.correct_answers,
-                qs.total_questions,
-                qs.created_at
-              FROM quiz_scores qs
-              JOIN notes n ON qs.note_id = n.id -- <<< ADDED THIS JOIN
-              WHERE qs.id = $1 AND qs.user_id = $2`,
+          qs.id,
+          qs.note_id,
+          n.topic AS note_title,
+          qs.difficulty,
+          qs.correct_answers,
+          qs.total_questions,
+          qs.created_at
+        FROM quiz_scores qs
+        JOIN notes n ON qs.note_id = n.id
+        WHERE qs.id = $1 AND qs.user_id = $2`,
       [quizScoreId, userId]
     );
 
@@ -169,28 +167,27 @@ export const getQuizDetails = async (req, res) => {
         .json({ error: "Quiz not found or unauthorized access." });
     }
 
-    // Fetch all questions and their corresponding user answers for this quiz score
     const questionsResult = await pool.query(
       `SELECT
-                qq.id AS quiz_question_id,
-                qq.question_text,
-                qq.option_a,
-                qq.option_b,
-                qq.option_c,
-                qq.option_d,
-                qq.correct_answer,
-                ua.user_selected_option,
-                ua.is_correct
-              FROM quiz_questions qq
-              JOIN user_answers ua ON qq.id = ua.quiz_question_id
-              WHERE qq.quiz_score_id = $1
-              ORDER BY qq.id ASC`, // Ordering by ID ensures consistent question order
+          qq.id AS quiz_question_id,
+          qq.question_text,
+          qq.option_a,
+          qq.option_b,
+          qq.option_c,
+          qq.option_d,
+          qq.correct_answer,
+          ua.user_selected_option,
+          ua.is_correct
+        FROM quiz_questions qq
+        JOIN user_answers ua ON qq.id = ua.quiz_question_id
+        WHERE qq.quiz_score_id = $1
+        ORDER BY qq.id ASC`,
       [quizScoreId]
     );
 
     res.status(200).json({
-      quizSummary: quizSummaryResult.rows[0], // This now includes note_title
-      questions: questionsResult.rows, // Array of detailed questions with user's answers
+      quizSummary: quizSummaryResult.rows[0],
+      questions: questionsResult.rows,
     });
   } catch (error) {
     console.error("Error fetching quiz details:", error);

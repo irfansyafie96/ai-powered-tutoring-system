@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFullLibrary, quizCreation } from "../api/api";
 import styles from "../styles/GenerateQuiz.module.css";
@@ -8,14 +8,17 @@ import "react-toastify/dist/ReactToastify.css";
 import { useLoading } from "../contexts/LoadingContext";
 
 export default function GenerateQuiz() {
+  const { startLoading, stopLoading, updateProgress, updateLoadingText } =
+    useLoading();
   const navigate = useNavigate();
-  const { startLoading, stopLoading, updateProgress } = useLoading();
   const [notes, setNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState(null);
   const [difficulty, setDifficulty] = useState("medium");
+  const [numQuestions, setNumQuestions] = useState(10);
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const progressIntervalRef = useRef(null);
 
-  // Load notes from user's library
   useEffect(() => {
     const fetchNotes = async () => {
       try {
@@ -32,33 +35,56 @@ export default function GenerateQuiz() {
     };
 
     fetchNotes();
-  }, []);
 
-  // Handle note selection
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, [navigate]);
+
   const handleNoteSelect = (note) => {
     setSelectedNote(note);
     setShowDifficultyModal(true);
   };
 
   const handleGenerateQuiz = async () => {
-    if (!selectedNote) return;
+    if (!selectedNote || isGenerating) {
+      return;
+    }
 
     setShowDifficultyModal(false);
+    setIsGenerating(true);
 
-    // Start loading via context with an initial message
-    startLoading("🧠 Generating quiz..."); // This sets the initial loading state
+    startLoading("🧠 Generating quiz. This might take a moment.");
+    updateProgress(0);
+
+    let simulatedProgress = 0;
+    progressIntervalRef.current = setInterval(() => {
+      simulatedProgress += 5;
+      if (simulatedProgress < 90) {
+        updateProgress(simulatedProgress);
+      }
+    }, 1000);
 
     try {
-      // MODIFIED: quizCreation call - removed numQuestions
-      const response = await quizCreation(selectedNote.id, difficulty);
+      const response = await quizCreation(
+        selectedNote.id,
+        difficulty,
+        numQuestions
+      );
+
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
 
       if (response.quiz && Array.isArray(response.quiz)) {
-        updateProgress(100); // Set progress to 100%
-        startLoading("✅ Quiz generated!"); // Change message to success indicator
+        updateProgress(100);
+        updateLoadingText("✅ Quiz generated!");
 
-        // Give the user a moment to see the "100% / success" message
         setTimeout(() => {
-          stopLoading(); // Now, hide the loading bar
+          stopLoading();
           navigate("/quizAnswer", {
             state: {
               quiz: response.quiz,
@@ -66,14 +92,26 @@ export default function GenerateQuiz() {
               difficulty: difficulty,
             },
           });
-        }, 3000);
+        }, 1500);
       } else {
         throw new Error("Invalid quiz format received");
       }
     } catch (err) {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
       console.error("Quiz generation failed:", err.message);
-      stopLoading(); // Always stop loading on error
-      toast.error("❌ Failed to generate quiz", { autoClose: 3000 });
+      stopLoading();
+      toast.error("❌ Failed to generate quiz. Please try again.", {
+        autoClose: 3000,
+      });
+    } finally {
+      setIsGenerating(false);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
     }
   };
 
@@ -81,7 +119,6 @@ export default function GenerateQuiz() {
     <div className={styles.container}>
       <h2 className={styles.title}>🧪 Select a Note</h2>
 
-      {/* Step 1: Note Cards */}
       <div className={styles.noteGrid}>
         {notes.map((note) => (
           <div
@@ -100,16 +137,15 @@ export default function GenerateQuiz() {
         ))}
       </div>
 
-      {/* Step 2: Difficulty Modal */}
       {showDifficultyModal && (
         <DifficultyModal
           title="Choose Quiz Options"
-          description="Select difficulty for your quiz."
+          description="Select difficulty and number of questions for your quiz."
           onCancel={() => setShowDifficultyModal(false)}
           onSave={handleGenerateQuiz}
+          disableSave={isGenerating}
         >
-          {/* Existing Difficulty Selection */}
-          <div>
+          <div className={styles.formGroup}>
             <label htmlFor="difficulty">Select Difficulty:</label>
             <select
               id="difficulty"
@@ -122,10 +158,26 @@ export default function GenerateQuiz() {
               <option value="hard">Hard</option>
             </select>
           </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="numQuestions">Number of Questions (1-20):</label>
+            <input
+              type="number"
+              id="numQuestions"
+              value={numQuestions}
+              onChange={(e) =>
+                setNumQuestions(
+                  Math.max(1, Math.min(20, parseInt(e.target.value, 10) || 1))
+                )
+              }
+              min="1"
+              max="20"
+              className={styles.inputNumber}
+            />
+          </div>
         </DifficultyModal>
       )}
 
-      {/* Toast Container */}
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );

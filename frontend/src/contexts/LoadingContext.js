@@ -19,11 +19,15 @@ export const LoadingProvider = ({ children }) => {
   const stopLoading = useCallback(() => {
     setIsLoading(false);
     setProgressPercent(0);
-    setLoadingText("Loading..."); // Reset to default
+    setLoadingText("Loading...");
   }, []);
 
   const updateProgress = useCallback((percent) => {
     setProgressPercent(percent);
+  }, []);
+
+  const updateLoadingText = useCallback((message) => {
+    setLoadingText(message);
   }, []);
 
   return (
@@ -35,6 +39,7 @@ export const LoadingProvider = ({ children }) => {
         startLoading,
         stopLoading,
         updateProgress,
+        updateLoadingText,
       }}
     >
       {children}
