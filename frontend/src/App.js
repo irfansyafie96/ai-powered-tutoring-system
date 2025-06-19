@@ -15,23 +15,23 @@ import SearchNotes from "./pages/SearchNotes.js";
 import Library from "./pages/Library.js";
 import QuizPage from "./pages/QuizPage.js";
 import QuizReviewPage from "./pages/QuizReviewPage.js";
-import { LoadingProvider } from "./contexts/LoadingContext.js"; // Import the provider
+import { LoadingProvider } from "./contexts/LoadingContext.js";
 
 function App() {
   return (
     <Router>
       <div className="app">
-        {/* Wrap your entire application with LoadingProvider */}
+        {/* Provides global loading state to the application */}
         <LoadingProvider>
           <Routes>
-            {/* Public routes */}
+            {/* Routes accessible without authentication */}
             <Route element={<PublicLayout />}>
               <Route path="/signup" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<Dashboard />} />
             </Route>
 
-            {/* Protected routes */}
+            {/* Routes requiring user authentication */}
             <Route element={<ProtectedLayout />}>
               <Route path="/home" element={<Home />} />
               <Route path="/upload" element={<UploadNotes />} />

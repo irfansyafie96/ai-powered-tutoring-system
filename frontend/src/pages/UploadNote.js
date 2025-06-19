@@ -1,15 +1,14 @@
-// D:\Projects\fyp\frontend\src\pages\UploadNote.js
 import React, { useState } from "react";
 import { uploadNote } from "../api/api";
 import { useNavigate } from "react-router-dom";
-import styles from "../styles/UploadNote.module.css"; // Keep page-specific styles
-import { useLoading } from "../contexts/LoadingContext"; // Import the hook
+import styles from "../styles/UploadNote.module.css";
+import { useLoading } from "../contexts/LoadingContext";
 
 const UploadNotes = () => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { startLoading, stopLoading, updateProgress } = useLoading(); // Use the loading context
+  const { startLoading, stopLoading, updateProgress } = useLoading();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -23,8 +22,8 @@ const UploadNotes = () => {
       return;
     }
 
-    // Start loading via context
-    startLoading("🧠 Analyzing notes...", 0); // Set initial message and 0%
+    // Activates the global loading overlay with an initial message and progress
+    startLoading("🧠 Analyzing notes...", 0);
 
     try {
       const formData = new FormData();
@@ -35,7 +34,7 @@ const UploadNotes = () => {
           const pct = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
           );
-          updateProgress(pct); // Update progress via context
+          updateProgress(pct); // Updates the progress bar
         },
       });
 
@@ -43,17 +42,14 @@ const UploadNotes = () => {
       if (!fileUrl || !summary) {
         throw new Error("Incomplete data received from server.");
       }
-      stopLoading(); // Stop loading on success
+      stopLoading(); // Deactivates the global loading overlay on success
       navigate("/summary", { state: { fileUrl, summary } });
     } catch (err) {
       console.error("Upload error:", err.message);
-      stopLoading(); // Stop loading on error
+      stopLoading(); // Deactivates the global loading overlay on error
       setError(err.response?.data?.error || "Upload failed");
     }
   };
-
-  // The `if (loading)` block is completely removed from here.
-  // The loading overlay is now handled by ProtectedLayout.
 
   return (
     <div className={styles.uploadContainer}>
@@ -74,7 +70,7 @@ const UploadNotes = () => {
         </div>
         <button
           type="submit"
-          disabled={false} // `loading` state is now handled by context and the overlay in ProtectedLayout
+          disabled={false} // Loading state is managed by the global context/overlay
           className={styles.uploadButton}
         >
           Upload

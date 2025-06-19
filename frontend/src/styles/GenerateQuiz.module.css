@@ -1,7 +1,8 @@
+/* --- Page Layout --- */
 .container {
   padding: 2rem;
   background-color: #fefae0;
-  min-height: 100vh;
+  min-height: 100vh; /* Ensures the background covers the full viewport height */
 }
 
 .title {
@@ -9,14 +10,32 @@
   color: #2d2d2d;
 }
 
-/* Note Cards */
+/* --- Note Cards Grid Layout --- */
 .noteGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(
+    3,
+    1fr
+  ); /* Default to 3 columns on larger screens */
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
+/* Responsive adjustment: 2 columns for tablets and smaller laptops */
+@media (max-width: 1023px) {
+  .noteGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Responsive adjustment: 1 column for mobile screens */
+@media (max-width: 767px) {
+  .noteGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Individual Note Card Styles --- */
 .noteCard {
   background: white;
   border-radius: 8px;
@@ -32,11 +51,11 @@
 }
 
 .noteCard.selected {
-  border-left: 4px solid #d4a373;
+  border-left: 4px solid #d4a373; /* Highlight selected cards */
   background-color: #fffbe6;
 }
 
-/* Styles for Form Groups and Number Input (used inside DifficultyModal) */
+/* --- Form Elements (used in DifficultyModal) --- */
 .formGroup {
   margin-bottom: 1rem;
 }
@@ -56,7 +75,6 @@
   font-size: 1rem;
 }
 
-/* Styles for select element (difficulty dropdown) */
 .select {
   width: 100%;
   padding: 0.75rem;
@@ -65,80 +83,9 @@
   font-size: 1rem;
 }
 
-/* Loading overlay (if it's rendered by GenerateQuiz component, otherwise move to global or context CSS) */
-.loadingOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #fefae0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  z-index: 999;
-}
-
-.loadingBar {
-  width: 80%;
-  max-width: 400px;
-  height: 12px;
-  background: #eee;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.loadingFill {
-  height: 100%;
-  background: #d4a373;
-  width: 0%;
-  transition: width 0.2s ease;
-}
-
-.loadingText {
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.loadingDots::after {
-  content: "";
-  display: inline-block;
-  animation: dots 1.4s infinite;
-}
-
-@keyframes dots {
-  0% {
-    content: ".";
-  }
-  33% {
-    content: "..";
-  }
-  66% {
-    content: "...";
-  }
-  100% {
-    content: "";
-  }
-}
-
-.spinner {
-  border: 4px solid rgba(212, 163, 115, 0.2);
-  border-left-color: #d4a373;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
+/* --- Responsive Page Adjustments --- */
 @media (max-width: 600px) {
-  /* Add responsive styles specific to GenerateQuiz.js if needed */
+  .container {
+    padding: 1rem; /* Reduce padding on smaller screens for better spacing */
+  }
 }
