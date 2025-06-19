@@ -1,0 +1,177 @@
+/* --- Page Layout --- */
+.quizHistoryContainer {
+  padding: 2rem;
+  background-color: #fefae0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px; /* Consistent max-width with Library */
+  margin: 2rem auto; /* Centers the container horizontally */
+}
+
+/* Base heading style */
+.quizHistoryContainer h2 {
+  margin: 0; /* Remove default top margin for consistency */
+}
+
+/* Base paragraph style; specific messages will override */
+.quizHistoryContainer p {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #4a5568;
+}
+
+/* --- Header & Search --- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem; /* Add spacing below the header */
+}
+
+.searchInput {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  width: 350px; /* Consistent width with Library search */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #805ad5; /* Consistent focus color */
+  box-shadow: 0 0 0 3px rgba(128, 90, 213, 0.2);
+}
+
+/* --- Quiz Cards Grid Layout --- */
+.quizGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(280px, 1fr)
+  ); /* Adaptive columns */
+  gap: 1.5rem;
+}
+
+/* --- Individual Quiz Card Styles --- */
+.quizCard {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.quizCard:hover {
+  transform: translateY(-2px);
+}
+
+.quizCard h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #2d2d2d;
+}
+
+.quizCard p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.dateText {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-top: 0.8rem;
+}
+
+/* Difficulty color indicators */
+.easy {
+  color: #28a745; /* Green */
+  font-weight: bold;
+}
+
+.medium {
+  color: #ffc107; /* Orange/Yellow */
+  font-weight: bold;
+}
+
+.hard {
+  color: #dc3545; /* Red */
+  font-weight: bold;
+}
+
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  align-items: center;
+}
+
+.actions button {
+  padding: 0.6rem 1rem; /* Slightly larger padding for better clickability */
+  font-size: 0.9rem;
+  background-color: #d4a373;
+  color: #2d2d2d; /* Adjust text color for better contrast on button */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.actions button:hover {
+  background-color: #8b5e3c; /* Darker hover from theme */
+  color: white; /* Text color change on hover */
+}
+
+.actions button:active {
+  transform: translateY(0); /* No transform on click */
+}
+
+/* --- Messages (Error, Loading, Info) --- */
+.errorMessage {
+  color: #cc0000;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Reusable style for informational messages, consistent with other pages */
+.infoMessage {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #8b5e3c; /* Theme color */
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fffbe6; /* Theme background */
+  border-radius: 8px;
+  border: 1px solid #d4a373; /* Theme border */
+}
+
+/* The .loading class will now use the .infoMessage styling */
+.loading {
+  /* No specific styles here as it will inherit from .infoMessage in JSX */
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .quizHistoryContainer {
+    padding: 1rem; /* Adjust padding for smaller screens */
+    margin: 1rem auto;
+  }
+
+  .header {
+    flex-direction: column; /* Stack header elements */
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .searchInput {
+    width: 100%; /* Full width search on small screens */
+  }
+
+  .quizGrid {
+    grid-template-columns: 1fr; /* Single column on very small screens */
+  }
+}

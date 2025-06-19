@@ -18,30 +18,36 @@ export default function GenerateQuiz() {
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const progressIntervalRef = useRef(null);
+  const hasFetchedNotesRef = useRef(false); // Flag to prevent double fetch in Strict Mode
+  const [isLoadingNotes, setIsLoadingNotes] = useState(true);
 
   useEffect(() => {
+    // Prevents double execution in React Strict Mode for initial data fetch
+    if (hasFetchedNotesRef.current) return;
+    hasFetchedNotesRef.current = true;
+
     const fetchNotes = async () => {
+      setIsLoadingNotes(true);
       try {
         const data = await getFullLibrary();
-        if (!data.length) {
-          toast.info("📘 No saved notes found. Save some notes first.");
-          navigate("/library");
-        }
         setNotes(data);
       } catch (err) {
         console.error("Load notes error:", err.message);
         toast.error("❌ Failed to load your notes.");
+      } finally {
+        setIsLoadingNotes(false);
       }
     };
 
     fetchNotes();
 
+    // Cleanup for the simulated progress interval
     return () => {
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
       }
     };
-  }, [navigate]);
+  }, []); // Effect runs once on component mount
 
   const handleNoteSelect = (note) => {
     setSelectedNote(note);
@@ -59,6 +65,7 @@ export default function GenerateQuiz() {
     startLoading("🧠 Generating quiz. This might take a moment.");
     updateProgress(0);
 
+    // Simulate progress updates for better UX during quiz generation
     let simulatedProgress = 0;
     progressIntervalRef.current = setInterval(() => {
       simulatedProgress += 5;
@@ -74,6 +81,7 @@ export default function GenerateQuiz() {
         numQuestions
       );
 
+      // Clear simulated progress interval immediately after API response
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
         progressIntervalRef.current = null;
@@ -83,6 +91,7 @@ export default function GenerateQuiz() {
         updateProgress(100);
         updateLoadingText("✅ Quiz generated!");
 
+        // Brief delay for user to see 100% progress before navigating
         setTimeout(() => {
           stopLoading();
           navigate("/quizAnswer", {
@@ -97,6 +106,7 @@ export default function GenerateQuiz() {
         throw new Error("Invalid quiz format received");
       }
     } catch (err) {
+      // Ensure interval is cleared and loading stops on error
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
         progressIntervalRef.current = null;
@@ -117,26 +127,33 @@ export default function GenerateQuiz() {
 
   return (
     <div className={styles.container}>
+      <ToastContainer position="top-right" autoClose={3000} />
       <h2 className={styles.title}>🧪 Select a Note</h2>
-
-      <div className={styles.noteGrid}>
-        {notes.map((note) => (
-          <div
-            key={note.id}
-            className={`${styles.noteCard} ${
-              selectedNote?.id === note.id ? styles.selected : ""
-            }`}
-            onClick={() => handleNoteSelect(note)}
-          >
-            <h3>{note.subject || "Untitled"}</h3>
-            <p>
-              <strong>Topic:</strong> {note.topic || "—"}
-            </p>
-            <small>{note.type === "uploaded" ? "You" : "Saved"}</small>
-          </div>
-        ))}
-      </div>
-
+      {isLoadingNotes ? (
+        <p className={styles.loadingMessage}>Loading notes...</p>
+      ) : notes.length === 0 ? (
+        <p className={styles.infoMessage}>
+          No saved notes found. Please upload a note to generate a quiz.
+        </p>
+      ) : (
+        <div className={styles.noteGrid}>
+          {notes.map((note) => (
+            <div
+              key={note.id}
+              className={`${styles.noteCard} ${
+                selectedNote?.id === note.id ? styles.selected : ""
+              }`}
+              onClick={() => handleNoteSelect(note)}
+            >
+              <h3>{note.subject || "Untitled"}</h3>
+              <p>
+                <strong>Topic:</strong> {note.topic || "—"}
+              </p>
+              <small>{note.type === "uploaded" ? "You" : "Saved"}</small>
+            </div>
+          ))}
+        </div>
+      )}
       {showDifficultyModal && (
         <DifficultyModal
           title="Choose Quiz Options"
@@ -177,8 +194,6 @@ export default function GenerateQuiz() {
           </div>
         </DifficultyModal>
       )}
-
-      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 }

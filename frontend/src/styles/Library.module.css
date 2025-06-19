@@ -1,3 +1,4 @@
+/* --- Page Layout --- */
 .libraryContainer {
   padding: 2rem;
   background-color: #fefae0;
@@ -5,24 +6,30 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto; /* Centers the container horizontally */
 }
 
 .libraryContainer h2 {
-  margin-top: 0;
+  margin: 0;
 }
 
+/* Base paragraph style; specific messages will override */
 .libraryContainer p {
   margin-top: 0.5rem;
   font-size: 1rem;
   color: #4a5568;
 }
 
+/* --- Note Cards Grid Layout --- */
 .noteGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
+/* --- Individual Note Card Styles --- */
 .noteCard {
   background: white;
   border-radius: 8px;
@@ -70,6 +77,16 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.actions button:hover {
+  background-color: #8b5e3c; /* Darker hover for consistency */
+  color: white; /* Text color change on hover for better contrast */
+}
+
+.actions button:active {
+  transform: translateY(0);
 }
 
 .uploadedBy {
@@ -77,6 +94,7 @@
   color: #718096;
 }
 
+/* --- Messages (Error, Loading, Info) --- */
 .errorMessage {
   color: #cc0000;
   text-align: center;
@@ -84,7 +102,61 @@
 }
 
 .loading {
+  /* This style will be overridden by .infoMessage for consistent styling */
   text-align: center;
   font-style: italic;
   color: #718096;
+}
+
+/* Reusable style for informational messages, consistent with GenerateQuiz */
+.infoMessage {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #8b5e3c; /* Theme color */
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fffbe6; /* Theme background */
+  border-radius: 8px;
+  border: 1px solid #d4a373; /* Theme border */
+}
+
+/* --- Header & Search --- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.searchInput {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  width: 350px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #805ad5; /* A nice purple focus color */
+  box-shadow: 0 0 0 3px rgba(128, 90, 213, 0.2);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .libraryContainer {
+    padding: 1rem; /* Adjust padding for smaller screens */
+    margin: 1rem auto;
+  }
+
+  .header {
+    flex-direction: column; /* Stack header elements */
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .searchInput {
+    width: 100%; /* Full width search on small screens */
+  }
 }

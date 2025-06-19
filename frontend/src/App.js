@@ -15,6 +15,7 @@ import SearchNotes from "./pages/SearchNotes.js";
 import Library from "./pages/Library.js";
 import QuizPage from "./pages/QuizPage.js";
 import QuizReviewPage from "./pages/QuizReviewPage.js";
+import QuizHistory from "./pages/QuizHistory.js";
 import { LoadingProvider } from "./contexts/LoadingContext.js";
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
               <Route path="/search" element={<SearchNotes />} />
               <Route path="/library" element={<Library />} />
               <Route path="/quizAnswer" element={<QuizPage />} />
+              <Route path="/quiz-history" element={<QuizHistory />} />
               <Route
                 path="/quiz/:quizScoreId/review"
                 element={<QuizReviewPage />}

@@ -49,19 +49,8 @@ export const uploadNote = async (formData, config = {}) => {
   return response.data;
 };
 
-export const generateSummary = async (noteId) => {
-  try {
-    const response = await api.post("/notes/summary", { noteId });
-    return response.data;
-  } catch (error) {
-    console.error("Generate summary error:", error);
-    throw error;
-  }
-};
-
 /**
- * Save a note’s metadata (subject + topic) to the DB.
- * @param {{ fileUrl, summary, subject, topic }} body
+ * Save a note's metadata (subject + topic) to the DB.
  */
 export const saveNote = async (body) => {
   const res = await api.post("/notes", body);
@@ -112,10 +101,9 @@ export const saveToLibrary = async (noteId) => {
 
 export const getFullLibrary = async () => {
   const res = await api.get("/notes/library");
-  return res.data.notes;
+  return res.data;
 };
 
-// Generate quiz
 export const quizCreation = async (noteId, difficulty, numQuestions) => {
   try {
     const response = await api.post("/quizzes/create", {
@@ -195,6 +183,18 @@ export const getQuizDetails = async (quizScoreId) => {
       error.message
     );
     throw error;
+  }
+};
+
+export const getRecommendedNotes = async (subject, excludeNoteId) => {
+  try {
+    const response = await api.get("/notes/recommendations", {
+      params: { subject, excludeNoteId },
+    });
+    return response.data.notes;
+  } catch (error) {
+    console.error("Fetch recommended notes failed:", error.message);
+    return []; // Return empty array on error to prevent UI crashes
   }
 };
 

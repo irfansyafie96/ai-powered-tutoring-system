@@ -21,15 +21,12 @@ export default function Home() {
         setLoadingNotes(false);
       }
 
-      // Fetch quiz history
       try {
         const historyData = await getQuizHistory();
-        // Limit to 3 recent quiz attempts for the home page
-        setQuizHistory(historyData.slice(0, 3));
+        setQuizHistory(historyData.slice(0, 3)); // Limit to 3 recent quiz attempts for the home page
       } catch (err) {
         console.error("Failed to load quiz history:", err);
       } finally {
-        // Fixed typo here (added '}')
         setLoadingQuizHistory(false);
       }
     };
@@ -39,7 +36,7 @@ export default function Home() {
   const handleViewSummary = (note) => {
     navigate("/summary", {
       state: {
-        fileUrl: note.fileurl,
+        fileUrl: note.fileUrl,
         summary: note.summary,
         subject: note.subject,
         topic: note.topic,
@@ -47,7 +44,6 @@ export default function Home() {
     });
   };
 
-  // New handler for reviewing past quiz attempts
   const handleReviewPastQuiz = (quiz) => {
     navigate(`/quiz/${quiz.quiz_score_id}/review`);
   };
@@ -84,7 +80,7 @@ export default function Home() {
 
         <div className={styles.notePreviewGrid}>
           {recentNotes.length === 0 ? (
-            <p>You don’t have any notes yet. Upload one to get started!</p>
+            <p>You don't have any notes yet. Upload one to get started!</p>
           ) : (
             recentNotes.map((note) => (
               <div key={note.id} className={styles.notePreviewCard}>
@@ -111,12 +107,9 @@ export default function Home() {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2>📊 Past Quiz Attempts</h2>
-          {/* You might want a "View All Quizzes" button here if you create a dedicated quiz history page */}
           <button
             className={styles.viewAllButton}
-            onClick={() =>
-              navigate("/quiz-history")
-            } /* Assuming you'll create this route */
+            onClick={() => navigate("/quiz-history")}
           >
             ➡️ View All
           </button>
@@ -125,7 +118,7 @@ export default function Home() {
         <div className={styles.quizAttemptsGrid}>
           {quizHistory.length === 0 ? (
             <p>
-              You haven’t completed any quizzes yet. Generate one from a note!
+              You haven't completed any quizzes yet. Generate one from a note!
             </p>
           ) : (
             quizHistory.map((quiz) => (

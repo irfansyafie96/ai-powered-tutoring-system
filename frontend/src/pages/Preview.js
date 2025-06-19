@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { saveNote, checkIfSaved } from "../api/api";
 import styles from "../styles/Preview.module.css";
 import MetadataModal from "../components/MetadataModal";
@@ -47,6 +49,10 @@ export default function Preview() {
   // Check if this note was already saved
   useEffect(() => {
     const checkSavedStatus = async () => {
+      // Assuming `fileUrl` should contain the note's ID if it's already a saved note.
+      // If `fileUrl` is a direct URL from upload, it might not have an ID yet.
+      // This logic might need adjustment based on how `fileUrl` is passed after initial upload vs. after saving.
+      // For now, assuming `fileUrl.id` is the note identifier if available.
       if (!fileUrl?.id) return;
 
       try {
@@ -83,7 +89,7 @@ export default function Preview() {
         });
       }
 
-      // ✅ Always close modal after saving attempt
+      // Always close modal after saving attempt
       setShowModal(false);
       setIsAlreadySaved(true); // Prevent future saves
       setSaveError(null);
@@ -94,7 +100,6 @@ export default function Preview() {
         autoClose: 5000,
         hideProgressBar: false,
       });
-      // setShowModal(true); // Uncomment if want to keep it open
     } finally {
       setSaving(false);
     }
@@ -198,6 +203,7 @@ export default function Preview() {
                   toast.info("📘 This note is already in your library", {
                     position: "top-right",
                     autoClose: 3000,
+                    hideProgressBar: false,
                   });
                   return;
                 }
@@ -213,17 +219,12 @@ export default function Preview() {
 
         <div className={styles.summaryContent}>
           {summary ? (
-            summary
-              .split("\n")
-              .map((line, i) => (
-                <p key={`summary_line_${i}`}>{line || <br />}</p>
-              ))
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
           ) : (
             <p className={styles.pdfLoading}>No analysis available</p>
           )}
         </div>
 
-        {/* Modal for saving */}
         {showModal && (
           <MetadataModal
             subject={subject}
@@ -240,7 +241,6 @@ export default function Preview() {
           />
         )}
 
-        {/* ✅ Toast Container */}
         <ToastContainer
           position="top-right"
           autoClose={3000}

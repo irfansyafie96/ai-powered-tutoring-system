@@ -8,6 +8,7 @@
 .title {
   margin-bottom: 1.5rem;
   color: #2d2d2d;
+  text-align: center; /* Centers the title text */
 }
 
 /* --- Note Cards Grid Layout --- */
@@ -81,6 +82,29 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
+}
+
+/* --- Info and Loading Messages --- */
+.infoMessage,
+.loadingMessage {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #555;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.infoMessage {
+  color: #8b5e3c; /* Uses a theme color for information text */
+  background-color: #fffbe6; /* Lighter background for emphasis */
+  border-color: #d4a373; /* Border matching theme accent */
+}
+
+.loadingMessage {
+  color: #555; /* Neutral color for loading text */
 }
 
 /* --- Responsive Page Adjustments --- */

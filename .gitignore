@@ -2,3 +2,4 @@ node_modules
 .env
 backend/uploads/
 backend/debug_extracted_text.txt
+.cursor/rules/fyp-rule.mdc
