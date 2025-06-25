@@ -233,7 +233,7 @@ export default function QuizPage() {
               className={styles.regenerateButton}
               onClick={() => navigate("/quiz")}
             >
-              🔁 Regenerate Quiz
+              🔁 Back to Generator
             </button>
             {/* Review Answers Button - Corrected class */}
             <button
