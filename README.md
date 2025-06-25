@@ -151,15 +151,19 @@ project-root/
 ## 📸 Screenshots
 
 - 📎 Upload screen: Select a file and watch it get processed
+
   ![Upload File Page](images/upload-file-page.png)
 
 - 📝 Summary preview: View AI-generated notes side-by-side with original
+
   ![Sumamry Page](images/summary-page.png)
 
 - 🧪 Quiz page: Take adaptive assessments based on your uploaded content
+
   ![Quiz Page](images/quiz-page.png)
 
 - 📊 Performance review: Track your progress and see areas to improve
+
   ![Quiz Review Page](images/quiz-review-page.png)
 
 ---
