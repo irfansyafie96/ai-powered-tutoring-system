@@ -198,7 +198,7 @@ This project is licensed under the **ISC License** – a permissive open-source 
 
 ---
 
-> This project was developed as part of my Final Year Project (FYP) at **Universiti Teknikal Malaysia Melaka (UTeM)**, Faculty of Information and Communication Technology (FTMK), under the supervision of **TS. Dr. Lizawati Binti Salahuiddin**.
+> This project was developed as part of my Final Year Project (FYP) at **Universiti Teknikal Malaysia Melaka (UTeM)**, Faculty of Information and Communication Technology (FTMK), under the supervision of **TS. Dr. Lizawati Binti Salahuddin**.
 
 Made with ❤️ and a lot of coffee during late-night coding sessions.
 
