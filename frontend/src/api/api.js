@@ -1,9 +1,12 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL
-    ? `${process.env.REACT_APP_API_URL}/api`
-    : "http://localhost:5000/api",
+  baseURL:
+    window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
+      ? `${
+          window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
+        }/api`
+      : "http://localhost:5000/api",
   timeout: 100000,
 });
 
@@ -41,6 +44,7 @@ export const updateProfile = async (body) => {
 export const uploadNote = async (formData, config = {}) => {
   const response = await api.post("/notes/upload", formData, {
     ...config,
+    timeout: 300000, // 5 minutes timeout for upload operations
     headers: {
       "Content-Type": "multipart/form-data",
       ...config.headers,
@@ -55,6 +59,11 @@ export const uploadNote = async (formData, config = {}) => {
 export const saveNote = async (body) => {
   const res = await api.post("/notes", body);
   return res.data;
+};
+
+export const deleteNote = async (noteId) => {
+  const response = await api.delete(`/notes/${noteId}`);
+  return response.data;
 };
 
 export const checkIfSaved = async (noteId) => {

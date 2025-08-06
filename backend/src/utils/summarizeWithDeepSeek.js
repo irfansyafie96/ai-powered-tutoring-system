@@ -17,27 +17,16 @@ export const summarizeWithDeepSeek = async (chunk) => {
       messages: [
         {
           role: "system",
-          content: `
-You are an AI assistant that extracts key information from a piece of text.
-Your goal is to create a raw, detailed set of notes from the text provided.
-Do not add any information that is not present in the text.
-Do not include any personal commentary, notes, or apologies (e.g., "Note: The text cuts off...").
-Structure the output using headings and bullet points where appropriate.
-          `.trim(),
+          content:
+            "Extract key points from this text. Use bullet points and headings. Be concise.",
         },
         {
           role: "user",
-          content: `
-Based on the text below, create a detailed set of notes.
-Only use the information provided in the text.
-
-Text:
-"${chunk}"
-          `.trim(),
+          content: `Summarize this text:\n\n${chunk}`,
         },
       ],
-      temperature: 0.2,
-      max_tokens: 1500,
+      temperature: 0.1, // Reduced from 0.2 for more consistent, faster responses
+      max_tokens: 1000, // Reduced from 1500 for faster processing
     });
 
     return completion.choices[0].message.content.trim();

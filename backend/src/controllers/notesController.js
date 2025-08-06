@@ -3,64 +3,15 @@ import fs from "fs";
 import { promisify } from "util";
 import libre from "libreoffice-convert";
 import { extractTextFromFile } from "../utils/extractTextFromFile.js";
-import { summarizeWithDeepSeek } from "../utils/summarizeWithDeepSeek.js";
-import { synthesizeWithDeepSeek } from "../utils/synthesisWithDeepSeek.js";
 import pool from "../db.js";
+import { OpenAI } from "openai";
+import crypto from "crypto";
 
 const convertAsync = promisify(libre.convert);
 
 /**
- * Splits text into coherent chunks, attempting to break at natural boundaries like sentences or paragraphs.
- * This helps in processing large texts by AI models while maintaining context.
- * @param {string} text - The full text to split.
- * @param {number} chunkSize - The target size (in characters) for each chunk.
- * @param {number} overlap - The number of characters to overlap between chunks to maintain context.
- * @returns {string[]} An array of text chunks.
- */
-function splitIntoChunks(text, chunkSize, overlap) {
-  const chunks = [];
-  let index = 0;
-
-  while (index < text.length) {
-    const targetEnd = index + chunkSize;
-
-    // If the remaining text is less than a chunk size, take all of it
-    if (targetEnd >= text.length) {
-      chunks.push(text.slice(index));
-      break;
-    }
-
-    // Attempt to find a sentence boundary ('. ') before the target end
-    let sliceEnd = text.lastIndexOf(". ", targetEnd);
-    if (sliceEnd <= index) {
-      // If no sentence boundary, try a new line character ('\n')
-      sliceEnd = text.lastIndexOf("\n", targetEnd);
-    }
-    if (sliceEnd <= index) {
-      // If no suitable boundary found, simply cut at the targetEnd
-      sliceEnd = targetEnd;
-    } else {
-      // Include the boundary character in the slice
-      sliceEnd += 1;
-    }
-
-    chunks.push(text.slice(index, sliceEnd));
-
-    // Calculate the next starting index with overlap
-    let nextIndex = sliceEnd - overlap;
-    // Ensure nextIndex doesn't go backwards or beyond the current index
-    if (nextIndex <= index) {
-      nextIndex = sliceEnd;
-    }
-    index = nextIndex;
-  }
-  return chunks;
-}
-
-/**
  * Handles the upload of a note file, converts PPTX to PDF if necessary,
- * extracts text, summarizes it using DeepSeek, synthesizes the final summary,
- * and returns the file URL and summary.
+ * extracts text, and generates a summary using an optimized single-pass approach.
  * @param {object} req - The request object, containing the uploaded file.
  * @param {object} res - The response object.
  */
@@ -70,6 +21,14 @@ export const uploadNote = async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
+    // Check file size (limit to 10MB to prevent timeouts)
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+    if (req.file.size > maxFileSize) {
+      return res.status(400).json({
+        error: "File too large. Please upload a file smaller than 10MB.",
+      });
+    }
+
     const baseUrl = process.env.BASE_URL || "http://localhost:5000";
     const uploadsDir = path.join(process.cwd(), "uploads");
     const inputPath = path.join(uploadsDir, req.file.filename);
@@ -77,7 +36,7 @@ export const uploadNote = async (req, res) => {
 
     let outputPath = inputPath;
     let fileUrl = `${baseUrl}/uploads/${encodeURIComponent(req.file.filename)}`;
-    let outputFileName; // Declared but not explicitly used for its string value after assignment
+    let outputFileName;
 
     // Convert PPTX to PDF if the uploaded file is a PPTX
     if (ext === ".pptx") {
@@ -93,37 +52,45 @@ export const uploadNote = async (req, res) => {
 
     // Step 1: Extract full text from the processed file
     const fullText = await extractTextFromFile(outputPath);
+    console.log(`Extracted ${fullText.length} characters from document`);
 
-    // Step 2: Split into chunks for manageable AI processing
-    const CHUNK_SIZE = 3500; // Target size for each text chunk (characters)
-    const OVERLAP = 250; // Overlap between chunks (characters) for context
-    const chunks = splitIntoChunks(fullText, CHUNK_SIZE, OVERLAP);
+    // Step 2: Compute file hash for caching
+    const fileHash = crypto.createHash("sha256").update(fullText).digest("hex");
+    console.log(`Computed file hash: ${fileHash}`);
 
-    console.log(`Split into ${chunks.length} chunks for summarization.`);
-
-    // Step 3: Summarize each chunk in parallel using DeepSeek
-    const partialSummaries = await Promise.all(
-      chunks.map(async (chunk) => {
-        try {
-          return await summarizeWithDeepSeek(chunk);
-        } catch (err) {
-          console.error("Error summarizing chunk:", err.message);
-          return ""; // Return empty string on chunk summary error to continue processing
-        }
-      })
+    // Step 3: Check for cached summary in the notes table
+    const cacheResult = await pool.query(
+      "SELECT summary, file_url FROM notes WHERE file_hash = $1 LIMIT 1",
+      [fileHash]
     );
+    if (cacheResult.rows.length > 0) {
+      console.log("Summary cache hit! Returning cached summary.");
+      return res.status(201).json({
+        note: {
+          fileUrl: cacheResult.rows[0].file_url,
+          summary: cacheResult.rows[0].summary,
+          cached: true,
+        },
+      });
+    }
 
-    // Step 4: Combine all partial summaries
-    const combinedSummary = partialSummaries.filter(Boolean).join("\n\n"); // Filter out empty summaries
+    // Step 4: Smart text preprocessing for better summarization
+    const processedText = preprocessTextForSummarization(fullText);
+    console.log(`Preprocessed text: ${processedText.length} characters`);
 
-    // Step 5: Synthesize the combined summary for a more coherent and refined output
-    const finalSummary = await synthesizeWithDeepSeek(combinedSummary);
+    // Step 5: Generate summary using optimized single-pass approach
+    const summary = await generateOptimizedSummary(processedText);
 
-    // Step 6: Return the file URL and final cleaned summary
+    // Step 6: Store the new summary and file_hash in the notes table (defer to saveNoteMetadata for metadata)
+    // (If you want to store immediately, you can insert here, but typically you store on saveNoteMetadata)
+
+    // Step 7: Return the file URL and summary
     res.status(201).json({
       note: {
         fileUrl,
-        summary: finalSummary,
+        summary: summary,
+        fileHash,
+        cached: false,
       },
     });
   } catch (error) {
@@ -133,27 +100,118 @@ export const uploadNote = async (req, res) => {
 };
 
 /**
+ * Preprocesses text to improve summarization quality and speed
+ * @param {string} text - Raw extracted text
+ * @returns {string} - Preprocessed text optimized for summarization
+ */
+function preprocessTextForSummarization(text) {
+  // Remove excessive whitespace and normalize
+  let processed = text
+    .replace(/\s+/g, " ") // Replace multiple spaces with single space
+    .replace(/\n\s*\n/g, "\n\n") // Normalize paragraph breaks
+    .trim();
+
+  // Remove common PDF artifacts
+  processed = processed
+    .replace(/Page \d+ of \d+/gi, "") // Remove page numbers
+    .replace(/\d{1,2}\/\d{1,2}\/\d{2,4}/g, "") // Remove dates
+    .replace(/©.*?\./g, "") // Remove copyright notices
+    .replace(/All rights reserved\.?/gi, "") // Remove legal text
+    .replace(/Confidential\.?/gi, ""); // Remove confidential notices
+
+  // Smart truncation for very long documents (preserve structure)
+  const maxLength = 25000; // 25K characters for optimal processing
+  if (processed.length > maxLength) {
+    console.log(
+      `Document truncated from ${processed.length} to ${maxLength} characters`
+    );
+
+    // Try to truncate at a sentence boundary
+    const truncated = processed.substring(0, maxLength);
+    const lastSentenceEnd = truncated.lastIndexOf(".");
+
+    if (lastSentenceEnd > maxLength * 0.8) {
+      // If we can find a good sentence break
+      processed = truncated.substring(0, lastSentenceEnd + 1);
+    } else {
+      processed = truncated;
+    }
+
+    processed += "\n\n[Document truncated for optimal processing]";
+  }
+
+  return processed;
+}
+
+/**
+ * Generates an optimized summary using a single API call with smart prompting
+ * @param {string} text - Preprocessed text
+ * @returns {Promise<string>} - Generated summary
+ */
+async function generateOptimizedSummary(text) {
+  try {
+    const openai = new OpenAI({
+      baseURL: process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com",
+    });
+
+    const completion = await openai.chat.completions.create({
+      model: "deepseek-chat",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert academic summarizer. Create a comprehensive, well-structured summary that:
+
+1. Preserves all key concepts and important details
+2. Uses clear headings and bullet points for organization
+3. Maintains the logical flow of the original content
+4. Includes definitions of important terms
+5. Highlights main points and supporting evidence
+6. Uses markdown formatting for better readability
+
+Focus on accuracy and completeness over brevity.`,
+        },
+        {
+          role: "user",
+          content: `Please create a detailed, well-structured summary of this academic content:
+
+${text}
+
+Ensure the summary is comprehensive and preserves all important information while being well-organized.`,
+        },
+      ],
+      temperature: 0.1, // Low temperature for consistency
+      max_tokens: 3000, // Allow for comprehensive summaries
+    });
+
+    return completion.choices[0].message.content.trim();
+  } catch (error) {
+    console.error("Summary generation failed:", error);
+    throw new Error("Failed to generate summary. Please try again.");
+  }
+}
+
+/**
  * Saves note metadata (file URL, summary, subject, topic) to the database.
  * @param {object} req - The request object, including authenticated user ID and body data.
  * @param {object} res - The response object.
  */
 export const saveNoteMetadata = async (req, res) => {
   const userId = req.user.id;
-  const { fileUrl, summary, subject, topic } = req.body;
+  const { fileUrl, summary, subject, topic, fileHash } = req.body;
 
-  if (!fileUrl || !summary || !subject || !topic) {
-    return res
-      .status(400)
-      .json({ error: "fileUrl, summary, subject, and topic are required." });
+  if (!fileUrl || !summary || !subject || !topic || !fileHash) {
+    return res.status(400).json({
+      error: "fileUrl, summary, subject, topic, and fileHash are required.",
+    });
   }
 
   try {
     const result = await pool.query(
       `INSERT INTO notes 
-         (user_id, file_url, summary, subject, topic, created_at)
-       VALUES ($1, $2, $3, $4, $5, NOW())
-       RETURNING id, user_id, file_url, summary, subject, topic, created_at`,
-      [userId, fileUrl, summary, subject, topic]
+         (user_id, file_url, summary, subject, topic, file_hash, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW())
+       RETURNING id, user_id, file_url, summary, subject, topic, file_hash, created_at`,
+      [userId, fileUrl, summary, subject, topic, fileHash]
     );
     res.status(201).json({ note: result.rows[0] });
   } catch (err) {
@@ -233,7 +291,7 @@ export const searchNotes = async (req, res) => {
     const { rows } = await pool.query(query, params);
     res.json({ notes: rows });
   } catch (err) {
-    console.error("Search notes error:", err.message); // Updated error message
+    console.error("Search notes error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -391,5 +449,31 @@ export const getRecommendedNotes = async (req, res) => {
   } catch (err) {
     console.error("Get recommended notes error:", err.message);
     res.status(500).json({ error: "Failed to load recommendations" });
+  }
+};
+
+export const deleteNote = async (req, res) => {
+  const userId = req.user.id;
+  const { noteId } = req.params;
+
+  if (!noteId) {
+    return res.status(400).json({ error: "Note ID is required." });
+  }
+
+  try {
+    // Only allow deleting notes owned by the user
+    const result = await pool.query(
+      "DELETE FROM notes WHERE id = $1 AND user_id = $2 RETURNING id",
+      [noteId, userId]
+    );
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Note not found or not authorized." });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Delete note error:", err);
+    res.status(500).json({ error: "Failed to delete note." });
   }
 };

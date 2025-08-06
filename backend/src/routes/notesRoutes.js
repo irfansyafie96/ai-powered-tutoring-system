@@ -10,6 +10,7 @@ import {
   getFullLibrary,
   isNoteSaved,
   getRecommendedNotes,
+  deleteNote,
 } from "../controllers/notesController.js";
 
 // Multer setup for file uploads
@@ -45,5 +46,6 @@ notesRoutes.get("/library", authenticateJWT, getFullLibrary);
 notesRoutes.get("/saved", authenticateJWT, isNoteSaved);
 // Route for getting recommended notes based on subject
 notesRoutes.get("/recommendations", authenticateJWT, getRecommendedNotes);
+notesRoutes.delete("/:noteId", authenticateJWT, deleteNote);
 
 export default notesRoutes;

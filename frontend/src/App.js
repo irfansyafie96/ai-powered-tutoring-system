@@ -1,6 +1,8 @@
 import React from "react";
 import "./utils/pdfOverride.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import PublicLayout from "./components/PublicLayout";
 import ProtectedLayout from "./components/ProtectedLayout";
 import Register from "./pages/Register";
@@ -50,6 +52,7 @@ function App() {
             </Route>
           </Routes>
         </LoadingProvider>
+        <ToastContainer />
       </div>
     </Router>
   );

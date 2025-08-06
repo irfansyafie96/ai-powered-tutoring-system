@@ -17,29 +17,16 @@ export const synthesizeWithDeepSeek = async (combinedSummary) => {
       messages: [
         {
           role: "system",
-          content: `
-You are an AI assistant that refines and synthesizes a set of notes into a final, coherent document.
-The notes you receive were generated from chunks of a larger document and have been concatenated.
-Your tasks are:
-1. Merge the notes into a single, logically flowing document.
-2. Remove any redundant or duplicate headings and content.
-3. Ensure a consistent and clean structure using headings and bullet points.
-4. Do not add any information that is not present in the provided notes.
-5. Remove any artifacts from the original document's structure, such as section numbers (e.g., "1.8", "Chapter 5"), page numbers, or phrases like "End of Document". The output should only contain the titles and the content.
-          `.trim(),
+          content:
+            "Merge these notes into a coherent document. Remove duplicates and organize with headings.",
         },
         {
           role: "user",
-          content: `
-Based on the combined notes below, create a final, synthesized summary.
-
-Notes:
-"${combinedSummary}"
-          `.trim(),
+          content: `Organize these notes:\n\n${combinedSummary}`,
         },
       ],
-      temperature: 0.1,
-      max_tokens: 3000,
+      temperature: 0.1, // Reduced for consistency
+      max_tokens: 2000, // Reduced from 3000 for faster processing
     });
 
     return completion.choices[0].message.content.trim();

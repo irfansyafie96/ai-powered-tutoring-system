@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function Preview() {
   const { state } = useLocation();
-  const { fileUrl, summary } = state || {};
+  const { fileUrl, summary, fileHash } = state || {};
   const [subject, setSubject] = useState("");
   const [topic, setTopic] = useState("");
   const [numPages, setNumPages] = useState(0);
@@ -73,7 +73,13 @@ export default function Preview() {
 
     setSaving(true);
     try {
-      const response = await saveNote({ fileUrl, summary, subject, topic });
+      const response = await saveNote({
+        fileUrl,
+        summary,
+        subject,
+        topic,
+        fileHash,
+      });
 
       if (response.saved === false) {
         toast.info("📘 This note is already in your library", {
