@@ -53,7 +53,7 @@ export const uploadNote = async (req, res) => {
     console.log("Extracting text from document...");
     let fullText;
     try {
-      fullText = await extractTextFromFile(processedBuffer);
+      fullText = await extractTextFromFile(processedBuffer, req.file.originalname);
       console.log(`Extracted ${fullText.length} characters from document`);
 
       // Check if text extraction was successful

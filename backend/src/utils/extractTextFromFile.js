@@ -25,18 +25,39 @@ export function splitWithOverlap(text, chunkSize = 3800, overlap = 300) {
 
 /**
  * Extracts raw text from .txt or .pdf files.
- * @param {string} filePath - Path to the file
+ * @param {string|Buffer} fileInput - Path to the file or file buffer
+ * @param {string} originalName - Original filename (required when fileInput is a Buffer)
  * @returns {Promise<string>} Extracted text
  */
-export const extractTextFromFile = async (filePath) => {
-  const ext = path.extname(filePath).toLowerCase();
+export const extractTextFromFile = async (fileInput, originalName = null) => {
+  let ext;
+  let data;
+
+  // Handle both file paths and buffers
+  if (Buffer.isBuffer(fileInput)) {
+    // Input is a buffer
+    if (!originalName) {
+      throw new Error("Original filename is required when input is a buffer");
+    }
+    ext = path.extname(originalName).toLowerCase();
+    data = new Uint8Array(fileInput);
+  } else if (typeof fileInput === "string") {
+    // Input is a file path
+    ext = path.extname(fileInput).toLowerCase();
+    data = new Uint8Array(await fs.promises.readFile(fileInput));
+  } else {
+    throw new Error("Invalid input type. Expected string (file path) or Buffer");
+  }
 
   if (ext === ".txt") {
-    return await fs.promises.readFile(filePath, "utf-8");
+    if (Buffer.isBuffer(fileInput)) {
+      return fileInput.toString("utf-8");
+    } else {
+      return await fs.promises.readFile(fileInput, "utf-8");
+    }
   }
 
   if (ext === ".pdf") {
-    const data = new Uint8Array(await fs.promises.readFile(filePath));
     const pdfDoc = await getDocument({ data }).promise;
 
     let fullText = "";
@@ -59,16 +80,18 @@ export const extractTextFromFile = async (filePath) => {
 
 /**
  * Extracts and safely splits long text into chunks.
- * @param {string} filePath - Path to the file
+ * @param {string|Buffer} fileInput - Path to the file or file buffer
+ * @param {string} originalName - Original filename (required when fileInput is a Buffer)
  * @param {number} chunkSize - Size of each chunk (default: 3800 chars)
  * @param {number} overlap - Overlapping characters (default: 300)
  * @returns {Promise<string[]>} Array of text chunks
  */
 export const extractAndSplitText = async (
-  filePath,
+  fileInput,
+  originalName = null,
   chunkSize = 3800,
   overlap = 300
 ) => {
-  const fullText = await extractTextFromFile(filePath);
+  const fullText = await extractTextFromFile(fileInput, originalName);
   return splitWithOverlap(fullText, chunkSize, overlap);
 };
