@@ -12,8 +12,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
-    'X-Render-Region': 'singapore',
-    'Origin': window.location.origin
+    'X-Render-Region': 'singapore'
   }
 });
 
