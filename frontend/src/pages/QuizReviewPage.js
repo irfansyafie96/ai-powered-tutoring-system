@@ -99,8 +99,14 @@ export default function QuizReviewPage() {
     // Navigate to the summary/preview page with the required state
     navigate("/summary", {
       state: {
-        fileUrl: note.fileurl,
-        summary: note.summary,
+        fileUrl:
+          typeof note.fileurl === "string"
+            ? note.fileurl
+            : String(note.fileurl || ""),
+        summary:
+          typeof note.summary === "string"
+            ? note.summary
+            : String(note.summary || ""),
         subject: note.subject,
         topic: note.topic,
       },

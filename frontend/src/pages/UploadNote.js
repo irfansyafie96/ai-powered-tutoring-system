@@ -115,14 +115,39 @@ const UploadNotes = () => {
       updateLoadingText("✅ Summary generated successfully!");
 
       const { fileUrl, summary, fileHash } = response?.note || {};
+
+      // Debug logging
+      console.log("Upload response:", response);
+      console.log("fileUrl:", fileUrl, "type:", typeof fileUrl);
+      console.log("summary:", summary, "type:", typeof summary);
+
+      // Validate response data
       if (!fileUrl || !summary) {
+        console.error("Invalid response data:", { fileUrl, summary, fileHash });
         throw new Error("Incomplete data received from server.");
+      }
+
+      // Ensure all values are strings
+      if (typeof fileUrl !== "string" || typeof summary !== "string") {
+        console.error("Response contains non-string values:", {
+          fileUrl,
+          summary,
+          fileHash,
+        });
+        throw new Error("Invalid data format received from server.");
       }
 
       // Brief delay to show completion message
       setTimeout(() => {
         stopLoading();
-        navigate("/summary", { state: { fileUrl, summary, fileHash } });
+        // Ensure we're passing the correct data structure
+        const stateData = {
+          fileUrl: String(fileUrl),
+          summary: String(summary),
+          fileHash: String(fileHash || ""),
+        };
+        console.log("Navigating with state:", stateData);
+        navigate("/summary", { state: stateData });
       }, 1500);
     } catch (err) {
       console.error("Upload error:", err.message);

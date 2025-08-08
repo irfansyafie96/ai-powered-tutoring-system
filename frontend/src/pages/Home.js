@@ -38,8 +38,14 @@ export default function Home() {
   const handleViewSummary = (note) => {
     navigate("/summary", {
       state: {
-        fileUrl: note.fileUrl,
-        summary: note.summary,
+        fileUrl:
+          typeof note.fileUrl === "string"
+            ? note.fileUrl
+            : String(note.fileUrl || ""),
+        summary:
+          typeof note.summary === "string"
+            ? note.summary
+            : String(note.summary || ""),
         subject: note.subject,
         topic: note.topic,
       },
@@ -93,7 +99,9 @@ export default function Home() {
                   <strong>Topic:</strong> {note.topic || "—"}
                 </p>
                 <p className={styles.summaryPreview}>
-                  {note.summary.split("\n").slice(0, 3).join("\n")}
+                  {typeof note.summary === "string"
+                    ? note.summary.split("\n").slice(0, 3).join("\n")
+                    : "No summary available"}
                 </p>
                 <button
                   onClick={() => handleViewSummary(note)}

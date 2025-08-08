@@ -28,14 +28,26 @@ export const uploadNote = async (req, res) => {
     }
 
     console.log("File uploaded to Cloudinary:", req.file);
+    console.log("req.file.path:", req.file.path);
+    console.log("req.file.url:", req.file.url);
+    console.log("req.file.secure_url:", req.file.secure_url);
 
-    // Get the Cloudinary URL
-    const fileUrl = req.file.path;
+    // Get the Cloudinary URL - prefer secure_url if available
+    let fileUrl = req.file.secure_url || req.file.url || req.file.path;
+
+    // Ensure fileUrl is a string
+    if (typeof fileUrl !== "string") {
+      console.error("fileUrl is not a string:", fileUrl);
+      fileUrl = String(fileUrl);
+    }
     const ext = path.extname(req.file.originalname).toLowerCase();
 
     // Step 1: Process file from Cloudinary (download + convert if needed)
     console.log("Processing file from Cloudinary...");
-    const processedBuffer = await processCloudFile(fileUrl, req.file.originalname);
+    const processedBuffer = await processCloudFile(
+      fileUrl,
+      req.file.originalname
+    );
 
     // Step 2: Extract full text from the processed file
     console.log("Extracting text from document...");
@@ -43,7 +55,7 @@ export const uploadNote = async (req, res) => {
     try {
       fullText = await extractTextFromFile(processedBuffer);
       console.log(`Extracted ${fullText.length} characters from document`);
-      
+
       // Check if text extraction was successful
       if (!fullText || fullText.trim().length < 10) {
         throw new Error("Text extraction produced insufficient content");
@@ -51,13 +63,23 @@ export const uploadNote = async (req, res) => {
     } catch (extractionError) {
       console.error("Text extraction failed:", extractionError);
       // Fallback: create a basic summary based on file metadata
-      fullText = `Document: ${req.file.originalname}\nType: ${ext}\nSize: ${(req.file.size / 1024).toFixed(2)} KB\n\nThis document has been uploaded successfully. Text extraction was not possible for this file type or format.`;
+      fullText = `Document: ${req.file.originalname}\nType: ${ext}\nSize: ${(
+        req.file.size / 1024
+      ).toFixed(
+        2
+      )} KB\n\nThis document has been uploaded successfully. Text extraction was not possible for this file type or format.`;
       console.log("Using fallback text extraction");
     }
 
     // Step 3: Compute file hash for caching (use actual content)
-    const fileHash = crypto.createHash("sha256").update(fullText).digest("hex");
+    let fileHash = crypto.createHash("sha256").update(fullText).digest("hex");
     console.log(`Computed file hash: ${fileHash}`);
+
+    // Ensure fileHash is a string
+    if (typeof fileHash !== "string") {
+      console.error("fileHash is not a string:", fileHash);
+      fileHash = String(fileHash);
+    }
 
     // Step 4: Check for cached summary in the notes table
     const cacheResult = await pool.query(
@@ -66,13 +88,31 @@ export const uploadNote = async (req, res) => {
     );
     if (cacheResult.rows.length > 0) {
       console.log("Summary cache hit! Returning cached summary.");
-      return res.status(201).json({
+
+      // Ensure cached fileUrl is a string
+      let cachedFileUrl = cacheResult.rows[0].file_url;
+      if (typeof cachedFileUrl !== "string") {
+        console.error("Cached fileUrl is not a string:", cachedFileUrl);
+        cachedFileUrl = String(cachedFileUrl);
+      }
+
+      // Ensure cached summary is a string
+      let cachedSummary = cacheResult.rows[0].summary;
+      if (typeof cachedSummary !== "string") {
+        console.error("Cached summary is not a string:", cachedSummary);
+        cachedSummary = String(cachedSummary);
+      }
+
+      const cachedResponse = {
         note: {
-          fileUrl: cacheResult.rows[0].file_url,
-          summary: cacheResult.rows[0].summary,
+          fileUrl: String(cachedFileUrl),
+          summary: String(cachedSummary),
+          fileHash: String(fileHash), // Use the computed fileHash
           cached: true,
         },
-      });
+      };
+      console.log("Sending cached response:", cachedResponse);
+      return res.status(201).json(cachedResponse);
     }
 
     // Step 5: Smart text preprocessing for better summarization
@@ -81,18 +121,26 @@ export const uploadNote = async (req, res) => {
 
     // Step 6: Generate summary using optimized single-pass approach
     console.log("Generating AI summary...");
-    const summary = await generateOptimizedSummary(processedText);
+    let summary = await generateOptimizedSummary(processedText);
     console.log("Summary generated successfully");
 
+    // Ensure summary is a string
+    if (typeof summary !== "string") {
+      console.error("Summary is not a string:", summary);
+      summary = String(summary);
+    }
+
     // Step 7: Return the file URL and summary
-    res.status(201).json({
+    const responseData = {
       note: {
-        fileUrl,
-        summary: summary,
-        fileHash,
+        fileUrl: String(fileUrl),
+        summary: String(summary),
+        fileHash: String(fileHash),
         cached: false,
       },
-    });
+    };
+    console.log("Sending response:", responseData);
+    res.status(201).json(responseData);
   } catch (error) {
     console.error("Error uploading note:", error);
     res.status(500).json({ error: "Internal server error" });

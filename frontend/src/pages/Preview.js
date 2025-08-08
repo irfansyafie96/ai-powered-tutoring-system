@@ -13,6 +13,25 @@ import "react-toastify/dist/ReactToastify.css";
 export default function Preview() {
   const { state } = useLocation();
   const { fileUrl, summary, fileHash } = state || {};
+
+  // Handle missing state data
+  if (!state || !fileUrl || !summary) {
+    console.error("Missing required state data:", state);
+    return (
+      <div className={styles.previewContainer}>
+        <div className={styles.pane}>
+          <div className={styles.paneHeader}>
+            <h3>Error</h3>
+          </div>
+          <div className={styles.paneContent}>
+            <p>
+              No summary data available. Please try uploading your file again.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const [subject, setSubject] = useState("");
   const [topic, setTopic] = useState("");
   const [numPages, setNumPages] = useState(0);
@@ -23,28 +42,50 @@ export default function Preview() {
   const [saveError, setSaveError] = useState(null);
   const [alreadySaved, setIsAlreadySaved] = useState(false);
 
+  // Debug logging to identify the issue
   useEffect(() => {
-    if (!fileUrl?.toLowerCase().endsWith(".txt")) return setText("");
-    fetch(fileUrl)
+    console.log("Preview component state:", { fileUrl, summary, fileHash });
+    console.log("fileUrl type:", typeof fileUrl);
+    console.log("summary type:", typeof summary);
+    if (fileUrl && typeof fileUrl === "object") {
+      console.log("fileUrl is an object:", fileUrl);
+    }
+
+    // Additional validation
+    if (fileUrl && typeof fileUrl !== "string") {
+      console.error("fileUrl is not a string:", fileUrl);
+    }
+    if (summary && typeof summary !== "string") {
+      console.error("summary is not a string:", summary);
+    }
+  }, [fileUrl, summary, fileHash]);
+
+  useEffect(() => {
+    if (!fileUrlString?.toLowerCase().endsWith(".txt")) return setText("");
+    fetch(fileUrlString)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load text file");
         return res.text();
       })
       .then(setText)
       .catch(() => setText("Error loading text content"));
-  }, [fileUrl]);
+  }, [fileUrlString]);
 
   const handlePdfError = (err) => {
     console.error("PDF Error:", err.message);
     setError("Failed to load PDF document");
   };
 
-  const cleanUrl = fileUrl ? fileUrl.split(/[#?]/)[0] : null;
+  // Ensure fileUrl is a string to prevent React rendering errors
+  const fileUrlString =
+    typeof fileUrl === "string" ? fileUrl : fileUrl?.path || fileUrl?.url || "";
+  const cleanUrl = fileUrlString ? fileUrlString.split(/[#?]/)[0] : null;
   const ext = cleanUrl ? cleanUrl.split(".").pop().toLowerCase() : "";
 
   useEffect(() => {
     const checkSavedStatus = async () => {
-      if (!fileUrl?.id) return;
+      // Only check if fileUrl is an object with an id property
+      if (!fileUrl || typeof fileUrl !== "object" || !fileUrl.id) return;
       try {
         const isSaved = await checkIfSaved(fileUrl.id);
         setIsAlreadySaved(isSaved);
@@ -64,7 +105,7 @@ export default function Preview() {
     setSaving(true);
     try {
       const response = await saveNote({
-        fileUrl,
+        fileUrl: fileUrlString, // Use the safe string version
         summary,
         subject,
         topic,
@@ -88,7 +129,7 @@ export default function Preview() {
   };
 
   const handleCopySummary = () => {
-    if (!summary) {
+    if (!summary || typeof summary !== "string") {
       toast.error("❌ No summary available to copy");
       return;
     }
@@ -141,24 +182,43 @@ export default function Preview() {
                 {error ? (
                   <div className={styles.pdfLoading}>{error}</div>
                 ) : (
-                  <Document
-                    file={fileUrl}
-                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                    onLoadError={handlePdfError}
-                    loading={
-                      <div className={styles.pdfLoading}>Loading...</div>
-                    }
-                    error={null}
-                  >
-                    {Array.from({ length: numPages }, (_, i) => (
-                      <Page
-                        key={`page_${i + 1}`}
-                        pageNumber={i + 1}
-                        renderTextLayer={false}
-                        renderAnnotationLayer={false}
-                      />
-                    ))}
-                  </Document>
+                  <div>
+                    {(() => {
+                      try {
+                        return (
+                          <Document
+                            file={fileUrlString}
+                            onLoadSuccess={({ numPages }) =>
+                              setNumPages(numPages)
+                            }
+                            onLoadError={handlePdfError}
+                            loading={
+                              <div className={styles.pdfLoading}>
+                                Loading...
+                              </div>
+                            }
+                            error={null}
+                          >
+                            {Array.from({ length: numPages }, (_, i) => (
+                              <Page
+                                key={`page_${i + 1}`}
+                                pageNumber={i + 1}
+                                renderTextLayer={false}
+                                renderAnnotationLayer={false}
+                              />
+                            ))}
+                          </Document>
+                        );
+                      } catch (error) {
+                        console.error("Error rendering PDF:", error);
+                        return (
+                          <div className={styles.pdfLoading}>
+                            Error loading PDF
+                          </div>
+                        );
+                      }
+                    })()}
+                  </div>
                 )}
               </div>
             ) : (
@@ -195,13 +255,26 @@ export default function Preview() {
           </div>
         </div>
         <div className={styles.paneContent}>
-          {summary ? (
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={markdownComponents}
-            >
-              {summary}
-            </ReactMarkdown>
+          {summary && typeof summary === "string" ? (
+            <div>
+              {(() => {
+                try {
+                  return (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={markdownComponents}
+                    >
+                      {summary}
+                    </ReactMarkdown>
+                  );
+                } catch (error) {
+                  console.error("Error rendering markdown:", error);
+                  return (
+                    <p className={styles.pdfLoading}>Error rendering summary</p>
+                  );
+                }
+              })()}
+            </div>
           ) : (
             <p className={styles.pdfLoading}>No analysis available</p>
           )}
