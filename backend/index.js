@@ -6,9 +6,18 @@ const __dirname = path.dirname(__filename);
 
 import express from "express";
 import cors from "cors";
+import fs from "fs";
+import path from "path";
 import notesRoutes from "./src/routes/notesRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import quizRoutes from "./src/routes/quizRoutes.js";
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log("Created uploads directory:", uploadsDir);
+}
 
 const app = express();
 

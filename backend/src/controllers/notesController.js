@@ -9,6 +9,20 @@ import crypto from "crypto";
 
 const convertAsync = promisify(libre.convert);
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log("Created uploads directory:", uploadsDir);
+}
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log("Created uploads directory:", uploadsDir);
+}
+
 /**
  * Handles the upload of a note file, converts PPTX to PDF if necessary,
  * extracts text, and generates a summary using an optimized single-pass approach.
@@ -30,9 +44,14 @@ export const uploadNote = async (req, res) => {
     }
 
     const baseUrl = process.env.BASE_URL || "http://localhost:5000";
-    const uploadsDir = path.join(process.cwd(), "uploads");
     const inputPath = path.join(uploadsDir, req.file.filename);
     const ext = path.extname(req.file.filename).toLowerCase();
+
+    // Verify file exists after upload
+    if (!fs.existsSync(inputPath)) {
+      console.error("Uploaded file not found:", inputPath);
+      return res.status(500).json({ error: "File upload failed" });
+    }
 
     let outputPath = inputPath;
     let fileUrl = `${baseUrl}/uploads/${encodeURIComponent(req.file.filename)}`;

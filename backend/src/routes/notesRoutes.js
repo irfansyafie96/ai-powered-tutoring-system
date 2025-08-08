@@ -1,5 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
+import fs from "fs";
+import path from "path";
 import { authenticateJWT } from "../middleware/authenticateJWT.js";
 import {
   uploadNote,
@@ -12,6 +14,13 @@ import {
   getRecommendedNotes,
   deleteNote,
 } from "../controllers/notesController.js";
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log("Created uploads directory:", uploadsDir);
+}
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
