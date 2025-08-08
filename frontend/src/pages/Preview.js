@@ -25,24 +25,11 @@ export default function Preview() {
   const [saveError, setSaveError] = useState(null);
   const [alreadySaved, setIsAlreadySaved] = useState(false);
 
-  // Handle missing state data
-  if (!state || !fileUrl || !summary) {
-    console.error("Missing required state data:", state);
-    return (
-      <div className={styles.previewContainer}>
-        <div className={styles.pane}>
-          <div className={styles.paneHeader}>
-            <h3>Error</h3>
-          </div>
-          <div className={styles.paneContent}>
-            <p>
-              No summary data available. Please try uploading your file again.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Ensure fileUrl is a string to prevent React rendering errors
+  const fileUrlString =
+    typeof fileUrl === "string" ? fileUrl : fileUrl?.path || fileUrl?.url || "";
+  const cleanUrl = fileUrlString ? fileUrlString.split(/[#?]/)[0] : null;
+  const ext = cleanUrl ? cleanUrl.split(".").pop().toLowerCase() : "";
 
   // Debug logging to identify the issue
   useEffect(() => {
@@ -73,17 +60,6 @@ export default function Preview() {
       .catch(() => setText("Error loading text content"));
   }, [fileUrlString]);
 
-  const handlePdfError = (err) => {
-    console.error("PDF Error:", err.message);
-    setError("Failed to load PDF document");
-  };
-
-  // Ensure fileUrl is a string to prevent React rendering errors
-  const fileUrlString =
-    typeof fileUrl === "string" ? fileUrl : fileUrl?.path || fileUrl?.url || "";
-  const cleanUrl = fileUrlString ? fileUrlString.split(/[#?]/)[0] : null;
-  const ext = cleanUrl ? cleanUrl.split(".").pop().toLowerCase() : "";
-
   useEffect(() => {
     const checkSavedStatus = async () => {
       // Only check if fileUrl is an object with an id property
@@ -97,6 +73,30 @@ export default function Preview() {
     };
     checkSavedStatus();
   }, [fileUrl]);
+
+  const handlePdfError = (err) => {
+    console.error("PDF Error:", err.message);
+    setError("Failed to load PDF document");
+  };
+
+  // Handle missing state data
+  if (!state || !fileUrl || !summary) {
+    console.error("Missing required state data:", state);
+    return (
+      <div className={styles.previewContainer}>
+        <div className={styles.pane}>
+          <div className={styles.paneHeader}>
+            <h3>Error</h3>
+          </div>
+          <div className={styles.paneContent}>
+            <p>
+              No summary data available. Please try uploading your file again.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSave = async () => {
     if (!subject.trim() || !topic.trim()) {
