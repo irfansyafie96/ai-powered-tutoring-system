@@ -1,17 +1,28 @@
 import axios from "axios";
 
+// Update the axios configuration:
 export const api = axios.create({
-  // For local development, force using localhost backend
-  baseURL:
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:5000/api"
-      : window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
-      ? `${
-          window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
-        }/api`
-      : "http://localhost:5000/api",
+  baseURL: "https://ai-powered-tutoring-system-backend.onrender.com/api",
   timeout: 100000,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+  },
 });
+
+// export const api = axios.create({
+//   // For local development, force using localhost backend
+//   baseURL:
+//     process.env.NODE_ENV === "development"
+//       ? "http://localhost:5000/api"
+//       : window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
+//       ? `${
+//           window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
+//         }/api`
+//       : "http://localhost:5000/api",
+//   timeout: 100000,
+// });
 
 // Inject JWT on every request
 api.interceptors.request.use((config) => {
