@@ -18,8 +18,10 @@ console.log("DB_PASS type:", typeof process.env.DB_PASS);
 
 export const signup = async (req, res) => {
   console.log("Signup endpoint hit");
+  console.log("Request body:", req.body);
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
+    console.log("Missing required fields:", { username: !!username, email: !!email, password: !!password });
     return res
       .status(400)
       .json({ error: "Username, email and password are required." });
@@ -28,7 +30,7 @@ export const signup = async (req, res) => {
   try {
     const hashed = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email",
+      "INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email",
       [username, email, hashed]
     );
     res.status(201).json({ user: result.rows[0] });
@@ -53,7 +55,7 @@ export const login = async (req, res) => {
     if (!user)
       return res.status(401).json({ error: "Invalid username or password" });
 
-    const valid = await bcrypt.compare(password, user.password);
+    const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid)
       return res.status(401).json({ error: "Invalid username or password" });
 
@@ -118,7 +120,7 @@ export const editProfile = async (req, res) => {
     }
     if (password) {
       const hashed = await bcrypt.hash(password, 10);
-      fields.push(`password = $${idx++}`);
+      fields.push(`password_hash = $${idx++}`);
       values.push(hashed);
     }
 
