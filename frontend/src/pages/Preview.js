@@ -14,6 +14,17 @@ export default function Preview() {
   const { state } = useLocation();
   const { fileUrl, summary, fileHash } = state || {};
 
+  // All hooks must be called before any conditional returns
+  const [subject, setSubject] = useState("");
+  const [topic, setTopic] = useState("");
+  const [numPages, setNumPages] = useState(0);
+  const [text, setText] = useState("");
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const [alreadySaved, setIsAlreadySaved] = useState(false);
+
   // Handle missing state data
   if (!state || !fileUrl || !summary) {
     console.error("Missing required state data:", state);
@@ -32,15 +43,6 @@ export default function Preview() {
       </div>
     );
   }
-  const [subject, setSubject] = useState("");
-  const [topic, setTopic] = useState("");
-  const [numPages, setNumPages] = useState(0);
-  const [text, setText] = useState("");
-  const [error, setError] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [saveError, setSaveError] = useState(null);
-  const [alreadySaved, setIsAlreadySaved] = useState(false);
 
   // Debug logging to identify the issue
   useEffect(() => {
