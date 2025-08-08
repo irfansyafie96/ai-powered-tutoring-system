@@ -1,6 +1,6 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import multer from 'multer';
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import multer from "multer";
 
 // Configure Cloudinary
 cloudinary.config({
@@ -13,10 +13,10 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'ai-tutoring-system',
-    allowed_formats: ['pdf', 'docx', 'pptx', 'txt'],
-    resource_type: 'auto',
-    transformation: [{ width: 1000, height: 1000, crop: 'limit' }],
+    folder: "ai-tutoring-system",
+    allowed_formats: ["pdf", "docx", "pptx", "txt"],
+    resource_type: "auto",
+    transformation: [{ width: 1000, height: 1000, crop: "limit" }],
   },
 });
 

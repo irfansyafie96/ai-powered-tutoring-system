@@ -1,14 +1,11 @@
 import path from "path";
 import fs from "fs";
-import { promisify } from "util";
-import libre from "libreoffice-convert";
 import { extractTextFromFile } from "../utils/extractTextFromFile.js";
+import { processCloudFile } from "../utils/cloudFileProcessor.js";
 import pool from "../db.js";
 import { OpenAI } from "openai";
 import crypto from "crypto";
 import { cloudinary } from "../config/cloudinary.js";
-
-const convertAsync = promisify(libre.convert);
 
 /**
  * Handles the upload of a note file, converts PPTX to PDF if necessary,
@@ -36,20 +33,33 @@ export const uploadNote = async (req, res) => {
     const fileUrl = req.file.path;
     const ext = path.extname(req.file.originalname).toLowerCase();
 
-    // For now, we'll skip the PPTX to PDF conversion since it requires local file access
-    // In a production environment, you might want to handle this differently
-    
-    // Step 1: Extract full text from the file
-    // Note: This will need to be updated to work with Cloudinary URLs
-    // For now, we'll create a placeholder summary
-    const fullText = "Document content will be extracted here";
-    console.log(`File uploaded successfully to Cloudinary`);
+    // Step 1: Process file from Cloudinary (download + convert if needed)
+    console.log("Processing file from Cloudinary...");
+    const processedBuffer = await processCloudFile(fileUrl, req.file.originalname);
 
-    // Step 2: Compute file hash for caching
-    const fileHash = crypto.createHash("sha256").update(req.file.originalname + Date.now()).digest("hex");
+    // Step 2: Extract full text from the processed file
+    console.log("Extracting text from document...");
+    let fullText;
+    try {
+      fullText = await extractTextFromFile(processedBuffer);
+      console.log(`Extracted ${fullText.length} characters from document`);
+      
+      // Check if text extraction was successful
+      if (!fullText || fullText.trim().length < 10) {
+        throw new Error("Text extraction produced insufficient content");
+      }
+    } catch (extractionError) {
+      console.error("Text extraction failed:", extractionError);
+      // Fallback: create a basic summary based on file metadata
+      fullText = `Document: ${req.file.originalname}\nType: ${ext}\nSize: ${(req.file.size / 1024).toFixed(2)} KB\n\nThis document has been uploaded successfully. Text extraction was not possible for this file type or format.`;
+      console.log("Using fallback text extraction");
+    }
+
+    // Step 3: Compute file hash for caching (use actual content)
+    const fileHash = crypto.createHash("sha256").update(fullText).digest("hex");
     console.log(`Computed file hash: ${fileHash}`);
 
-    // Step 3: Check for cached summary in the notes table
+    // Step 4: Check for cached summary in the notes table
     const cacheResult = await pool.query(
       "SELECT summary, file_url FROM notes WHERE file_hash = $1 LIMIT 1",
       [fileHash]
@@ -65,10 +75,16 @@ export const uploadNote = async (req, res) => {
       });
     }
 
-    // Step 4: Generate a placeholder summary for now
-    const summary = "This is a placeholder summary. Text extraction from Cloudinary URLs will be implemented in the next iteration.";
+    // Step 5: Smart text preprocessing for better summarization
+    const processedText = preprocessTextForSummarization(fullText);
+    console.log(`Preprocessed text: ${processedText.length} characters`);
 
-    // Step 5: Return the file URL and summary
+    // Step 6: Generate summary using optimized single-pass approach
+    console.log("Generating AI summary...");
+    const summary = await generateOptimizedSummary(processedText);
+    console.log("Summary generated successfully");
+
+    // Step 7: Return the file URL and summary
     res.status(201).json({
       note: {
         fileUrl,
