@@ -19,26 +19,46 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    "https://ai-powered-tutoring-system-frontend.onrender.com",
-    "https://ai-powered-tutoring-system.onrender.com",
-    "http://localhost:3000",
-  ];
+const allowedOrigins = [
+  // Production
+  "https://ai-powered-tutoring-system-frontend.onrender.com",
+  "https://ai-powered-tutoring-system.onrender.com",
 
+  // Local development
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+
+  // Render's internal domains
+  "https://render.com",
+];
+
+app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+
+  // Dynamic origin matching
+  if (
+    allowedOrigins.includes(origin) ||
+    origin?.endsWith(".onrender.com") ||
+    origin?.includes("localhost")
+  ) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With"
-  );
-  res.header("Access-Control-Allow-Credentials", "true");
 
+  // Essential headers
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With, X-Render-Region, Origin"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Vary", "Origin");
+
+  // Preflight handling
   if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
+    return res.status(204).end();
   }
 
   next();
