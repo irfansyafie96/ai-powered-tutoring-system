@@ -28,14 +28,25 @@ export const signup = async (req, res) => {
   }
 
   try {
+    console.log("Attempting to hash password...");
     const hashed = await bcrypt.hash(password, 10);
+    console.log("Password hashed successfully");
+    
+    console.log("Attempting database insert...");
     const result = await pool.query(
       "INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email",
       [username, email, hashed]
     );
+    console.log("Database insert successful:", result.rows[0]);
     res.status(201).json({ user: result.rows[0] });
   } catch (error) {
-    console.error("Signup error: ", error.message);
+    console.error("Signup error details:", {
+      message: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint,
+      stack: error.stack
+    });
     res.status(400).json({ error: "User already exists or invalid input" });
   }
 };
