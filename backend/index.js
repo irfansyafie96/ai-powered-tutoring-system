@@ -34,12 +34,13 @@ const allowedOrigins = [
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
+  const isLocalDev = process.env.NODE_ENV === "development";
 
   // Dynamic origin matching
   if (
     allowedOrigins.includes(origin) ||
     origin?.endsWith(".onrender.com") ||
-    origin?.includes("localhost")
+    (isLocalDev && origin?.includes("localhost"))
   ) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
