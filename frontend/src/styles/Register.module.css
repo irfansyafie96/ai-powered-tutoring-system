@@ -3,12 +3,14 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 90vh;
+  min-height: 90vh;
   padding: 1rem;
 }
 
 .registerTitle {
-  font-size: 2rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #333;
   margin-bottom: 1.25rem;
   text-align: center;
 }
@@ -17,75 +19,89 @@
   color: #cc0000;
   margin-bottom: 0.75rem;
   font-size: 0.9rem;
+  background: #ffe5e5;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(255, 0, 0, 0.1);
 }
 
 .registerForm {
-  padding: 2rem;
-  background: #fff;
-  border-radius: 8px;
   width: 100%;
   max-width: 400px;
+  padding: 2rem;
+  background: #fefcf3;
+  border-radius: 20px;
+  box-shadow: 8px 8px 16px #e6e2c3, -8px -8px 16px #fffde8;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 1rem;
 }
 
 .registerFormGroup {
-  width: 100%;
-  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
 .registerFormGroup label {
-  padding-bottom: 0.25rem;
   font-weight: 600;
+  font-size: 0.95rem;
+  color: #444;
 }
 
 .registerInput {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
   font-size: 1rem;
+  background-color: #fffdf4;
+  transition: border-color 0.2s ease;
+}
+
+.registerInput:focus {
+  border-color: #d4a373;
 }
 
 .submitButton {
   width: 100%;
-  padding: 0.75rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  padding: 0.75rem 1rem;
+  background-color: #d4a373;
+  color: white;
+  font-weight: 600;
   font-size: 1rem;
-  transition: background-color 0.2s ease;
-  margin-top: 0.5rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 4px 4px 8px #e6e2c3, -4px -4px 8px #fffde8;
 }
+
 .submitButton:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #bc8a5f;
+  transform: translateY(-1px);
 }
+
 .submitButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Tablet and down */
-@media (max-width: 600px) {
+/* Tablet styles */
+@media (min-width: 601px) {
   .registerForm {
-    padding: 1.5rem;
+    padding: 2.5rem;
   }
   .registerTitle {
-    font-size: 1.75rem;
+    font-size: 2rem;
+  }
+  .registerFormGroup label {
+    font-size: 1rem;
   }
 }
 
-/* Mobile */
-@media (max-width: 400px) {
+/* Desktop styles */
+@media (min-width: 769px) {
   .registerForm {
-    padding: 1rem;
-  }
-  .registerTitle {
-    font-size: 1.5rem;
+    padding: 3rem;
   }
 }

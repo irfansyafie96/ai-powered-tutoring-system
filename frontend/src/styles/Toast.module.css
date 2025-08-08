@@ -1,42 +1,73 @@
+/* Base styles for Toasts, mobile-first */
 .Toastify__toast-container {
   z-index: 9999;
-  padding: 0.5rem;
+  width: 90%;
+  max-width: 320px;
+  box-sizing: border-box;
+  position: fixed;
+  top: 1rem;
+  right: 50%;
+  transform: translateX(50%);
 }
 
 .Toastify__toast {
   font-family: "Segoe UI", sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 1rem 1.25rem;
+  padding: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
-/* Success */
 .Toastify__toast--success {
-  background-color: #fefae0 !important;
-  color: #2d2d2d !important;
-  border-left: 4px solid #d4a373 !important;
+  background-color: #f0f9eb !important;
+  color: #3f6212 !important;
+  border-left: 4px solid #84cc16 !important;
 }
 
-/* Info */
 .Toastify__toast--info {
-  background-color: #d4a373 !important;
-  color: white !important;
-  border-left: 4px solid #8b5e3c !important;
+  background-color: #eff6ff !important;
+  color: #1e40af !important;
+  border-left: 4px solid #3b82f6 !important;
 }
 
-/* Error */
 .Toastify__toast--error {
-  background-color: #cc0000 !important;
-  color: white !important;
-  border-left: 4px solid #990000 !important;
+  background-color: #fef2f2 !important;
+  color: #991b1b !important;
+  border-left: 4px solid #ef4444 !important;
 }
 
-/* Progress bar */
 .Toastify__progress-bar {
-  background-color: #d4a373 !important;
   height: 4px;
+}
+
+.Toastify__progress-bar--success {
+  background-color: #84cc16 !important;
+}
+.Toastify__progress-bar--info {
+  background-color: #3b82f6 !important;
+}
+.Toastify__progress-bar--error {
+  background-color: #ef4444 !important;
+}
+
+.Toastify__close-button {
+  color: inherit;
+}
+
+/* Tablet and Desktop styles */
+@media (min-width: 600px) {
+  .Toastify__toast-container {
+    width: auto;
+    max-width: 400px;
+    top: 1.5rem;
+    right: 1.5rem;
+    transform: none;
+  }
+  .Toastify__toast {
+    font-size: 0.95rem;
+  }
 }

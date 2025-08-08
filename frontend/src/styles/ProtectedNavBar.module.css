@@ -1,84 +1,299 @@
+/* Base nav wrapper */
 .protectedNavBar {
-  position: fixed;
-  left: 0;
+  background: #fefae0;
+  box-shadow: 6px 6px 12px #dcd6b7, -6px -6px 12px #fffde6;
+  border-radius: 0 0 12px 12px;
+  position: sticky;
   top: 0;
-  height: 100vh;
-  width: 125px;
-  background-color: #d4a373;
-  padding: 20px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  z-index: 10000;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.protectedNavBar ul {
+/* Header */
+.navHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  height: 60px;
+  position: relative;
+}
+
+.navLogo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #5a432e;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Hamburger Button - Updated to match PublicNavBar */
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #fefae0;
+  box-shadow: 6px 6px 12px #dcd6b7, -6px -6px 12px #fffde6;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  z-index: 1002;
+  position: relative;
+  padding: 0;
+}
+
+.hamburgerIcon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.hamburgerBar,
+.hamburgerBar::before,
+.hamburgerBar::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 3px;
+  background-color: #5a432e;
+  border-radius: 3px;
+  left: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.hamburgerBar {
+  top: 10px;
+}
+
+.hamburgerBar::before {
+  top: -8px;
+}
+
+.hamburgerBar::after {
+  top: 8px;
+}
+
+/* Hamburger active animation */
+.hamburgerBar.active {
+  background-color: transparent;
+}
+
+.hamburgerBar.active::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.hamburgerBar.active::after {
+  transform: rotate(-45deg);
+  top: 0;
+}
+
+/* Mobile nav menu */
+.navLinksContainer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 80%;
+  max-width: 300px;
+  height: 100vh;
+  background: #fefae0;
+  transition: left 0.3s ease-in-out;
+  box-shadow: 6px 0 12px rgba(220, 214, 183, 0.5);
+  z-index: 1001;
+  padding-top: 4rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.navLinksContainer.isOpen {
+  left: 0;
+}
+
+.navLinks {
   list-style: none;
   padding: 0;
   margin: 0;
+  margin-top: 1.5rem;
+}
+
+.navLinks li {
+  text-align: left;
   width: 100%;
 }
 
-.protectedNavBar li {
-  width: 100%;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.protectedNavBar a {
+.navLink,
+.active {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  color: #5a432e;
   text-decoration: none;
-  font-weight: bold;
-  color: black;
-  display: block;
+  transition: background 0.3s ease;
+  box-sizing: border-box;
   width: 100%;
 }
 
-/* Active link underline */
-/* Better active link styling */
-.protectedNavBar a.active,
-.protectedNavBar a.active:hover {
-  color: #8b5e3c;
-  text-decoration: none;
+.navLink:hover {
+  background-color: #f1eecb;
+}
+
+.active {
+  background-color: #e0ddc1;
   position: relative;
 }
 
-.protectedNavBar a.active {
-  color: #8b5e3c;
-  font-weight: 900;
-  position: relative;
+/* Icon + Text */
+.navIcon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
-.protectedNavBar a.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
+.navText {
+  flex-grow: 1;
+}
+
+/* Logout */
+.logoutListItem {
+  margin-top: 2rem;
   width: 100%;
-  height: 2px;
-  background-color: #8b5e3c;
 }
 
-/* Logout button styling */
 .logoutBtn {
-  margin-top: auto;
   width: 100%;
-  padding: 0.75rem;
-  background-color: #8b5e3c;
-  color: #fff;
+  background: transparent;
+  color: #5a432e;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
   border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  text-align: center;
+  padding: 1rem 1.5rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.logoutBtn .navText {
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .logoutBtn:hover {
-  background-color: #6f492f;
-  transform: translateY(-1px);
+  background-color: rgba(90, 67, 46, 0.1);
+  color: #3e2f22;
 }
 
-.logoutBtn:active {
-  transform: translateY(0);
+/* Overlay */
+.navOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .menuButton {
+    display: none;
+  }
+  .protectedNavBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 100vh;
+    border-radius: 0 12px 12px 0;
+    box-shadow: 6px 6px 12px #dcd6b7, -6px -6px 12px #fffde6;
+    transition: width 0.3s ease-in-out;
+    box-sizing: border-box;
+  }
+  .protectedNavBar:hover {
+    width: 220px;
+  }
+  .navHeader {
+    height: 80px;
+    justify-content: center;
+    padding: 1rem 0;
+  }
+  .navLogo {
+    display: none;
+  }
+  .navLinksContainer {
+    position: static;
+    width: 100%;
+    height: calc(100vh - 80px);
+    box-shadow: none;
+    padding-top: 1rem;
+    overflow-y: visible;
+    max-width: none;
+    left: 0;
+    top: auto;
+  }
+  .navLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 2rem;
+  }
+  .navLink,
+  .active {
+    justify-content: flex-start;
+    padding: 1rem 1.5rem;
+    white-space: nowrap;
+    box-sizing: border-box;
+    text-align: left;
+  }
+  .active {
+    background-color: #e0ddc1;
+    position: relative;
+    border-left: none;
+  }
+  /* Only show left border on hover and keep it contained */
+  .protectedNavBar:hover .active {
+    border-left: 4px solid #5a432e;
+    padding-left: calc(
+      1.5rem - 4px
+    ); /* Adjust padding to prevent layout shift */
+  }
+  .navText {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+  }
+  .protectedNavBar:hover .navText {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .logoutListItem {
+    position: absolute;
+    bottom: 2rem;
+    width: 100%;
+  }
+  .logoutBtn {
+    background-color: transparent;
+    color: #5a432e;
+    justify-content: flex-start;
+    padding: 1rem 1.5rem;
+  }
+  .logoutBtn:hover {
+    background-color: rgba(90, 67, 46, 0.1);
+    color: #3e2f22;
+  }
+  .navOverlay {
+    display: none;
+  }
 }

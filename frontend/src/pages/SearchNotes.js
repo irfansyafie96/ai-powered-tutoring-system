@@ -1,3 +1,5 @@
+// D:\Projects\fyp\frontend\src\pages\SearchNotes.js
+
 import React, { useState } from "react";
 import { searchNotes, saveToLibrary } from "../api/api";
 import styles from "../styles/SearchNotes.module.css";
@@ -40,25 +42,16 @@ export default function SearchNotes() {
         toast.info("📘 Note already in your library", {
           position: "top-right",
           autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
         });
       } else if (response.saved === true) {
         toast.success("✅ Note saved to your library", {
           position: "top-right",
           autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
         });
       } else {
         toast.warn("⚠️ Unknown response from server", {
           position: "top-right",
           autoClose: 4000,
-          hideProgressBar: true,
         });
       }
     } catch (err) {
@@ -66,7 +59,6 @@ export default function SearchNotes() {
       toast.error("❌ Failed to save note", {
         position: "top-right",
         autoClose: 5000,
-        hideProgressBar: false,
       });
     }
   };
@@ -96,15 +88,19 @@ export default function SearchNotes() {
           onChange={(e) => setKeyword(e.target.value)}
           disabled={loading}
         />
-        <button type="submit" disabled={loading}>
-          {loading ? "Searching..." : "Search"}
-        </button>
+        <div className={styles.buttonWrapper}>
+          <button type="submit" disabled={loading}>
+            {loading ? "Searching..." : "Search"}
+          </button>
+        </div>
       </form>
 
       {error && <p className={styles.errorMessage}>{error}</p>}
 
       <div className={styles.results}>
-        {results.length === 0 && !loading && <p>No notes match your search.</p>}
+        {results.length === 0 && !loading && (
+          <p className={styles.noResults}>No notes match your search.</p>
+        )}
 
         {results.map((note) => (
           <div key={note.id} className={styles.noteCard}>
@@ -130,18 +126,7 @@ export default function SearchNotes() {
         ))}
       </div>
 
-      {/* ✅ Local Toast Container */}
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      <ToastContainer />
     </div>
   );
 }

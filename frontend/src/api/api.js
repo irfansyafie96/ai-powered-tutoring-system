@@ -1,8 +1,11 @@
 import axios from "axios";
 
 export const api = axios.create({
+  // For local development, force using localhost backend
   baseURL:
-    window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:5000/api"
+      : window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
       ? `${
           window.ENV_CONFIG?.REACT_APP_API_URL || process.env.REACT_APP_API_URL
         }/api`

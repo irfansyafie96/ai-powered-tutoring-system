@@ -22,6 +22,7 @@ const Register = () => {
       setError("Passwords do not match");
       return;
     }
+
     setLoading(true);
 
     try {
@@ -36,7 +37,7 @@ const Register = () => {
 
   return (
     <div className={styles.registerContainer}>
-      <h2 className={styles.registerTitle}>Sign Up</h2>
+      <h2 className={styles.registerTitle}>Create Account</h2>
       {error && <div className={styles.errorText}>{error}</div>}
 
       <form className={styles.registerForm} onSubmit={handleSubmit}>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { login } from "../api/api";
 import { useNavigate } from "react-router-dom";
+import { login } from "../api/api";
 import styles from "../styles/Login.module.css";
 
 const Login = () => {
@@ -28,11 +28,12 @@ const Login = () => {
 
   return (
     <div className={styles.loginContainer}>
-      <h2 className={styles.loginTitle}>Login</h2>
+      <h2 className={styles.loginTitle}>Welcome Back</h2>
       {error && <div className={styles.errorText}>{error}</div>}
 
       <form className={styles.loginForm} onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
+        <div className={styles.loginFormGroup}>
+          <label>Username</label>
           <input
             type="text"
             placeholder="Username"
@@ -42,7 +43,9 @@ const Login = () => {
             className={styles.loginInput}
           />
         </div>
-        <div className={styles.formGroup}>
+
+        <div className={styles.loginFormGroup}>
+          <label>Password</label>
           <input
             type="password"
             placeholder="Password"
@@ -52,10 +55,11 @@ const Login = () => {
             className={styles.loginInput}
           />
         </div>
+
         <button
           type="submit"
-          disabled={loading}
           className={styles.submitButton}
+          disabled={loading}
         >
           {loading ? "Logging in..." : "Login"}
         </button>

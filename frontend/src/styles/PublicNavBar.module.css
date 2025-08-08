@@ -1,39 +1,188 @@
 .publicNavBar {
   position: sticky;
   top: 0;
-  background-color: #d4a373;
   width: 100%;
-  padding: 1rem 0;
-  z-index: 500;
+  background: #fefae0;
+  box-shadow: 4px 4px 8px #e0dcc1, -4px -4px 8px #fffde6;
+  z-index: 1000;
+  border-radius: 0 0 12px 12px;
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.navLogo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #5a432e;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+}
+
+/* === HAMBURGER BUTTON === */
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #fefae0;
+  box-shadow: 6px 6px 12px #dcd6b7, -6px -6px 12px #fffde6;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  z-index: 1002;
+  position: relative;
+  padding: 0;
+}
+
+.hamburgerIcon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.hamburgerBar,
+.hamburgerBar::before,
+.hamburgerBar::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 3px;
+  background-color: #5a432e;
+  border-radius: 3px;
+  left: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.hamburgerBar {
+  top: 10px;
+}
+
+.hamburgerBar::before {
+  top: -8px;
+}
+
+.hamburgerBar::after {
+  top: 8px;
+}
+
+/* Hamburger active animation */
+.hamburgerBar.active {
+  background-color: transparent;
+}
+
+.hamburgerBar.active::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.hamburgerBar.active::after {
+  transform: rotate(-45deg);
+  top: 0;
+}
+
+/* === SLIDE-IN MOBILE NAV === */
+.navMenu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 80%;
+  max-width: 300px;
+  height: 100vh;
+  background: #fefae0;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -6px 6px 12px #dcd6b7;
+  padding-top: 4rem;
+  z-index: 1001;
+  border-left: 2px solid #e0dcc1;
+}
+
+.navMenu.isOpen {
+  right: 0;
 }
 
 .navList {
   list-style: none;
   display: flex;
-  justify-content: space-around;
-  gap: 2rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
   margin: 0;
   padding: 0;
 }
 
 .navItem {
+  width: 100%;
+  text-align: center;
 }
 
 .navLink {
   text-decoration: none;
-  font-weight: bold;
-  color: black;
-  transition: color 0.2s ease;
-}
-.navLink:hover {
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
   color: #5a432e;
+  padding: 1rem;
+  display: block;
+  width: 100%;
+  transition: background 0.3s ease;
 }
 
-/* Stack vertically on small screens */
-@media (max-width: 480px) {
+.navLink:hover {
+  background-color: #f1eecb;
+}
+
+/* === DESKTOP === */
+@media (min-width: 768px) {
+  .menuButton {
+    display: none;
+  }
+
+  .navMenu {
+    position: static;
+    width: auto;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+    padding-top: 0;
+    border: none;
+  }
+
   .navList {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: flex-end;
+
+    /* 🔥 FIXED: remove all spacing */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .navItem {
+    width: auto;
+  }
+
+  .navLink {
+    padding: 0.5rem 0.75rem;
+    position: relative;
+  }
+
+  .navLink:hover::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #5a432e;
+    border-radius: 2px;
   }
 }

@@ -1,103 +1,170 @@
-/* Profile.module.css */
+/* Flat Claymorphism (Soft UI) Styles - matching Upload Notes design */
 
-/* Global button base */
-.btn {
-  display: inline-block;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
-  transition: background-color 0.2s ease;
-}
-
-/* Primary button—for “Save Changes” */
-.btnPrimary {
-  background-color: #007bff;
-  color: #fff;
-}
-.btnPrimary:hover {
-  background-color: #0056b3;
+/* Full viewport wrapper for centering */
+.pageWrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: #fefae0;
 }
 
-/* Secondary button—for “Change Password” and “Cancel” */
-.btnSecondary {
-  background-color: #6c757d;
-  color: #fff;
-}
-.btnSecondary:hover {
-  background-color: #5a6268;
-}
-
-/* Container & layout */
 .profileContainer {
-  max-width: 500px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fefae0;
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px;
+  box-shadow: 4px 4px 10px #e6d5b8, -4px -4px 10px #fff4dc;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Heading inside container */
 .profileContainer h2 {
-  margin-bottom: 1rem;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #2d2d2d;
   text-align: center;
 }
 
-/* Message box */
+/* Messages */
 .profileMessage {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: inset 2px 2px 5px rgba(220, 220, 220, 0.5),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.8);
 }
-/* Variants */
+
 .error {
   background-color: #ffe5e5;
   color: #cc0000;
 }
+
 .success {
-  background-color: #e5ffe5;
-  color: #007700;
+  background-color: #e8f5e8;
+  color: #2d7d32;
 }
 
-/* Field groups */
+/* Form fields */
 .profileField {
-  margin-bottom: 1rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
+
 .profileField label {
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
   font-weight: 600;
-}
-.profileField input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
+  color: #2d2d2d;
+  text-align: left;
 }
 
-/* Action buttons container */
+.profileField input {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 400px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profileField input:focus {
+  outline: none;
+  border-color: #d4a373;
+  box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.3);
+}
+
+.profileField input:read-only {
+  background-color: #f8f8f8;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Buttons */
+.btn {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 4px 4px 10px #e6d5b8, -4px -4px 10px #fff4dc;
+  transition: all 0.2s ease;
+  margin: 0.5rem;
+}
+
+.btnPrimary {
+  background-color: #d4a373;
+  color: #2d2d2d;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background-color: #c4906c;
+  transform: translateY(-1px);
+  box-shadow: 5px 5px 12px #e6d5b8, -5px -5px 12px #fff4dc;
+}
+
+.btnSecondary {
+  background-color: #b8b8a8;
+  color: #2d2d2d;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background-color: #a8a898;
+  transform: translateY(-1px);
+  box-shadow: 5px 5px 12px #e6d5b8, -5px -5px 12px #fff4dc;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Action buttons layout */
 .profileActions {
   display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: 1rem;
   margin-top: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
-/* Center any standalone button inside the container */
-.profileContainer > .btn {
-  display: block;
-  margin: 1rem auto 0;
+/* Loading state */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #4a5568;
+  background-color: #fefae0;
 }
 
-@media (max-width: 400px) {
-  .profileActions {
-    flex-direction: column;
+/* Responsive for tablet and up */
+@media (min-width: 601px) {
+  .pageWrapper {
+    padding: 2rem;
+  }
+
+  .profileContainer {
+    padding: 3rem;
+  }
+
+  .btn {
+    width: auto;
+    min-width: 140px;
   }
 }

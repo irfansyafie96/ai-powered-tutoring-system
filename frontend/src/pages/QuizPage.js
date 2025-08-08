@@ -8,24 +8,20 @@ export default function QuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Ensure quiz is safely accessed
   const quiz = location.state?.quiz || [];
   const noteId = location.state?.noteId;
   const difficulty = location.state?.difficulty;
 
-  // Store user answers with their corresponding question details
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: quiz.length });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [savedQuizScoreId, setSavedQuizScoreId] = useState(null);
 
-  // Effect to update score total if quiz changes
   useEffect(() => {
     setScore((prev) => ({ ...prev, total: quiz.length }));
   }, [quiz.length]);
 
-  // If no quiz data found
   if (quiz.length === 0 || !noteId || !difficulty) {
     return (
       <div className={styles.container}>
@@ -48,7 +44,7 @@ export default function QuizPage() {
     if (currentQuestionIndex < quiz.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      submitQuiz(); // Submit quiz when user is on the last question and clicks next
+      submitQuiz();
     }
   };
 
@@ -65,21 +61,19 @@ export default function QuizPage() {
       const isCorrect =
         userSelectedAnswer !== undefined &&
         userSelectedAnswer === q.correctAnswer;
-      if (isCorrect) {
-        correctCount++;
-      }
+      if (isCorrect) correctCount++;
       return {
         question: q.question,
         options: q.options,
         correctAnswer: q.correctAnswer,
-        userSelectedAnswer: userSelectedAnswer || null, // Ensure null if skipped
-        isCorrect: isCorrect,
+        userSelectedAnswer: userSelectedAnswer || null,
+        isCorrect,
       };
     });
 
     const finalScore = { correct: correctCount, total: quiz.length };
     setScore(finalScore);
-    setShowResults(true); // Show results immediately
+    setShowResults(true);
 
     try {
       const response = await saveCompletedQuiz({
@@ -89,7 +83,7 @@ export default function QuizPage() {
         totalQuestions: finalScore.total,
         quizData: quizDataForSaving,
       });
-      setSavedQuizScoreId(response.quizScoreId); // Store the ID returned from the backend
+      setSavedQuizScoreId(response.quizScoreId);
       toast.success("✅ Quiz session saved successfully!");
     } catch (error) {
       console.error("Failed to save quiz session:", error);
@@ -102,28 +96,20 @@ export default function QuizPage() {
     score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
 
   const getFeedbackMessage = () => {
-    if (accuracyPercentage >= 90) {
+    if (accuracyPercentage >= 90)
       return "🎊 Excellent job! You're a quiz master!";
-    } else if (accuracyPercentage >= 70) {
-      return "👍 Great effort! You're doing well!";
-    } else if (accuracyPercentage >= 50) {
+    if (accuracyPercentage >= 70) return "👍 Great effort! You're doing well!";
+    if (accuracyPercentage >= 50)
       return "✍️ Good start! A little more practice will get you there.";
-    } else {
-      return "📚 Keep studying! You'll improve with practice.";
-    }
+    return "📚 Keep studying! You'll improve with practice.";
   };
 
   const getAccuracyClass = () => {
-    if (accuracyPercentage >= 70) {
-      return styles.highAccuracy;
-    } else if (accuracyPercentage >= 50) {
-      return styles.mediumAccuracy;
-    } else {
-      return styles.lowAccuracy;
-    }
+    if (accuracyPercentage >= 70) return styles.highAccuracy;
+    if (accuracyPercentage >= 50) return styles.mediumAccuracy;
+    return styles.lowAccuracy;
   };
 
-  // Handler for "Review Answers" button
   const handleReviewAnswers = () => {
     if (savedQuizScoreId) {
       navigate(`/quiz/${savedQuizScoreId}/review`);
@@ -138,13 +124,11 @@ export default function QuizPage() {
         <div className={styles.quizOutput}>
           <div className={styles.quizHeader}>
             <h2>📝 Quiz</h2>
-            {/* Display current question number out of total */}
             <p className={styles.questionCounter}>
               Question {currentQuestionIndex + 1} of {quiz.length}
             </p>
           </div>
 
-          {/* Single Question Card */}
           <div className={styles.questionCardWrapper}>
             <div className={styles.questionCard}>
               <strong>{`${currentQuestionIndex + 1}. ${
@@ -172,7 +156,6 @@ export default function QuizPage() {
             </div>
           </div>
 
-          {/* Navigation Buttons */}
           <div className={styles.navigationContainer}>
             <button
               className={styles.backButton}
@@ -181,7 +164,6 @@ export default function QuizPage() {
             >
               ← Previous
             </button>
-
             <button className={styles.submitButton} onClick={goToNextQuestion}>
               {currentQuestionIndex === quiz.length - 1
                 ? "✅ Finish Quiz"
@@ -189,7 +171,6 @@ export default function QuizPage() {
             </button>
           </div>
 
-          {/* Back to Generator Button */}
           <button
             className={styles.backButton}
             onClick={() => navigate("/quiz")}
@@ -235,7 +216,6 @@ export default function QuizPage() {
             >
               🔁 Back to Generator
             </button>
-            {/* Review Answers Button - Corrected class */}
             <button
               className={styles.reviewButton}
               onClick={handleReviewAnswers}

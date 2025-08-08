@@ -1,30 +1,30 @@
-/* D:\Projects\fyp\frontend\src\styles\Home.module.css */
+/* Base styles (Mobile-first) */
 .homeContainer {
-  padding: 2rem;
+  padding: 1rem;
   background-color: #fefae0;
   min-height: 100vh;
 }
 
 .hero {
   text-align: center;
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
 }
 
 .hero h1 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   margin: 0;
   color: #2d2d2d;
 }
 
 .hero p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #4a5568;
   margin-top: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
 .ctaButton {
-  padding: 0.6rem 1.2rem;
+  padding: 0.8rem 1.4rem;
   background-color: #d4a373;
   color: #2d2d2d;
   border: none;
@@ -36,13 +36,13 @@
 }
 
 .ctaButton:hover:not(:disabled) {
-  background-color: #d4a373;
+  background-color: #c89a63;
 }
 
 .section {
   background-color: #fefae0;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 0;
   margin-bottom: 2rem;
 }
 
@@ -53,6 +53,10 @@
   margin-bottom: 1.5rem;
 }
 
+.sectionHeader h2 {
+  font-size: 1.2rem;
+}
+
 .viewAllButton {
   background: none;
   border: none;
@@ -60,36 +64,48 @@
   font-weight: bold;
   cursor: pointer;
   font-size: 0.9rem;
+  padding: 0.5rem;
 }
 
-.notePreviewGrid {
+/* Grid layout for notes and quizzes */
+.notePreviewGrid,
+.quizAttemptsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.2rem;
   justify-content: center;
 }
 
-.notePreviewCard {
+.notePreviewCard,
+.quizAttemptCard {
   background: white;
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.notePreviewCard h3 {
+.notePreviewCard:hover,
+.quizAttemptCard:hover {
+  transform: translateY(-2px);
+}
+
+.notePreviewCard h3,
+.quizAttemptCard h4 {
   margin-top: 0;
   font-size: 1.1rem;
   color: #2d2d2d;
+  margin-bottom: 0.5rem;
 }
 
-.notePreviewCard p {
+.notePreviewCard p,
+.quizAttemptCard p {
   margin: 0.3rem 0;
   font-size: 0.95rem;
-}
-
-.notePreviewCard:hover {
-  transform: translateY(-2px);
+  color: #4a5568;
 }
 
 .summaryPreview {
@@ -99,101 +115,84 @@
   max-height: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: pre-wrap;
 }
 
-.viewSummaryButton {
-  background-color: #d4a373;
-  color: #2d2d2d;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-top: 1rem; /* Added margin to separate from summary */
-}
-
-/* --- NEW STYLES FOR QUIZ ATTEMPTS --- */
-
-.quizAttemptsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.2rem;
-  justify-content: center;
-}
-
-.quizAttemptCard {
-  background: white;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease;
-  display: flex; /* Using flex to align content within the card */
-  flex-direction: column;
-  justify-content: space-between; /* Pushes button to bottom */
-}
-
-.quizAttemptCard:hover {
-  transform: translateY(-2px);
-}
-
-.quizAttemptCard h4 {
-  margin-top: 0;
-  font-size: 1.1rem;
-  color: #2d2d2d;
-  margin-bottom: 0.5rem;
-}
-
-.quizAttemptCard p {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
-  color: #4a5568;
-}
-
-.dateText {
-  font-size: 0.85rem;
-  color: #6c757d; /* Slightly darker grey for less prominence */
-  margin-top: 0.8rem;
-  margin-bottom: 0.8rem; /* Space before the button */
-}
-
+.viewSummaryButton,
 .reviewQuizButton {
   background-color: #d4a373;
   color: #2d2d2d;
   border: none;
-  padding: 0.4rem 0.8rem;
+  padding: 0.6rem 1rem;
   font-size: 0.9rem;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  align-self: flex-start; /* Aligns button to the left within the flex container */
-  width: auto; /* Ensure button doesn't stretch */
+  margin-top: 1rem;
+  align-self: flex-start;
+  width: auto;
 }
 
-.reviewQuizButton:hover:not(:disabled) {
-  background-color: #d4a373; /* Hover same as ctaButton/viewSummaryButton for consistency */
+.viewSummaryButton:hover,
+.reviewQuizButton:hover {
+  background-color: #c89a63;
 }
 
-/* Difficulty color styles (reusing logic from QuizReviewPage if available) */
+.dateText {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Difficulty labels */
 .easy {
-  color: #6a994e; /* A shade of green */
+  color: #6a994e;
   font-weight: bold;
 }
 
 .medium {
-  color: #e6b800; /* A shade of yellow/orange */
+  color: #e6b800;
   font-weight: bold;
 }
 
 .hard {
-  color: #c0392b; /* A shade of red */
+  color: #c0392b;
   font-weight: bold;
 }
 
-@media (max-width: 768px) {
+/* Tablet styles */
+@media (min-width: 601px) {
+  .homeContainer {
+    padding: 2rem;
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+
+  .sectionHeader h2 {
+    font-size: 1.4rem;
+  }
+
   .notePreviewGrid,
   .quizAttemptsGrid {
-    /* Apply stacking to both grids */
-    grid-template-columns: 1fr; /* Stack vertically on small screens */
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .section {
+    padding: 1.5rem;
+  }
+
+  .notePreviewGrid,
+  .quizAttemptsGrid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

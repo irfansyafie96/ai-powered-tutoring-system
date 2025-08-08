@@ -1,79 +1,91 @@
+/* src/styles/Dashboard.module.css */
 .dashboardContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 2rem;
-  justify-content: center;
-  height: 90vh;
-  padding: 1rem;
-}
-
-.leftColumn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.dashboardTitle {
-  font-size: 4rem;
   text-align: center;
+  min-height: 90vh;
+  padding: 1.5rem;
+  gap: 2rem;
+  background: #fefae0; /* 🎯 Flat pastel tone */
+  border-radius: 24px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.05); /* 🎯 Light depth only */
+  transition: all 0.3s ease;
+  margin-top: 3rem; /* 🎯 Extra space from nav */
 }
 
+.leftColumn,
 .rightColumn {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  justify-content: center;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.dashboardTitle {
+  font-family: "Poppins", sans-serif;
+  font-size: 2.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  color: #5a432e;
+}
+
+.rightColumn p {
+  font-size: 1.1rem;
+  color: #5a432e;
+  margin-bottom: 1.5rem;
+  max-width: 480px;
 }
 
 .buttonContainer {
-  padding: 1rem 0;
   display: flex;
+  flex-direction: column;
   gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
+  width: 100%;
+  max-width: 320px;
 }
 
 .buttonContainer button {
-  padding: 10px 15px;
-  border-radius: 8px;
-  border-width: 1px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  background: #fefae0;
+  border: 1px solid #e6dec5; /* 🎯 Adds tactile depth */
+  border-radius: 50px;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  color: #5a432e;
+  cursor: pointer;
 }
 
 .buttonContainer button:hover {
-  background-color: #d4a373;
+  transform: translateY(-2px);
+  background: #f1eecb;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.06);
 }
 
-/* Responsive for tablets and smaller */
-@media (max-width: 768px) {
+@media (min-width: 769px) {
   .dashboardContainer {
-    grid-template-columns: 1fr;
-    text-align: center;
-    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .buttonContainer {
+    flex-direction: row;
+    justify-content: center;
   }
 
   .dashboardTitle {
-    font-size: 3rem;
+    font-size: 3.5rem;
+    margin-bottom: 2rem;
   }
 }
 
-/* Extra responsive for small phones */
-@media (max-width: 480px) {
+@media (min-width: 1025px) {
   .dashboardTitle {
-    font-size: 2.25rem;
-  }
-
-  .buttonContainer button {
-    width: 100%;
-    padding: 12px;
-    font-size: 1.1rem;
+    font-size: 4.5rem;
   }
 }

@@ -1,7 +1,8 @@
+// D:\Projects\fyp\frontend\src\pages\Home.js
 import React, { useEffect, useState } from "react";
 import { getFullLibrary, getQuizHistory } from "../api/api";
-import styles from "../styles/Home.module.css";
 import { useNavigate } from "react-router-dom";
+import styles from "../styles/Home.module.css";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function Home() {
     const fetchNotesAndQuizHistory = async () => {
       try {
         const notesData = await getFullLibrary();
-        setRecentNotes(notesData.slice(0, 3)); // Show only 3 recent notes
+        setRecentNotes(notesData.slice(0, 3));
       } catch (err) {
         console.error("Failed to load recent notes:", err);
       } finally {
@@ -23,13 +24,14 @@ export default function Home() {
 
       try {
         const historyData = await getQuizHistory();
-        setQuizHistory(historyData.slice(0, 3)); // Limit to 3 recent quiz attempts for the home page
+        setQuizHistory(historyData.slice(0, 3));
       } catch (err) {
         console.error("Failed to load quiz history:", err);
       } finally {
         setLoadingQuizHistory(false);
       }
     };
+
     fetchNotesAndQuizHistory();
   }, []);
 
@@ -48,16 +50,16 @@ export default function Home() {
     navigate(`/quiz/${quiz.quiz_score_id}/review`);
   };
 
-  // Combine loading states for initial render
   if (loadingNotes || loadingQuizHistory) {
-    return <p>Loading your dashboard...</p>;
+    return <p className={styles.loadingText}>Loading your dashboard...</p>;
   }
 
   return (
     <div className={styles.homeContainer}>
+      {/* Hero / CTA Section */}
       <section className={styles.hero}>
-        <h1>Welcome back!</h1>
-        <p>Manage and review your AI-analyzed lecture notes</p>
+        <h1>Welcome back 👋</h1>
+        <p>Manage and review your AI-analyzed lecture notes below</p>
         <button
           onClick={() => navigate("/upload")}
           className={styles.ctaButton}
@@ -66,7 +68,7 @@ export default function Home() {
         </button>
       </section>
 
-      {/* Your Notes Section */}
+      {/* Notes Section */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2>📚 Your Notes</h2>
@@ -80,7 +82,9 @@ export default function Home() {
 
         <div className={styles.notePreviewGrid}>
           {recentNotes.length === 0 ? (
-            <p>You don't have any notes yet. Upload one to get started!</p>
+            <p className={styles.emptyText}>
+              You don't have any notes yet. Upload one to get started!
+            </p>
           ) : (
             recentNotes.map((note) => (
               <div key={note.id} className={styles.notePreviewCard}>
@@ -89,7 +93,7 @@ export default function Home() {
                   <strong>Topic:</strong> {note.topic || "—"}
                 </p>
                 <p className={styles.summaryPreview}>
-                  {note.summary.split("\n").slice(0, 3).join("\n")}{" "}
+                  {note.summary.split("\n").slice(0, 3).join("\n")}
                 </p>
                 <button
                   onClick={() => handleViewSummary(note)}
@@ -103,7 +107,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Past Quiz Attempts Section */}
+      {/* Quiz Section */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2>📊 Past Quiz Attempts</h2>
@@ -117,7 +121,7 @@ export default function Home() {
 
         <div className={styles.quizAttemptsGrid}>
           {quizHistory.length === 0 ? (
-            <p>
+            <p className={styles.emptyText}>
               You haven't completed any quizzes yet. Generate one from a note!
             </p>
           ) : (

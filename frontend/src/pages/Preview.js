@@ -1,3 +1,4 @@
+// src/pages/Preview.js
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
@@ -22,13 +23,8 @@ export default function Preview() {
   const [saveError, setSaveError] = useState(null);
   const [alreadySaved, setIsAlreadySaved] = useState(false);
 
-  // Load text content if file is .txt
   useEffect(() => {
-    if (!fileUrl?.toLowerCase().endsWith(".txt")) {
-      setText("");
-      return;
-    }
-
+    if (!fileUrl?.toLowerCase().endsWith(".txt")) return setText("");
     fetch(fileUrl)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load text file");
@@ -46,15 +42,9 @@ export default function Preview() {
   const cleanUrl = fileUrl ? fileUrl.split(/[#?]/)[0] : null;
   const ext = cleanUrl ? cleanUrl.split(".").pop().toLowerCase() : "";
 
-  // Check if this note was already saved
   useEffect(() => {
     const checkSavedStatus = async () => {
-      // Assuming `fileUrl` should contain the note's ID if it's already a saved note.
-      // If `fileUrl` is a direct URL from upload, it might not have an ID yet.
-      // This logic might need adjustment based on how `fileUrl` is passed after initial upload vs. after saving.
-      // For now, assuming `fileUrl.id` is the note identifier if available.
       if (!fileUrl?.id) return;
-
       try {
         const isSaved = await checkIfSaved(fileUrl.id);
         setIsAlreadySaved(isSaved);
@@ -80,32 +70,18 @@ export default function Preview() {
         topic,
         fileHash,
       });
-
       if (response.saved === false) {
         toast.info("📘 This note is already in your library", {
-          position: "top-right",
           autoClose: 3000,
-          hideProgressBar: false,
         });
       } else {
-        toast.success("✅ Note saved to your collection!", {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-        });
+        toast.success("✅ Note saved to your collection!", { autoClose: 2000 });
       }
-
-      // Always close modal after saving attempt
       setShowModal(false);
-      setIsAlreadySaved(true); // Prevent future saves
+      setIsAlreadySaved(true);
       setSaveError(null);
     } catch (err) {
-      console.error("Save failed:", err.message);
-      toast.error("❌ Failed to save note", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-      });
+      toast.error("❌ Failed to save note");
     } finally {
       setSaving(false);
     }
@@ -113,40 +89,54 @@ export default function Preview() {
 
   const handleCopySummary = () => {
     if (!summary) {
-      toast.error("❌ No summary available to copy", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.error("❌ No summary available to copy");
       return;
     }
-
     navigator.clipboard
       .writeText(summary)
-      .then(() => {
-        toast.success("📋 Summary copied to clipboard!", {
-          position: "top-right",
-          autoClose: 2000,
-        });
-      })
-      .catch((err) => {
-        console.error("Copy failed:", err);
-        toast.error("⚠️ Failed to copy summary.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-      });
+      .then(() =>
+        toast.success("📋 Summary copied to clipboard!", { autoClose: 2000 })
+      )
+      .catch(() => toast.error("⚠️ Failed to copy summary."));
+  };
+
+  const markdownComponents = {
+    code({ node, inline, className, children, ...props }) {
+      return (
+        <pre className={styles.markdownCode}>
+          <code {...props}>{children}</code>
+        </pre>
+      );
+    },
+    blockquote({ children }) {
+      return (
+        <blockquote className={styles.markdownQuote}>{children}</blockquote>
+      );
+    },
+    h1: ({ children }) => (
+      <h1 className={styles.markdownHeading}>{children}</h1>
+    ),
+    h2: ({ children }) => (
+      <h2 className={styles.markdownHeading}>{children}</h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className={styles.markdownHeading}>{children}</h3>
+    ),
+    li: ({ children }) => (
+      <li className={styles.markdownListItem}>{children}</li>
+    ),
+    p: ({ children }) => <p className={styles.markdownParagraph}>{children}</p>,
   };
 
   return (
     <div className={styles.previewContainer}>
-      {/* Left Pane: Original Document */}
       {fileUrl && (
-        <div className={styles.paneLeft}>
-          <div className={styles.originalFileHeader}>
+        <div className={styles.pane}>
+          <div className={styles.paneHeader}>
             <h3>Original Document</h3>
           </div>
-          <div className={styles.originalFileContent}>
-            {ext === "pdf" && (
+          <div className={styles.paneContent}>
+            {ext === "pdf" ? (
               <div className={styles.pdfContainer}>
                 {error ? (
                   <div className={styles.pdfLoading}>{error}</div>
@@ -156,9 +146,7 @@ export default function Preview() {
                     onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                     onLoadError={handlePdfError}
                     loading={
-                      <div className={styles.pdfLoading}>
-                        Loading document...
-                      </div>
+                      <div className={styles.pdfLoading}>Loading...</div>
                     }
                     error={null}
                   >
@@ -168,19 +156,12 @@ export default function Preview() {
                         pageNumber={i + 1}
                         renderTextLayer={false}
                         renderAnnotationLayer={false}
-                        loading={
-                          <div className={styles.pdfLoading}>
-                            Loading page {i + 1}...
-                          </div>
-                        }
                       />
                     ))}
                   </Document>
                 )}
               </div>
-            )}
-
-            {ext === "txt" && (
+            ) : (
               <div className={styles.pdfContainer}>
                 <pre className={styles.textPreview}>{text}</pre>
               </div>
@@ -189,76 +170,60 @@ export default function Preview() {
         </div>
       )}
 
-      {/* Right Pane: AI Summary */}
-      <div className={styles.summaryBox}>
-        <div className={styles.summaryTitle}>
+      <div className={styles.pane}>
+        <div className={styles.paneHeader}>
           <h3>📘 Summary</h3>
-
           <div className={styles.summaryActions}>
             <button
               onClick={handleCopySummary}
-              title="Copy summary to clipboard"
               className={styles.btnAction}
+              title="Copy summary"
             >
               📋 Copy
             </button>
-
             <button
-              onClick={() => {
-                if (alreadySaved) {
-                  toast.info("📘 This note is already in your library", {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                  });
-                  return;
-                }
-                setShowModal(true);
-              }}
-              title="Save these notes to your library"
+              onClick={() =>
+                alreadySaved
+                  ? toast.info("📘 Already saved")
+                  : setShowModal(true)
+              }
               className={styles.btnAction}
+              title="Save summary"
             >
               💾 Save
             </button>
           </div>
         </div>
-
-        <div className={styles.summaryContent}>
+        <div className={styles.paneContent}>
           {summary ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={markdownComponents}
+            >
+              {summary}
+            </ReactMarkdown>
           ) : (
             <p className={styles.pdfLoading}>No analysis available</p>
           )}
         </div>
-
-        {showModal && (
-          <MetadataModal
-            subject={subject}
-            topic={topic}
-            saving={saving}
-            error={saveError}
-            onSubjectChange={setSubject}
-            onTopicChange={setTopic}
-            onSave={handleSave}
-            onCancel={() => {
-              setShowModal(false);
-              setSaveError(null);
-            }}
-          />
-        )}
-
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
       </div>
+
+      {showModal && (
+        <MetadataModal
+          subject={subject}
+          topic={topic}
+          saving={saving}
+          error={saveError}
+          onSubjectChange={setSubject}
+          onTopicChange={setTopic}
+          onSave={handleSave}
+          onCancel={() => {
+            setShowModal(false);
+            setSaveError(null);
+          }}
+        />
+      )}
+      <ToastContainer />
     </div>
   );
 }

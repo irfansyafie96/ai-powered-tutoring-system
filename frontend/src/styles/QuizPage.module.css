@@ -1,197 +1,149 @@
 .container {
-  padding: 2rem;
+  padding: 1rem;
   max-width: 800px;
   margin: auto;
-  background-color: #fefae0; /* Using your base background color */
-  border-radius: 8px; /* Slight rounding for the overall container */
+  background-color: #fefae0;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .quizOutput {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Reduced gap between sections */
+  gap: 1rem;
 }
 
 .quizHeader {
-  margin-bottom: 0.5rem; /* Adjusted margin */
-  text-align: center; /* Center the quiz title */
+  text-align: center;
+}
+
+.quizHeader h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.questionCounter {
+  font-size: 1rem;
+  color: #555;
 }
 
 .questionCardWrapper {
   flex: 1;
-  height: 300px; /* Fixed height for the question card wrapper */
-  margin-bottom: 0.5rem; /* Reduced space before navigation buttons */
+  min-height: 200px;
 }
 
 .questionCard {
   width: 100%;
-  height: 100%; /* IMPORTANT: Make questionCard fill the height of its wrapper */
-  padding: 2rem;
-  border-radius: 12px;
-  background-color: #fffbe6; /* Using your Modal Background for cards */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Using your Shadow Overlay inspiration */
-  border: 1px solid #d4a373; /* Using Accent Brown for border for a themed look */
+  padding: 1.2rem;
+  border-radius: 8px;
+  background-color: #fffbe6;
+  border: 1px solid #d4a373;
   word-wrap: break-word;
-  overflow-y: auto; /* Add scroll if content overflows fixed height */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
-
-  /* Flexbox for internal layout of question and options */
   display: flex;
-  flex-direction: column; /* Stack question text and options vertically */
-  color: #2d2d2d; /* Dark Text */
-}
-
-.questionCard strong {
-  flex-shrink: 0; /* Prevent the question text from shrinking */
-  margin-bottom: 1rem; /* Space between question and options */
+  flex-direction: column;
+  gap: 1rem;
+  color: #2d2d2d;
 }
 
 .options {
-  margin-top: 0; /* Reset previous margin-top as questionCard handles vertical spacing now */
-  flex-grow: 1; /* Allow options to take up remaining vertical space */
-  display: flex; /* Make options a flex container too */
-  flex-direction: column; /* Stack items vertically within options */
+  flex-grow: 1;
 }
 
 .answerGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  flex-grow: 1; /* Allow the grid to take up available space within options */
-  grid-auto-rows: 1fr; /* This helps distribute available space equally among rows */
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
 }
 
 .answerBox {
-  padding: 1rem;
-  border-radius: 8px;
-  border: 2px solid #ccc; /* Muted Gray for borders */
+  padding: 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
   cursor: pointer;
-  transition: all 0.2s ease;
   font-size: 1rem;
   display: flex;
-  align-items: center; /* Vertically centers content */
-  justify-content: flex-start; /* ALIGNS CONTENT TO THE START (LEFT) */
-  text-align: left; /* Ensures text inside is aligned to the left */
-  background-color: #fffbe6; /* Keeping consistency with card background */
+  align-items: center;
+  background-color: #fffbe6;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .answerBox strong {
-  margin-right: 0.6em; /* Adds space after the letter */
-  flex-shrink: 0; /* Prevents the letter from shrinking */
+  margin-right: 0.6em;
 }
 
 .answerBox:hover {
-  background-color: #fefae0; /* Lighter background on hover */
-  border-color: #d4a373; /* Accent Brown on hover */
+  background-color: #fefae0;
+  border-color: #d4a373;
 }
 
 .answerBox.selectedAnswer {
-  border-color: #4caf50; /* Keeping current green for selected, as it implies correctness */
-  background-color: #d1f7d1; /* Using your Success Green for background */
-  outline: none;
+  border-color: #4caf50;
+  background-color: #d1f7d1;
 }
 
-/* Navigation Buttons (Common Styles) */
-.submitButton {
-  padding: 0.75rem 1.5rem;
-  background-color: #4caf50; /* Keeping existing green for primary submit */
-  color: white;
+.navigationContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.backButton,
+.submitButton,
+.regenerateButton,
+.reviewButton {
+  padding: 0.75rem 1rem;
   border: none;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  width: 100%;
 }
 
+.submitButton {
+  background-color: #4caf50;
+  color: white;
+}
 .submitButton:hover {
   background-color: #43a047;
 }
 
-/* Updated colors for back and regenerate buttons using theme */
 .backButton,
 .regenerateButton {
-  padding: 0.75rem 1.5rem;
-  background-color: #d4a373; /* Accent Brown */
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  background-color: #d4a373;
+  color: #2d2d2d;
 }
-
 .backButton:hover,
 .regenerateButton:hover {
-  background-color: #c59666; /* Accent Hover */
+  background-color: #c59666;
 }
 
 .backButton:disabled {
-  background-color: rgba(0, 0, 0, 0.1); /* Disabled Button from palette */
-  color: #4a5568; /* Light Text for disabled text */
+  background-color: #e0e0e0;
+  color: #777;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
-/* Navigation Layout */
-.navigationContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-/* Specific styles for the "Back to Generator" button at the bottom (main quiz view) */
-.quizOutput > .backButton {
-  margin-top: 1.5rem; /* Standardized margin */
-  display: block;
-  margin-inline: auto;
-  max-width: 250px;
-}
-
-.navigationContainer .backButton {
-  order: 1;
-  flex: 1 1 auto;
-  max-width: 150px;
-}
-
-.navigationContainer .submitButton {
-  order: 2;
-  flex: 1 1 auto;
-  max-width: 180px;
-}
-
-/* --- Quiz Results Page Styles --- */
 .resultsBox {
-  padding: 2.5rem;
-  border-radius: 15px;
-  background-color: #fffbe6; /* Modal Background for results box */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Shadow Overlay */
-  border: 1px solid #d4a373; /* Accent Brown border for consistency */
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #fffbe6;
+  border: 1px solid #d4a373;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Space between sections inside results box */
-  color: #2d2d2d; /* Dark Text */
+  gap: 1.5rem;
 }
 
 .resultsHeader {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 0.5rem;
-}
-
-.resultsHeader h3 {
-  margin: 0; /* Remove default margin */
-  font-size: 1.8rem;
-  color: #2d2d2d; /* Dark Text */
+  gap: 8px;
 }
 
 .trophyIcon {
-  font-size: 2.5rem; /* Make emoji larger */
-  line-height: 1; /* Align vertically with text */
+  font-size: 1.8rem;
 }
 
 .scoreSummary {
@@ -201,175 +153,82 @@
 }
 
 .scoreText {
-  font-size: 1.3rem;
-  color: #4a5568; /* Light Text */
-  margin: 0;
+  font-size: 1.1rem;
 }
 
 .scoreHighlight {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: bold;
-  color: #4caf50; /* Keeping current green for score highlight */
+  color: #4caf50;
 }
 
 .accuracyText {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: bold;
-  margin: 0;
-  transition: color 0.3s ease; /* Smooth color transition */
 }
 
-/* Accuracy color coding - using your suggested status colors */
-.accuracyText.highAccuracy {
-  color: #4caf50; /* Using your success green for high accuracy, can be #d1f7d1 if you want lighter */
+.highAccuracy {
+  color: #4caf50;
 }
-
-.accuracyText.mediumAccuracy {
-  color: #d4a373; /* Accent Brown for medium accuracy */
+.mediumAccuracy {
+  color: #d4a373;
 }
-
-.accuracyText.lowAccuracy {
-  color: #cc0000; /* Error Red for low accuracy */
+.lowAccuracy {
+  color: #cc0000;
 }
 
 .progressBarContainer {
   width: 100%;
-  height: 12px;
-  background-color: #eee; /* Light neutral for container, from your summary */
-  border-radius: 6px;
-  overflow: hidden; /* Ensures fill stays within bounds */
-  margin-top: 1rem;
+  height: 10px;
+  background-color: #eee;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .progressBarFill {
   height: 100%;
-  background-color: #4caf50; /* Green progress - keeping for visual impact */
-  border-radius: 6px;
-  transition: width 0.5s ease-in-out; /* Smooth transition for width change */
-}
-
-.accuracyText.lowAccuracy + .progressBarContainer .progressBarFill {
-  background-color: #cc0000; /* Error Red for low accuracy bar */
-}
-.accuracyText.mediumAccuracy + .progressBarContainer .progressBarFill {
-  background-color: #d4a373; /* Accent Brown for medium accuracy bar */
+  background-color: #4caf50;
+  transition: width 0.4s ease;
 }
 
 .feedbackMessage {
-  font-size: 1.2rem;
-  color: #4a5568; /* Light Text */
-  margin-top: 1.5rem;
+  font-size: 0.95rem;
   font-style: italic;
 }
 
 .resultsActions {
-  margin-top: 1.5rem;
   display: flex;
-  justify-content: center; /* Center the buttons */
-  gap: 1rem; /* Adds space between buttons */
-  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-/* Common button styling for actions in the results box */
-.resultsActions button {
-  /* Target all buttons inside resultsActions */
-  padding: 0.8rem 1.8rem; /* Uniform padding */
-  font-size: 1.1rem; /* Uniform font size */
-  flex: 1 1 auto; /* Allow them to grow/shrink, max-width will control final size */
-  max-width: 220px; /* Set a consistent max-width for both buttons */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 6px; /* Ensure consistent border-radius */
-  font-weight: bold; /* Ensure consistent font-weight */
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-  border: none; /* Ensure no border by default */
-}
-
-/* Regenerate button uses Accent Brown theme */
-.regenerateButton {
-  background-color: #d4a373; /* Accent Brown */
-  color: white;
-}
-
-.regenerateButton:hover {
-  background-color: #c59666; /* Accent Hover */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* NEW: Style for the "Review Answers" button using Secondary Accent */
 .reviewButton {
-  background-color: #ccd5ae; /* Secondary Accent */
-  color: #2d2d2d; /* Dark Text for better contrast on light background */
+  background-color: #ccd5ae;
+  color: #2d2d2d;
 }
-
 .reviewButton:hover {
-  background-color: #b9c19b; /* Slightly darker shade for hover */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  background-color: #b9c19b;
 }
-
-/* Disabled states for both regenerate and review buttons */
-.regenerateButton:disabled,
 .reviewButton:disabled {
-  background-color: rgba(0, 0, 0, 0.1); /* Disabled Button from palette */
-  color: #4a5568; /* Light Text for disabled text */
+  background-color: #e0e0e0;
+  color: #777;
   cursor: not-allowed;
-  box-shadow: none;
-  opacity: 0.7; /* Make it slightly transparent when disabled */
 }
 
-/* Media Queries (already existing, just ensure they are at the bottom) */
-@media (max-width: 600px) {
+@media (min-width: 600px) {
+  .answerGrid {
+    grid-template-columns: 1fr 1fr;
+  }
   .navigationContainer {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
   }
-
-  .navigationContainer .backButton,
-  .navigationContainer .submitButton {
-    max-width: none;
-    width: 100%;
+  .resultsActions {
+    flex-direction: row;
+    justify-content: center;
   }
-
-  .questionCardWrapper {
-    height: 250px; /* Adjust height for smaller screens */
-  }
-
-  .resultsBox {
-    padding: 1.5rem;
-  }
-
-  .resultsHeader h3 {
-    font-size: 1.5rem;
-  }
-
-  .trophyIcon {
-    font-size: 2rem;
-  }
-
-  .scoreHighlight {
-    font-size: 1.5rem;
-  }
-
-  .accuracyText {
-    font-size: 1rem;
-  }
-
-  .feedbackMessage {
-    font-size: 1rem;
-  }
-
-  .regenerateButton,
-  .reviewButton {
-    /* Apply responsive styles to the new button as well */
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-  }
-
   .resultsActions button {
-    /* Target all buttons inside resultsActions for smaller screens */
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    max-width: none; /* Remove max-width on small screens to let them take full width */
-    width: 100%; /* Make them full width */
+    width: auto;
+    flex: 1;
+    max-width: 220px;
   }
 }

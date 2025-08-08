@@ -1,68 +1,58 @@
-/* --- Page Layout --- */
+/* Base styles (Mobile-first) */
 .quizHistoryContainer {
-  padding: 2rem;
+  padding: 1rem;
   background-color: #fefae0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   width: 100%;
-  max-width: 1200px; /* Consistent max-width with Library */
-  margin: 2rem auto; /* Centers the container horizontally */
+  box-sizing: border-box;
 }
 
-/* Base heading style */
 .quizHistoryContainer h2 {
-  margin: 0; /* Remove default top margin for consistency */
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: center;
 }
 
-/* Base paragraph style; specific messages will override */
-.quizHistoryContainer p {
-  margin-top: 0.5rem;
-  font-size: 1rem;
-  color: #4a5568;
-}
-
-/* --- Header & Search --- */
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem; /* Add spacing below the header */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .searchInput {
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 1rem;
   border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 1rem;
-  width: 350px; /* Consistent width with Library search */
+  width: 100%;
+  box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: #805ad5; /* Consistent focus color */
+  border-color: #805ad5;
   box-shadow: 0 0 0 3px rgba(128, 90, 213, 0.2);
 }
 
-/* --- Quiz Cards Grid Layout --- */
 .quizGrid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(280px, 1fr)
-  ); /* Adaptive columns */
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
-/* --- Individual Quiz Card Styles --- */
 .quizCard {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   padding: 1rem;
   transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .quizCard:hover {
@@ -87,34 +77,18 @@
   margin-top: 0.8rem;
 }
 
-/* Difficulty color indicators */
-.easy {
-  color: #28a745; /* Green */
-  font-weight: bold;
-}
-
-.medium {
-  color: #ffc107; /* Orange/Yellow */
-  font-weight: bold;
-}
-
-.hard {
-  color: #dc3545; /* Red */
-  font-weight: bold;
-}
-
 .actions {
   margin-top: 1rem;
   display: flex;
-  justify-content: flex-end; /* Align button to the right */
+  justify-content: flex-end;
   align-items: center;
 }
 
 .actions button {
-  padding: 0.6rem 1rem; /* Slightly larger padding for better clickability */
+  padding: 0.6rem 1rem;
   font-size: 0.9rem;
   background-color: #d4a373;
-  color: #2d2d2d; /* Adjust text color for better contrast on button */
+  color: #2d2d2d;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -122,56 +96,67 @@
 }
 
 .actions button:hover {
-  background-color: #8b5e3c; /* Darker hover from theme */
-  color: white; /* Text color change on hover */
+  background-color: #8b5e3c;
+  color: white;
 }
 
-.actions button:active {
-  transform: translateY(0); /* No transform on click */
+.easy {
+  color: #28a745;
+  font-weight: bold;
 }
-
-/* --- Messages (Error, Loading, Info) --- */
-.errorMessage {
-  color: #cc0000;
-  text-align: center;
+.medium {
+  color: #ffc107;
+  font-weight: bold;
+}
+.hard {
+  color: #dc3545;
   font-weight: bold;
 }
 
-/* Reusable style for informational messages, consistent with other pages */
-.infoMessage {
+.infoMessage,
+.errorMessage {
   text-align: center;
   font-size: 1.1rem;
-  color: #8b5e3c; /* Theme color */
   margin-top: 2rem;
   padding: 1.5rem;
-  background-color: #fffbe6; /* Theme background */
   border-radius: 8px;
-  border: 1px solid #d4a373; /* Theme border */
 }
 
-/* The .loading class will now use the .infoMessage styling */
-.loading {
-  /* No specific styles here as it will inherit from .infoMessage in JSX */
+.infoMessage {
+  color: #8b5e3c;
+  background-color: #fffbe6;
+  border: 1px solid #d4a373;
 }
 
-/* --- Responsive Adjustments --- */
-@media (max-width: 768px) {
-  .quizHistoryContainer {
-    padding: 1rem; /* Adjust padding for smaller screens */
-    margin: 1rem auto;
-  }
+.errorMessage {
+  color: #cc0000;
+  font-weight: bold;
+}
 
-  .header {
-    flex-direction: column; /* Stack header elements */
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .searchInput {
-    width: 100%; /* Full width search on small screens */
-  }
-
+/* Tablet styles */
+@media (min-width: 600px) {
   .quizGrid {
-    grid-template-columns: 1fr; /* Single column on very small screens */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .quizHistoryContainer {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+  }
+  .quizHistoryContainer h2 {
+    text-align: left;
+  }
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0; /* Adjusted from 2rem to 0, gap handles spacing */
+  }
+  .searchInput {
+    width: 350px;
   }
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/DifficultyModal.module.css";
+import styles from "../styles/Modal.module.css";
 
 export default function DifficultyModal({ title, children, onSave, onCancel }) {
   return (

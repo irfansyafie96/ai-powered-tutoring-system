@@ -142,43 +142,45 @@ const UploadNotes = () => {
   };
 
   return (
-    <div className={styles.uploadContainer}>
-      {error && (
-        <div className={styles.errorText}>
-          {error}
-          <br />
+    <div className={styles.pageWrapper}>
+      <div className={styles.uploadContainer}>
+        {error && (
+          <div className={styles.errorText}>
+            {error}
+            <br />
+            <button
+              type="button"
+              className={styles.uploadButton}
+              onClick={handleRetry}
+              style={{ marginTop: "1rem" }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+        <h2>Upload Your Notes</h2>
+        <form className={styles.uploadForm} onSubmit={handleSubmit}>
+          <div className={styles.fileInputWrapper}>
+            <input
+              type="file"
+              id="fileInput"
+              accept=".pdf,.txt,.pptx"
+              onChange={handleFileChange}
+              className={styles.uploadInput}
+            />
+            <label htmlFor="fileInput" className={styles.uploadLabel}>
+              {file ? file.name : "Choose file"}
+            </label>
+          </div>
           <button
-            type="button"
+            type="submit"
+            disabled={false} // Loading state is managed by the global context/overlay
             className={styles.uploadButton}
-            onClick={handleRetry}
-            style={{ marginTop: "1rem" }}
           >
-            Retry
+            Upload
           </button>
-        </div>
-      )}
-      <h2>Upload Your Notes</h2>
-      <form className={styles.uploadForm} onSubmit={handleSubmit}>
-        <div className={styles.fileInputWrapper}>
-          <input
-            type="file"
-            id="fileInput"
-            accept=".pdf,.txt,.pptx"
-            onChange={handleFileChange}
-            className={styles.uploadInput}
-          />
-          <label htmlFor="fileInput" className={styles.uploadLabel}>
-            {file ? file.name : "Choose file"}
-          </label>
-        </div>
-        <button
-          type="submit"
-          disabled={false} // Loading state is managed by the global context/overlay
-          className={styles.uploadButton}
-        >
-          Upload
-        </button>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

@@ -1,112 +1,73 @@
 .previewContainer {
   display: flex;
-  height: calc(100vh - 64px);
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
   background-color: #fefae0;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  position: relative;
+  box-sizing: border-box;
 }
 
-/* Left pane */
-.paneLeft {
+.pane {
   flex: 1;
-  min-width: 0;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
+  min-height: 400px;
+  overflow: hidden;
 }
 
-/* Header of left pane */
-.originalFileHeader {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(221, 161, 94, 0.15);
-  background: linear-gradient(to right, #fefae0, #fffcf2);
-  flex-shrink: 0;
-}
-
-/* Content area of left pane */
-.originalFileContent {
-  flex: 1;
-  overflow-y: auto;
+/* Unified header */
+.paneHeader {
   padding: 1rem;
+  background: linear-gradient(to right, #fefae0, #fffcf2);
+  border-bottom: 1px solid rgba(221, 161, 94, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* PDF container */
+.paneHeader h3 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Shared content area */
+.paneContent {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #fcfcfc;
+  line-height: 1.6;
+  color: #4a5568;
+}
+
 .pdfContainer {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-/* Text preview fallback */
 .textPreview {
   white-space: pre-wrap;
   word-break: break-word;
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.9rem;
-  line-height: 1.6;
   color: #2d3748;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  padding: 1rem;
-  margin: 0 1.5rem;
 }
 
-/* PDF.js overrides */
-:global(.react-pdf__Document) {
-  margin: 0 auto;
-  max-width: 100%;
-}
-:global(.react-pdf__Page) {
-  margin: 0 auto 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-radius: 6px;
-  overflow: hidden;
-}
-:global(.react-pdf__Page__canvas) {
-  width: 100% !important;
-  height: auto !important;
-  display: block !important;
-  max-width: 100%;
-  margin: 0 auto;
-}
-
-/* Summary box */
-.summaryBox {
-  flex: 0 0 380px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-}
-
-/* Summary header with action buttons */
-.summaryTitle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(221, 161, 94, 0.15);
-  background: linear-gradient(to right, #fefae0, #fffcf2);
-  flex-shrink: 0;
-}
-
-/* Button actions in header */
+/* Shared actions */
 .summaryActions {
   display: flex;
   gap: 0.75rem;
 }
 
-/* Unified style for Copy and Save buttons */
 .btnAction {
   background-color: #d4a373;
   color: #2d2d2d;
   border: none;
-  padding: 0.4rem 0.8rem;
+  padding: 0.6rem 1rem;
   font-size: 0.9rem;
   border-radius: 6px;
   cursor: pointer;
@@ -117,97 +78,83 @@
   background-color: #c59666;
 }
 
-/* Summary content area */
-.summaryContent {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem;
-  background: #fcfcfc;
-  line-height: 1.6;
-  color: #4a5568;
-}
-
-/* Loading / error text */
 .pdfLoading {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
+  min-height: 150px;
   color: #718096;
   font-style: italic;
+  text-align: center;
 }
 
-/* Modal button styling */
-.saveButtonContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1rem;
+/* Markdown styles */
+.markdownHeading {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+  color: #5a432e;
 }
 
-.saveTooltip {
-  font-size: 0.75rem;
-  color: #718096;
-  margin-top: 0.25rem;
+.markdownParagraph {
+  margin: 0.75rem 0;
+  color: #4a4a4a;
+  font-size: 1rem;
+  line-height: 1.7;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
+.markdownListItem {
+  margin-left: 1.5rem;
+  list-style-type: disc;
+  color: #444;
+}
+
+.markdownCode {
+  background-color: #f1eecb;
+  color: #2d2d2d;
+  padding: 1rem;
+  font-size: 0.95rem;
+  font-family: "IBM Plex Mono", monospace;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.markdownQuote {
+  border-left: 4px solid #d4a373;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #5a432e;
+  font-style: italic;
+  background: #fdf8e3;
+  border-radius: 4px;
+}
+
+/* Tablet/Desktop */
+@media (min-width: 769px) {
   .previewContainer {
-    flex-direction: column;
-    height: auto;
-  }
-  .summaryBox {
-    width: 100%;
-    margin-top: 1rem;
+    flex-direction: row;
+    height: calc(100vh - 64px);
+    padding: 1.5rem;
+    gap: 1.5rem;
   }
 }
 
-@media (max-width: 480px) {
-  .previewContainer {
-    padding: 1rem;
-    gap: 1rem;
-  }
-  .originalFileHeader,
-  .summaryTitle {
-    padding: 1rem;
-  }
-  .pdfContainer,
-  .summaryContent {
-    padding: 1rem;
-  }
+/* PDF.js Overrides */
+:global(.react-pdf__Document) {
+  margin: 0 auto;
+  max-width: 100%;
 }
-
-/* 🧱 Toastify Styles (Local Only in Preview.js) */
-
-.Toastify__toast-container {
-  z-index: 9999;
+:global(.react-pdf__Page) {
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 100%;
 }
-
-.Toastify__toast--success,
-.Toastify__toast--info,
-.Toastify__toast--error {
-  background-color: #ffffff !important;
-  color: #2d2d2d !important;
-  border-left: 4px solid #d4a373 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 1rem 1.25rem;
-  font-weight: 500;
-}
-
-.Toastify__toast--info {
-  background-color: #d4a373 !important;
-  color: white !important;
-  border-left: 4px solid #8b5e3c !important;
-}
-
-.Toastify__toast--error {
-  background-color: #cc0000 !important;
-  color: white !important;
-  border-left: 4px solid #990000 !important;
-}
-
-.Toastify__progress-bar {
-  background-color: #d4a373 !important;
-  height: 4px;
+:global(.react-pdf__Page__canvas) {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
 }

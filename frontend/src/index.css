@@ -1,10 +1,43 @@
+/* index.css */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
 }
 
+html,
 body {
-  font-family: "Montserrat", sans-serif;
-  background-color: #fefae0;
+  font-family: "Poppins", sans-serif;
+  background: #fefae0;
+  color: #333;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus ring for accessibility */
+input:focus,
+button:focus {
+  outline: 2px solid #d4a373;
+  outline-offset: 2px;
+}
+
+/* Optional: Soft custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #fefae0;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4a373;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #bc8a5f;
 }

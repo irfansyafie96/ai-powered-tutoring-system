@@ -48,70 +48,72 @@ const Profile = () => {
     }
   };
 
-  if (!user) return <div>Loading...</div>;
+  if (!user) return <div className={styles.loading}>Loading...</div>;
 
   return (
-    <div className={styles.profileContainer}>
-      <h2>Profile</h2>
+    <div className={styles.pageWrapper}>
+      <div className={styles.profileContainer}>
+        <h2>Profile</h2>
 
-      {message && (
-        <div className={`${styles.profileMessage} ${styles[messageType]}`}>
-          {message}
-        </div>
-      )}
+        {message && (
+          <div className={`${styles.profileMessage} ${styles[messageType]}`}>
+            {message}
+          </div>
+        )}
 
-      <div className={styles.profileField}>
-        <label>Email (read-only)</label>
-        <input type="text" value={user.email} readOnly />
-      </div>
-
-      <div className={styles.profileField}>
-        <label>Username</label>
-        <input
-          type="text"
-          value={newUsername}
-          onChange={(e) => setNewUsername(e.target.value)}
-        />
-      </div>
-
-      {!changePassword && (
-        <button
-          className={`${styles.btn} ${styles.btnSecondary}`}
-          onClick={() => setChangePassword(true)}
-        >
-          Change Password
-        </button>
-      )}
-
-      {changePassword && (
         <div className={styles.profileField}>
-          <label>New Password</label>
+          <label>Email (read-only)</label>
+          <input type="text" value={user.email} readOnly />
+        </div>
+
+        <div className={styles.profileField}>
+          <label>Username</label>
           <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            type="text"
+            value={newUsername}
+            onChange={(e) => setNewUsername(e.target.value)}
           />
         </div>
-      )}
 
-      <div className={styles.profileActions}>
-        <button
-          className={`${styles.btn} ${styles.btnPrimary}`}
-          onClick={handleUpdate}
-        >
-          Save Changes
-        </button>
-        {changePassword && (
+        {!changePassword && (
           <button
             className={`${styles.btn} ${styles.btnSecondary}`}
-            onClick={() => {
-              setChangePassword(false);
-              setNewPassword("");
-            }}
+            onClick={() => setChangePassword(true)}
           >
-            Cancel
+            Change Password
           </button>
         )}
+
+        {changePassword && (
+          <div className={styles.profileField}>
+            <label>New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </div>
+        )}
+
+        <div className={styles.profileActions}>
+          <button
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            onClick={handleUpdate}
+          >
+            Save Changes
+          </button>
+          {changePassword && (
+            <button
+              className={`${styles.btn} ${styles.btnSecondary}`}
+              onClick={() => {
+                setChangePassword(false);
+                setNewPassword("");
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

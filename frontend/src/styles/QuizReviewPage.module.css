@@ -1,28 +1,34 @@
+/* Container - Claymorphic layout */
 .container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 2rem;
-  max-width: 800px;
-  margin: auto;
-  background-color: #fefae0; /* Base Background */
-  border-radius: 8px;
-  color: #2d2d2d; /* Dark Text */
+  background-color: #fefae0;
+  box-sizing: border-box;
 }
 
+/* Header section */
 .reviewHeader {
   text-align: center;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #d4a373; /* Accent Brown for separator */
+  padding: 1rem 2rem;
+  background: #fefcf4;
+  border-radius: 20px;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.05),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
 }
 
 .reviewHeader h2 {
-  font-size: 2rem;
-  color: #2d2d2d; /* Dark Text */
+  font-size: 1.8rem;
   margin-bottom: 0.5rem;
+  color: #2d2d2d;
 }
 
 .difficulty {
-  font-size: 1.1rem;
-  color: #4a5568; /* Light Text */
+  font-size: 1rem;
+  color: #4a5568;
   margin-bottom: 0.5rem;
 }
 
@@ -31,51 +37,45 @@
   text-transform: capitalize;
 }
 
-.difficulty.easy {
-  color: #4caf50;
-} /* Success Green */
-.difficulty.medium {
-  color: #d4a373;
-} /* Accent Brown */
-.difficulty.hard {
-  color: #cc0000;
-} /* Error Red */
-
 .scoreSummary {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  color: #2d2d2d; /* Dark Text */
 }
 
 .scoreHighlight {
-  color: #4caf50; /* A vibrant green for score highlight */
+  color: #4caf50;
 }
 
+/* Questions container */
 .questionsContainer {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
 }
 
+/* Question card - Claymorphic style */
 .questionCard {
-  background-color: #fffbe6; /* Modal Background for card */
+  background: #fffdf5;
   padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  border: 1px solid #e0e0e0; /* Muted gray for border */
-  position: relative; /* For icon positioning */
+  border-radius: 20px;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.05),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
 }
 
 .questionText {
   font-size: 1.1rem;
   margin-bottom: 1rem;
   line-height: 1.5;
+  color: #2d2d2d;
 }
 
 .questionText strong {
   margin-right: 0.5rem;
 }
 
+/* Options review - stacked */
 .optionsReview {
   display: flex;
   flex-direction: column;
@@ -83,21 +83,23 @@
   margin-bottom: 1rem;
 }
 
+/* Option base style - Claymorphic buttons */
 .optionItem {
-  padding: 0.8rem 1.2rem;
-  border-radius: 8px;
-  border: 1px solid #ccc; /* Muted Gray */
-  background-color: #fcfcfc; /* PDF Container BG for options */
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: #fcfcfc;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Space out option text and icon */
+  justify-content: space-between;
   font-size: 1rem;
-  color: #4a5568; /* Light Text for option text */
+  color: #4a5568;
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.05),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
 }
 
 .optionItem strong {
   margin-right: 0.5em;
-  color: #2d2d2d; /* Dark Text for option letter */
+  color: #2d2d2d;
 }
 
 .icon {
@@ -105,204 +107,191 @@
   margin-left: 0.5rem;
 }
 
+/* Correct/Incorrect - Pastel theme */
 .correctOption {
-  border-color: #4caf50; /* Standard Green */
-  background-color: #d1f7d1; /* Success Green */
-  color: #2d2d2d; /* Ensure good contrast */
+  background-color: #e6f8e6;
+  box-shadow: inset 3px 3px 6px rgba(0, 128, 0, 0.08),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+  border: 1px solid #b7e3b7;
 }
 
 .incorrectOption {
-  border-color: #cc0000; /* Error Red */
-  background-color: #ffe0e0; /* Light red */
-  color: #2d2d2d; /* Ensure good contrast */
+  background-color: #fdeaea;
+  box-shadow: inset 3px 3px 6px rgba(255, 0, 0, 0.08),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+  border: 1px solid #f3bcbc;
 }
 
 .selectedCorrectOption {
-  /* When user selected the correct option, combine styles */
-  border-color: #4caf50;
-  background-color: #d1f7d1;
-  color: #2d2d2d;
-  font-weight: bold; /* Make selected correct stand out */
+  font-weight: bold;
+}
+
+/* Feedback messages */
+.skippedMessage,
+.feedbackCorrect,
+.feedbackIncorrect {
+  text-align: center;
+  margin-top: 1rem;
+  font-weight: bold;
 }
 
 .skippedMessage {
   font-style: italic;
-  color: #4a5568; /* Light Text */
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  text-align: center;
+  color: #4a5568;
 }
-
 .feedbackCorrect {
-  color: #4caf50; /* Standard Green */
-  font-weight: bold;
-  text-align: center;
-  margin-top: 1rem;
+  color: #4caf50;
 }
-
 .feedbackIncorrect {
-  color: #e57373; /* Soft red for incorrect feedback */
-  font-size: 0.9em;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 1rem;
+  color: #e57373;
 }
-
 .feedbackIncorrect strong {
-  color: #2d2d2d; /* Dark Text for the correct answer highlight */
+  color: #2d2d2d;
 }
 
+/* Back button - Claymorphic style */
 .backButton {
   padding: 0.75rem 1.5rem;
-  background-color: #d4a373; /* Accent Brown */
-  color: white;
+  background-color: #fefcf4;
+  color: #2d2d2d;
   border: none;
-  border-radius: 6px;
+  border-radius: 15px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   margin-top: 2rem;
   display: block;
   margin-inline: auto;
-  max-width: 200px;
+  width: 100%;
+  max-width: 250px;
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.05),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
 }
 
 .backButton:hover {
-  background-color: #c59666; /* Accent Hover */
+  transform: translateY(-2px);
 }
 
-/* Media Queries */
-@media (max-width: 600px) {
-  .container {
-    padding: 1.5rem;
-  }
-
-  .reviewHeader h2 {
-    font-size: 1.6rem;
-  }
-
-  .scoreSummary {
-    font-size: 1.2rem;
-  }
-
-  .questionText {
-    font-size: 1rem;
-  }
-
-  .optionItem {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-  }
-}
-
-/* Recommendation Section */
+/* Recommendation Section - Claymorphic cards */
 .recommendationSection {
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 1px solid #d4a373; /* Use accent color */
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #d4a373;
   text-align: center;
 }
 
 .recommendationTitle {
-  font-size: 1.8rem;
-  color: #2d2d2d; /* Dark text */
-  margin-bottom: 8px;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .recommendationSubtitle {
-  font-size: 1.1rem;
-  color: #6f492f; /* Tertiary brown for subtitle */
-  margin-bottom: 24px;
+  font-size: 1rem;
+  color: #6f492f;
+  margin-bottom: 1.5rem;
 }
 
 .recommendationGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
 .recommendationCard {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  text-align: left;
+  background: #fffdf5;
+  border-radius: 15px;
+  padding: 1rem;
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.05),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
+  text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid #eee;
 }
 
 .recommendationCard h4 {
-  margin: 0 0 15px 0;
-  font-size: 1.2rem;
-  color: #2d2d2d; /* Dark text */
-  flex-grow: 1;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  text-align: center;
-  border: none; /* Removing border from both buttons */
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
 }
 
 .recommendationActions {
   display: flex;
-  gap: 10px;
-  margin-top: auto;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.recommendationActions .primaryAction,
-.recommendationActions .secondaryAction {
+.primaryAction,
+.secondaryAction {
   flex-grow: 1;
-  padding: 10px 15px;
-  border-radius: 5px;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   text-align: center;
-  border: none; /* Removing border from both buttons */
+  border: none;
 }
 
-.recommendationActions .primaryAction {
-  background-color: #d4a373; /* Primary Accent */
+.primaryAction {
+  background: #d4a373;
   color: white;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05),
+    -4px -4px 8px rgba(255, 255, 255, 0.9);
+}
+.primaryAction:hover {
+  transform: scale(1.02);
 }
 
-.recommendationActions .primaryAction:hover {
-  background-color: #c59666; /* Darker shade for hover */
-  transform: scale(1.03);
-}
-
-.recommendationActions .secondaryAction {
-  background-color: #8b5e3c; /* Secondary Accent Solid Background */
+.secondaryAction {
+  background: #8b5e3c;
   color: white;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05),
+    -4px -4px 8px rgba(255, 255, 255, 0.9);
+}
+.secondaryAction:hover {
+  transform: scale(1.02);
 }
 
-.recommendationActions .secondaryAction:hover {
-  background-color: #6f492f; /* Darkest brown on hover */
-  transform: scale(1.03);
-}
-
-/* Styles for Difficulty Modal Inputs */
+/* Modal form elements */
 .formGroup {
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
   text-align: left;
 }
-
 .formGroup label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #555;
 }
-
 .select,
 .input {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 12px;
   font-size: 1rem;
+  box-sizing: border-box;
+  background: #fefcf4;
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.05),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+}
+
+/* Tablet styles */
+@media (min-width: 600px) {
+  .reviewHeader h2 {
+    font-size: 2rem;
+  }
+  .recommendationGrid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  .recommendationActions {
+    flex-direction: row;
+    gap: 10px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .backButton {
+    max-width: 200px;
+  }
 }

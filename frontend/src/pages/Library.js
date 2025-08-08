@@ -44,7 +44,7 @@ export default function Library() {
   const handleViewSummary = (note) => {
     navigate("/summary", {
       state: {
-        fileUrl: note.fileurl,
+        fileUrl: note.fileUrl,
         summary: note.summary,
         subject: note.subject || "Untitled Note",
         topic: note.topic || "—",
