@@ -21,7 +21,11 @@ export const signup = async (req, res) => {
   console.log("Request body:", req.body);
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
-    console.log("Missing required fields:", { username: !!username, email: !!email, password: !!password });
+    console.log("Missing required fields:", {
+      username: !!username,
+      email: !!email,
+      password: !!password,
+    });
     return res
       .status(400)
       .json({ error: "Username, email and password are required." });
@@ -31,10 +35,10 @@ export const signup = async (req, res) => {
     console.log("Attempting to hash password...");
     const hashed = await bcrypt.hash(password, 10);
     console.log("Password hashed successfully");
-    
+
     console.log("Attempting database insert...");
     const result = await pool.query(
-      "INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email",
+      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email",
       [username, email, hashed]
     );
     console.log("Database insert successful:", result.rows[0]);
@@ -45,7 +49,7 @@ export const signup = async (req, res) => {
       code: error.code,
       detail: error.detail,
       hint: error.hint,
-      stack: error.stack
+      stack: error.stack,
     });
     res.status(400).json({ error: "User already exists or invalid input" });
   }
@@ -66,7 +70,7 @@ export const login = async (req, res) => {
     if (!user)
       return res.status(401).json({ error: "Invalid username or password" });
 
-    const valid = await bcrypt.compare(password, user.password_hash);
+    const valid = await bcrypt.compare(password, user.password);
     if (!valid)
       return res.status(401).json({ error: "Invalid username or password" });
 
@@ -131,7 +135,7 @@ export const editProfile = async (req, res) => {
     }
     if (password) {
       const hashed = await bcrypt.hash(password, 10);
-      fields.push(`password_hash = $${idx++}`);
+      fields.push(`password = $${idx++}`);
       values.push(hashed);
     }
 
