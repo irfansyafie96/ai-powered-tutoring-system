@@ -1,13 +1,12 @@
 import "dotenv/config";
 import { fileURLToPath } from "url";
 import path from "path";
+import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import express from "express";
 import cors from "cors";
-import fs from "fs";
-import path from "path";
 import notesRoutes from "./src/routes/notesRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import quizRoutes from "./src/routes/quizRoutes.js";

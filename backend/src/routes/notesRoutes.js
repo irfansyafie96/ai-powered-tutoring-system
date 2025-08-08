@@ -1,8 +1,6 @@
 import { Router } from "express";
-import multer from "multer";
-import fs from "fs";
-import path from "path";
 import { authenticateJWT } from "../middleware/authenticateJWT.js";
+import { upload } from "../config/cloudinary.js";
 import {
   uploadNote,
   saveNoteMetadata,
@@ -14,28 +12,6 @@ import {
   getRecommendedNotes,
   deleteNote,
 } from "../controllers/notesController.js";
-
-// Ensure uploads directory exists
-const uploadsDir = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log("Created uploads directory:", uploadsDir);
-}
-
-// Multer setup for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => {
-    // Generate a unique suffix for the filename to prevent collisions
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    // Sanitize the original filename to remove special characters and reduce multiple underscores
-    const sanitizedName = file.originalname
-      .replace(/[^a-zA-Z0-9-._]/g, "_") // Replace non-allowed characters with underscore
-      .replace(/(_{2,})/g, "_"); // Replace multiple underscores with a single one
-    cb(null, `${uniqueSuffix}-${sanitizedName}`);
-  },
-});
-const upload = multer({ storage });
 
 const notesRoutes = Router();
 
