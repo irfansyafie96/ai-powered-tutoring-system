@@ -31,4 +31,4 @@ services:
     staticPublishPath: ./frontend/build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://ai-powered-tutoring-system-backend.onrender.com
+        value: https://ai-powered-tutoring-system.onrender.com

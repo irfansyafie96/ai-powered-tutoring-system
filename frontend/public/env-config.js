@@ -4,5 +4,5 @@ window.ENV_CONFIG = {
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
       ? "http://localhost:5000"
-      : "https://ai-powered-tutoring-system-backend.onrender.com",
+      : "https://ai-powered-tutoring-system.onrender.com",
 };
