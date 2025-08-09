@@ -67,7 +67,7 @@ export default function SearchNotes() {
 
   // Function to handle navigating to the summary/preview page
   const handleViewSummary = (note) => {
-    navigate("/preview", {
+    navigate("/summary", {
       state: {
         fileUrl: note.fileUrl,
         summary: note.summary,
