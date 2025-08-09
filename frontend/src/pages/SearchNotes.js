@@ -126,10 +126,10 @@ export default function SearchNotes() {
               {note.summary.split("\n").slice(0, 3).join("\n")}
             </p>
             <div className={styles.actions}>
-              <div>
+              <div className={styles.buttonGroup}> {/* Added buttonGroup class */}
                 <button
                   onClick={() => handleViewSummary(note)}
-                  className={styles.viewButton} // New class for styling
+                  className={styles.viewButton}
                 >
                   📄 View Summary
                 </button>

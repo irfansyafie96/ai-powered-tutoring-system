@@ -139,6 +139,12 @@
   flex-wrap: wrap;
 }
 
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem; /* Gap between the two buttons */
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
 .saveButton,
 .viewButton {
   padding: 0.6rem 1rem;
