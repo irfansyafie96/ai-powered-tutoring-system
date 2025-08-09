@@ -12,7 +12,25 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function Preview() {
   const { state } = useLocation();
-  const { fileUrl, summary, fileHash } = state || {};
+  
+  // Validate and normalize state data
+  const { fileUrl, summary, fileHash } = React.useMemo(() => {
+    if (!state) return { fileUrl: '', summary: '', fileHash: '' };
+    
+    return {
+      fileUrl: state.fileUrl ? String(state.fileUrl) : '',
+      summary: state.summary ? String(state.summary) : '',
+      fileHash: state.fileHash ? String(state.fileHash) : ''
+    };
+  }, [state]);
+
+  // Additional validation effect
+  React.useEffect(() => {
+    if (!fileUrl || !summary) {
+      console.error('Invalid preview data:', { fileUrl, summary });
+      // Optionally redirect back or show error
+    }
+  }, [fileUrl, summary]);
 
   // All hooks must be called before any conditional returns
   const [subject, setSubject] = useState("");
