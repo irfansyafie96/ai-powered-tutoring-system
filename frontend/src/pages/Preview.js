@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+// import ReactMarkdown from "react-markdown";
+// import remarkGfm from "remark-gfm";
 import { saveNote, checkIfSaved } from "../api/api";
 import styles from "../styles/Preview.module.css";
 import MetadataModal from "../components/MetadataModal";
@@ -56,12 +56,12 @@ export default function Preview() {
     console.log("fileUrl:", fileUrl, "type:", typeof fileUrl);
     console.log("summary:", summary, "type:", typeof summary);
     console.log("fileHash:", fileHash, "type:", typeof fileHash);
-    
+
     // Check if any values are React elements
-    if (fileUrl && typeof fileUrl === 'object' && fileUrl.$$typeof) {
+    if (fileUrl && typeof fileUrl === "object" && fileUrl.$$typeof) {
       console.error("fileUrl is a React element!", fileUrl);
     }
-    if (summary && typeof summary === 'object' && summary.$$typeof) {
+    if (summary && typeof summary === "object" && summary.$$typeof) {
       console.error("summary is a React element!", summary);
     }
   }, [state, fileUrl, summary, fileHash]);
@@ -160,57 +160,53 @@ export default function Preview() {
       .catch(() => toast.error("⚠️ Failed to copy summary."));
   };
 
-  const markdownComponents = {
-    code({ node, inline, className, children, ...props }) {
-      // Ensure children is always a string
-      const codeContent = Array.isArray(children) 
-        ? children.join('') 
-        : String(children || '');
-      
-      return (
-        <pre className={styles.markdownCode}>
-          <code {...props}>{codeContent}</code>
-        </pre>
-      );
-    },
-    blockquote({ children }) {
-      // Ensure children is properly handled
-      return (
-        <blockquote className={styles.markdownQuote}>
-          {children}
-        </blockquote>
-      );
-    },
-    h1: ({ children }) => {
-      // Convert children to string if needed
-      const headingText = Array.isArray(children) 
-        ? children.join('') 
-        : String(children || '');
-      return <h1 className={styles.markdownHeading}>{headingText}</h1>;
-    },
-    h2: ({ children }) => {
-      const headingText = Array.isArray(children) 
-        ? children.join('') 
-        : String(children || '');
-      return <h2 className={styles.markdownHeading}>{headingText}</h2>;
-    },
-    h3: ({ children }) => {
-      const headingText = Array.isArray(children) 
-        ? children.join('') 
-        : String(children || '');
-      return <h3 className={styles.markdownHeading}>{headingText}</h3>;
-    },
-    li: ({ children }) => (
-      <li className={styles.markdownListItem}>{children}</li>
-    ),
-    p: ({ children }) => (
-      <p className={styles.markdownParagraph}>{children}</p>
-    ),
-  };
+  // const markdownComponents = {
+  //   code({ node, inline, className, children, ...props }) {
+  //     // Ensure children is always a string
+  //     const codeContent = Array.isArray(children)
+  //       ? children.join("")
+  //       : String(children || "");
+
+  //     return (
+  //       <pre className={styles.markdownCode}>
+  //         <code {...props}>{codeContent}</code>
+  //       </pre>
+  //     );
+  //   },
+  //   blockquote({ children }) {
+  //     // Ensure children is properly handled
+  //     return (
+  //       <blockquote className={styles.markdownQuote}>{children}</blockquote>
+  //     );
+  //   },
+  //   h1: ({ children }) => {
+  //     // Convert children to string if needed
+  //     const headingText = Array.isArray(children)
+  //       ? children.join("")
+  //       : String(children || "");
+  //     return <h1 className={styles.markdownHeading}>{headingText}</h1>;
+  //   },
+  //   h2: ({ children }) => {
+  //     const headingText = Array.isArray(children)
+  //       ? children.join("")
+  //       : String(children || "");
+  //     return <h2 className={styles.markdownHeading}>{headingText}</h2>;
+  //   },
+  //   h3: ({ children }) => {
+  //     const headingText = Array.isArray(children)
+  //       ? children.join("")
+  //       : String(children || "");
+  //     return <h3 className={styles.markdownHeading}>{headingText}</h3>;
+  //   },
+  //   li: ({ children }) => (
+  //     <li className={styles.markdownListItem}>{children}</li>
+  //   ),
+  //   p: ({ children }) => <p className={styles.markdownParagraph}>{children}</p>,
+  // };
 
   // Deep check for React elements in the data
-  const deepCheckForReactElements = (obj, path = '') => {
-    if (obj && typeof obj === 'object') {
+  const deepCheckForReactElements = (obj, path = "") => {
+    if (obj && typeof obj === "object") {
       if (obj.$$typeof) {
         console.error(`Found React element at ${path}:`, obj);
         return true;
@@ -227,15 +223,18 @@ export default function Preview() {
   // Check all your state data
   console.log("=== DEEP DEBUGGING ===");
   console.log("State:", state);
-  deepCheckForReactElements(state, 'state');
-  deepCheckForReactElements({ fileUrl, summary, fileHash }, 'props');
+  deepCheckForReactElements(state, "state");
+  deepCheckForReactElements({ fileUrl, summary, fileHash }, "props");
 
   // Check if summary contains any problematic characters or structures
   if (summary) {
     console.log("Summary length:", summary.length);
     console.log("Summary first 100 chars:", summary.substring(0, 100));
-    console.log("Summary last 100 chars:", summary.substring(summary.length - 100));
-    
+    console.log(
+      "Summary last 100 chars:",
+      summary.substring(summary.length - 100)
+    );
+
     // Check for any non-string content
     try {
       JSON.parse(JSON.stringify(summary));
@@ -333,48 +332,50 @@ export default function Preview() {
         <div className={styles.paneContent}>
           {summary && typeof summary === "string" && summary.length > 0 ? (
             <div>
-              {(() => {
-                try {
-                  const cleanSummary = String(summary).trim();
-                  console.log("About to render markdown with ReactMarkdown");
-                  
-                  return (
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={markdownComponents}
-                      // Add these safety props
-                      skipHtml={false}
-                      transformLinkUri={null}
-                      transformImageUri={null}
-                    >
-                      {cleanSummary}
-                    </ReactMarkdown>
-                  );
-                } catch (error) {
-                  console.error("ReactMarkdown rendering failed:", error);
-                  
-                  // Fallback: render as formatted plain text
-                  return (
-                    <div style={{ 
-                      fontFamily: 'inherit', 
-                      lineHeight: '1.6', 
-                      whiteSpace: 'pre-wrap',
-                      padding: '1rem',
-                      backgroundColor: '#f5f5f5',
-                      borderRadius: '8px'
-                    }}>
-                      <h3 style={{ color: '#333', marginBottom: '1rem' }}>Summary</h3>
-                      <div dangerouslySetInnerHTML={{ 
-                        __html: String(summary).trim()
-                          .replace(/\n/g, '<br>')
-                          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                          .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                          .replace(/`(.*?)`/g, '<code>$1</code>')
-                      }} />
-                    </div>
-                  );
-                }
-              })()}
+              <div
+                style={{
+                  fontFamily: "inherit",
+                  lineHeight: "1.6",
+                  fontSize: "14px",
+                  color: "#333",
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: String(summary)
+                    // Markdown to HTML conversions
+                    .replace(
+                      /### (.*?)$/gm,
+                      '<h3 style="margin: 1.5rem 0 0.5rem 0; color: #2c3e50;">$1</h3>'
+                    )
+                    .replace(
+                      /## (.*?)$/gm,
+                      '<h2 style="margin: 2rem 0 0.5rem 0; color: #2c3e50;">$1</h2>'
+                    )
+                    .replace(
+                      /# (.*?)$/gm,
+                      '<h1 style="margin: 2rem 0 0.5rem 0; color: #2c3e50;">$1</h1>'
+                    )
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+                    .replace(
+                      /```(\w+)?\n([\s\S]*?)```/g,
+                      '<pre style="background: #f4f4f4; padding: 1rem; border-radius: 4px; overflow-x: auto; margin: 1rem 0;"><code>$2</code></pre>'
+                    )
+                    .replace(
+                      /`([^`]+)`/g,
+                      '<code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>'
+                    )
+                    .replace(/\n\n/g, '</p><p style="margin: 1rem 0;">')
+                    .replace(/\n/g, "<br>")
+                    .replace(
+                      /^- (.*$)/gm,
+                      '<li style="margin: 0.25rem 0;">$1</li>'
+                    )
+                    .replace(
+                      /\[([^\]]+)\]\(([^)]+)\)/g,
+                      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+                    ),
+                }}
+              />
             </div>
           ) : (
             <p className={styles.pdfLoading}>No analysis available</p>
