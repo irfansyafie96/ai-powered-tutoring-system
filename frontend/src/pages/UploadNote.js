@@ -140,13 +140,30 @@ const UploadNotes = () => {
       // Brief delay to show completion message
       setTimeout(() => {
         stopLoading();
-        // Ensure we're passing the correct data structure
+
+        // Enhanced validation before navigation
+        if (!fileUrl || !summary) {
+          throw new Error("Missing required data from server");
+        }
+
+        // Ensure all values are strings and properly formatted
         const stateData = {
-          fileUrl: String(fileUrl),
-          summary: String(summary),
-          fileHash: String(fileHash || ""),
+          fileUrl: String(fileUrl).trim(),
+          summary: String(summary).trim(),
+          fileHash: String(fileHash || "").trim(),
         };
-        console.log("Navigating with state:", stateData);
+
+        // Additional validation for Cloudinary URLs
+        if (!stateData.fileUrl.startsWith("http")) {
+          console.error("Invalid file URL format:", stateData.fileUrl);
+          throw new Error("Invalid file URL received from server");
+        }
+
+        if (stateData.summary.length < 10) {
+          console.warn("Very short summary received:", stateData.summary);
+        }
+
+        console.log("Navigating with validated state:", stateData);
         navigate("/summary", { state: stateData });
       }, 1500);
     } catch (err) {
