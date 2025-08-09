@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-  baseURL: process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com",
+  baseURL: "https://api.deepseek.com",
 });
 
 /**
