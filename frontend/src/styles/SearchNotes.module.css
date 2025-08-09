@@ -135,23 +135,36 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem; /* Increased gap */
   flex-wrap: wrap;
 }
 
-.saveButton {
+.saveButton,
+.viewButton {
   padding: 0.6rem 1rem;
   font-size: 0.9rem;
-  background-color: #d4a373;
-  color: #2d2d2d;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
+.saveButton {
+  background-color: #d4a373;
+  color: #2d2d2d;
+}
+
+.viewButton {
+  background-color: #e0ddc1; /* A different color to distinguish */
+  color: #5a432e;
+}
+
 .saveButton:hover {
   background-color: #b8946e;
+}
+
+.viewButton:hover {
+  background-color: #d1ceb2;
 }
 
 .uploadedBy {

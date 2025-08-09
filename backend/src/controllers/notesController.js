@@ -53,7 +53,10 @@ export const uploadNote = async (req, res) => {
     console.log("Extracting text from document...");
     let fullText;
     try {
-      fullText = await extractTextFromFile(processedBuffer, req.file.originalname);
+      fullText = await extractTextFromFile(
+        processedBuffer,
+        req.file.originalname
+      );
       console.log(`Extracted ${fullText.length} characters from document`);
 
       // Check if text extraction was successful
@@ -305,6 +308,7 @@ export const searchNotes = async (req, res) => {
         n.summary,
         n.subject,
         n.topic,
+        n.file_url AS "fileUrl",
         u.username AS uploader_username,
         n.created_at
       FROM notes n
@@ -316,22 +320,19 @@ export const searchNotes = async (req, res) => {
     // Optional: filter by subject (case-insensitive)
     if (subject) {
       query += ` AND n.subject ILIKE $${params.length + 1}`;
-      params.push(`%${subject}%`);
+      params.push(`%${String(subject).trim()}%`);
     }
 
     // Optional: filter by topic (case-insensitive)
     if (topic) {
       query += ` AND n.topic ILIKE $${params.length + 1}`;
-      params.push(`%${topic}%`);
+      params.push(`%${String(topic).trim()}%`);
     }
 
     // Optional: filter by keyword in summary using full-text search
     if (keyword) {
-      // Replaces spaces with '&' for PostgreSQL's to_tsquery, enabling AND logic
-      query += ` AND to_tsvector('english', n.summary) @@ to_tsquery('english', $${
-        params.length + 1
-      })`;
-      params.push(`${keyword.replace(/\s+/g, " & ")}`);
+      query += ` AND to_tsvector('english', n.summary) @@ to_tsquery('english', $${params.length + 1})`;
+      params.push(`${String(keyword).trim().replace(/\s+/g, " & ")}`);
     }
 
     query += ` ORDER BY n.created_at DESC`;

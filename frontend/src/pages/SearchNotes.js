@@ -1,6 +1,7 @@
 // D:\Projects\fyp\frontend\src\pages\SearchNotes.js
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { searchNotes, saveToLibrary } from "../api/api";
 import styles from "../styles/SearchNotes.module.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -13,6 +14,7 @@ export default function SearchNotes() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -61,6 +63,18 @@ export default function SearchNotes() {
         autoClose: 5000,
       });
     }
+  };
+
+  // Function to handle navigating to the summary/preview page
+  const handleViewSummary = (note) => {
+    navigate("/preview", {
+      state: {
+        fileUrl: note.fileUrl,
+        summary: note.summary,
+        subject: note.subject,
+        topic: note.topic,
+      },
+    });
   };
 
   return (
@@ -112,12 +126,20 @@ export default function SearchNotes() {
               {note.summary.split("\n").slice(0, 3).join("\n")}
             </p>
             <div className={styles.actions}>
-              <button
-                onClick={() => handleSave(note.id)}
-                className={styles.saveButton}
-              >
-                💾 Save to My Library
-              </button>
+              <div>
+                <button
+                  onClick={() => handleViewSummary(note)}
+                  className={styles.viewButton} // New class for styling
+                >
+                  📄 View Summary
+                </button>
+                <button
+                  onClick={() => handleSave(note.id)}
+                  className={styles.saveButton}
+                >
+                  💾 Save to My Library
+                </button>
+              </div>
               <small className={styles.uploadedBy}>
                 Uploaded by: {note.uploader_username}
               </small>
@@ -130,3 +152,4 @@ export default function SearchNotes() {
     </div>
   );
 }
+
