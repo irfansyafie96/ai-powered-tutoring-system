@@ -66,15 +66,27 @@ export const saveCompletedQuiz = async (req, res) => {
     req.body;
   const userId = req.user.id;
 
+  // Basic validation
+  if (!quizData || !Array.isArray(quizData) || quizData.length === 0) {
+    return res.status(400).json({ error: "quizData is missing or invalid." });
+  }
+
   try {
     await pool.query("BEGIN"); // Start a transaction for atomicity
 
-    // Insert quiz score
+    // Insert quiz score, now including the quiz_data column
     const scoreResult = await pool.query(
-      `INSERT INTO quiz_scores (user_id, note_id, difficulty, correct_answers, total_questions, created_at)
-             VALUES ($1, $2, $3, $4, $5, NOW())
+      `INSERT INTO quiz_scores (user_id, note_id, difficulty, correct_answers, total_questions, quiz_data, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, NOW())
              RETURNING id`,
-      [userId, noteId, difficulty, correctAnswers, totalQuestions]
+      [
+        userId,
+        noteId,
+        difficulty,
+        correctAnswers,
+        totalQuestions,
+        JSON.stringify(quizData), // Add quizData here
+      ]
     );
     const quizScoreId = scoreResult.rows[0].id;
 
