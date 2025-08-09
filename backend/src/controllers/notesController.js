@@ -108,9 +108,9 @@ export const uploadNote = async (req, res) => {
 
       const cachedResponse = {
         note: {
-          fileUrl: String(cachedFileUrl),
-          summary: String(cachedSummary),
-          fileHash: String(fileHash), // Use the computed fileHash
+          fileUrl: JSON.parse(JSON.stringify(String(cachedFileUrl))),
+          summary: JSON.parse(JSON.stringify(String(cachedSummary))),
+          fileHash: JSON.parse(JSON.stringify(String(fileHash))),
           cached: true,
         },
       };
@@ -136,9 +136,9 @@ export const uploadNote = async (req, res) => {
     // Step 7: Return the file URL and summary
     const responseData = {
       note: {
-        fileUrl: String(fileUrl),
-        summary: String(summary),
-        fileHash: String(fileHash),
+        fileUrl: JSON.parse(JSON.stringify(String(fileUrl))),
+        summary: JSON.parse(JSON.stringify(String(summary))),
+        fileHash: JSON.parse(JSON.stringify(String(fileHash))),
         cached: false,
       },
     };

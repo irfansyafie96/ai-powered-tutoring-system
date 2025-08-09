@@ -49,6 +49,23 @@ export default function Preview() {
     }
   }, [fileUrl, summary, fileHash]);
 
+  // Detailed debugging
+  useEffect(() => {
+    console.log("=== DEBUGGING STATE ===");
+    console.log("Raw state:", JSON.stringify(state, null, 2));
+    console.log("fileUrl:", fileUrl, "type:", typeof fileUrl);
+    console.log("summary:", summary, "type:", typeof summary);
+    console.log("fileHash:", fileHash, "type:", typeof fileHash);
+    
+    // Check if any values are React elements
+    if (fileUrl && typeof fileUrl === 'object' && fileUrl.$$typeof) {
+      console.error("fileUrl is a React element!", fileUrl);
+    }
+    if (summary && typeof summary === 'object' && summary.$$typeof) {
+      console.error("summary is a React element!", summary);
+    }
+  }, [state, fileUrl, summary, fileHash]);
+
   useEffect(() => {
     if (!fileUrlString?.toLowerCase().endsWith(".txt")) return setText("");
     fetch(fileUrlString)
@@ -145,31 +162,88 @@ export default function Preview() {
 
   const markdownComponents = {
     code({ node, inline, className, children, ...props }) {
+      // Ensure children is always a string
+      const codeContent = Array.isArray(children) 
+        ? children.join('') 
+        : String(children || '');
+      
       return (
         <pre className={styles.markdownCode}>
-          <code {...props}>{children}</code>
+          <code {...props}>{codeContent}</code>
         </pre>
       );
     },
     blockquote({ children }) {
+      // Ensure children is properly handled
       return (
-        <blockquote className={styles.markdownQuote}>{children}</blockquote>
+        <blockquote className={styles.markdownQuote}>
+          {children}
+        </blockquote>
       );
     },
-    h1: ({ children }) => (
-      <h1 className={styles.markdownHeading}>{children}</h1>
-    ),
-    h2: ({ children }) => (
-      <h2 className={styles.markdownHeading}>{children}</h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className={styles.markdownHeading}>{children}</h3>
-    ),
+    h1: ({ children }) => {
+      // Convert children to string if needed
+      const headingText = Array.isArray(children) 
+        ? children.join('') 
+        : String(children || '');
+      return <h1 className={styles.markdownHeading}>{headingText}</h1>;
+    },
+    h2: ({ children }) => {
+      const headingText = Array.isArray(children) 
+        ? children.join('') 
+        : String(children || '');
+      return <h2 className={styles.markdownHeading}>{headingText}</h2>;
+    },
+    h3: ({ children }) => {
+      const headingText = Array.isArray(children) 
+        ? children.join('') 
+        : String(children || '');
+      return <h3 className={styles.markdownHeading}>{headingText}</h3>;
+    },
     li: ({ children }) => (
       <li className={styles.markdownListItem}>{children}</li>
     ),
-    p: ({ children }) => <p className={styles.markdownParagraph}>{children}</p>,
+    p: ({ children }) => (
+      <p className={styles.markdownParagraph}>{children}</p>
+    ),
   };
+
+  // Deep check for React elements in the data
+  const deepCheckForReactElements = (obj, path = '') => {
+    if (obj && typeof obj === 'object') {
+      if (obj.$$typeof) {
+        console.error(`Found React element at ${path}:`, obj);
+        return true;
+      }
+      for (const [key, value] of Object.entries(obj)) {
+        if (deepCheckForReactElements(value, `${path}.${key}`)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  // Check all your state data
+  console.log("=== DEEP DEBUGGING ===");
+  console.log("State:", state);
+  deepCheckForReactElements(state, 'state');
+  deepCheckForReactElements({ fileUrl, summary, fileHash }, 'props');
+
+  // Check if summary contains any problematic characters or structures
+  if (summary) {
+    console.log("Summary length:", summary.length);
+    console.log("Summary first 100 chars:", summary.substring(0, 100));
+    console.log("Summary last 100 chars:", summary.substring(summary.length - 100));
+    
+    // Check for any non-string content
+    try {
+      JSON.parse(JSON.stringify(summary));
+      console.log("Summary JSON serialization: OK");
+    } catch (e) {
+      console.error("Summary JSON serialization failed:", e);
+    }
+  }
 
   return (
     <div className={styles.previewContainer}>
@@ -257,22 +331,42 @@ export default function Preview() {
           </div>
         </div>
         <div className={styles.paneContent}>
-          {summary && typeof summary === "string" ? (
+          {summary && typeof summary === "string" && summary.length > 0 ? (
             <div>
               {(() => {
                 try {
+                  // Clean the summary text first
+                  const cleanSummary = String(summary).trim();
+                  
+                  // Additional safety check for any embedded objects
+                  if (typeof cleanSummary !== 'string') {
+                    throw new Error('Summary is not a string after cleaning');
+                  }
+                  
                   return (
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={markdownComponents}
+                      // Add these props for better safety
+                      skipHtml={true}
+                      transformLinkUri={(uri) => uri}
                     >
-                      {summary}
+                      {cleanSummary}
                     </ReactMarkdown>
                   );
                 } catch (error) {
                   console.error("Error rendering markdown:", error);
+                  console.error("Summary value:", summary);
+                  console.error("Summary type:", typeof summary);
+                  
+                  // Fallback: render as plain text
                   return (
-                    <p className={styles.pdfLoading}>Error rendering summary</p>
+                    <div className={styles.markdownParagraph}>
+                      <h3>Summary (Plain Text)</h3>
+                      <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
+                        {String(summary)}
+                      </pre>
+                    </div>
                   );
                 }
               })()}
