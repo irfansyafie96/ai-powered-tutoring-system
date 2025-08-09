@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../styles/Modal.module.css";
+import libraryStyles from "../styles/Library.module.css"; // Import library styles
 
 export default function MetadataModal({
   subject,
@@ -24,20 +25,24 @@ export default function MetadataModal({
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <h3>Save Notes</h3>
-        <input
-          type="text"
-          placeholder="Subject"
-          value={subject}
-          onChange={(e) => onSubjectChange(e.target.value)}
-          disabled={saving}
-        />
-        <input
-          type="text"
-          placeholder="Topic"
-          value={topic}
-          onChange={(e) => onTopicChange(e.target.value)}
-          disabled={saving}
-        />
+        <div className={styles.inputContainer}>
+          <input
+            type="text"
+            placeholder="Subject"
+            value={subject}
+            onChange={(e) => onSubjectChange(e.target.value)}
+            disabled={saving}
+            className={`${libraryStyles.searchInput} ${styles.modalInput}`}
+          />
+          <input
+            type="text"
+            placeholder="Topic"
+            value={topic}
+            onChange={(e) => onTopicChange(e.target.value)}
+            disabled={saving}
+            className={libraryStyles.searchInput} // No bottom margin needed for the last input
+          />
+        </div>
 
         {/* Optional: Show message if fields are empty */}
         {!isFormValid && (
