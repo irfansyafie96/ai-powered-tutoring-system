@@ -335,37 +335,42 @@ export default function Preview() {
             <div>
               {(() => {
                 try {
-                  // Clean the summary text first
                   const cleanSummary = String(summary).trim();
-                  
-                  // Additional safety check for any embedded objects
-                  if (typeof cleanSummary !== 'string') {
-                    throw new Error('Summary is not a string after cleaning');
-                  }
+                  console.log("About to render markdown with ReactMarkdown");
                   
                   return (
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={markdownComponents}
-                      // Add these props for better safety
-                      skipHtml={true}
-                      transformLinkUri={(uri) => uri}
+                      // Add these safety props
+                      skipHtml={false}
+                      transformLinkUri={null}
+                      transformImageUri={null}
                     >
                       {cleanSummary}
                     </ReactMarkdown>
                   );
                 } catch (error) {
-                  console.error("Error rendering markdown:", error);
-                  console.error("Summary value:", summary);
-                  console.error("Summary type:", typeof summary);
+                  console.error("ReactMarkdown rendering failed:", error);
                   
-                  // Fallback: render as plain text
+                  // Fallback: render as formatted plain text
                   return (
-                    <div className={styles.markdownParagraph}>
-                      <h3>Summary (Plain Text)</h3>
-                      <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
-                        {String(summary)}
-                      </pre>
+                    <div style={{ 
+                      fontFamily: 'inherit', 
+                      lineHeight: '1.6', 
+                      whiteSpace: 'pre-wrap',
+                      padding: '1rem',
+                      backgroundColor: '#f5f5f5',
+                      borderRadius: '8px'
+                    }}>
+                      <h3 style={{ color: '#333', marginBottom: '1rem' }}>Summary</h3>
+                      <div dangerouslySetInnerHTML={{ 
+                        __html: String(summary).trim()
+                          .replace(/\n/g, '<br>')
+                          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                          .replace(/`(.*?)`/g, '<code>$1</code>')
+                      }} />
                     </div>
                   );
                 }
