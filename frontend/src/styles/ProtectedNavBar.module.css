@@ -103,7 +103,7 @@
   background: #fefae0;
   transition: left 0.3s ease-in-out;
   box-shadow: 6px 0 12px rgba(220, 214, 183, 0.5);
-  z-index: 1001;
+  z-index: 10001;
   padding-top: 4rem;
   box-sizing: border-box;
   overflow-y: auto;
