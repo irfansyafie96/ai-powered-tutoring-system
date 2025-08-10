@@ -1,21 +1,21 @@
-import { promisify } from "util";
-import libre from "libreoffice-convert";
-import fs from "fs";
 import path from "path";
-import os from "os";
 import fetch from "node-fetch";
-
-const convertAsync = promisify(libre.convert);
+import ConvertAPI from 'convertapi';
 
 /**
- * Converts a PPTX file buffer to PDF buffer
- * @param {Buffer} pptxBuffer - The PPTX file buffer
+ * Converts a PPTX file to PDF using ConvertAPI
+ * @param {string} fileUrl - The URL of the PPTX file
  * @returns {Promise<Buffer>} - The PDF buffer
  */
-export const convertPptxToPdf = async (pptxBuffer) => {
+const convertPptxToPdfWithApi = async (fileUrl) => {
   try {
-    console.log("Converting PPTX to PDF...");
-    const pdfBuffer = await convertAsync(pptxBuffer, ".pdf", undefined);
+    console.log("Converting PPTX to PDF with ConvertAPI...");
+    const convertApi = new ConvertAPI(process.env.CONVERTAPI_SECRET, {
+      conversionTimeout: 60, // Optional: set conversion timeout in seconds
+    });
+    const result = await convertApi.convert('pdf', { File: fileUrl }, 'pptx');
+    const pdfUrl = result.files[0].Url;
+    const pdfBuffer = await downloadFileFromUrl(pdfUrl);
     console.log("PPTX to PDF conversion successful");
     return pdfBuffer;
   } catch (error) {
@@ -54,18 +54,16 @@ export const downloadFileFromUrl = async (url) => {
  */
 export const processCloudFile = async (fileUrl, originalName) => {
   try {
-    // Download the file
-    const fileBuffer = await downloadFileFromUrl(fileUrl);
     const ext = path.extname(originalName).toLowerCase();
 
     // Convert PPTX to PDF if needed
     if (ext === ".pptx") {
       console.log("Detected PPTX file, converting to PDF...");
-      return await convertPptxToPdf(fileBuffer);
+      return await convertPptxToPdfWithApi(fileUrl);
     }
 
-    // Return original buffer for other file types
-    return fileBuffer;
+    // For other file types, just download the file
+    return await downloadFileFromUrl(fileUrl);
   } catch (error) {
     console.error("Cloud file processing failed:", error);
     throw error;

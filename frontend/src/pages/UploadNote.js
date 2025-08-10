@@ -10,7 +10,6 @@ const UploadNotes = () => {
   const navigate = useNavigate();
   const { startLoading, stopLoading, updateProgress, updateLoadingText } =
     useLoading();
-  const [retryCount, setRetryCount] = useState(0);
 
   const handleRetry = () => {
     setError(null);
