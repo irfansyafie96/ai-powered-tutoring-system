@@ -31,6 +31,12 @@ export function splitWithOverlap(text, chunkSize = 3800, overlap = 300) {
  * @returns {Promise<string>} Extracted text
  */
 export const extractTextFromFile = async (fileInput, originalName = null) => {
+  // In extractTextFromFile.js before processing
+  const freeMem = Math.round(process.memoryUsage().heapFree / 1024 / 1024);
+  if (freeMem < 100) {
+    throw new Error(`Insufficient memory (${freeMem}MB free)`);
+  }
+
   let ext;
   let data;
 
@@ -78,19 +84,18 @@ export const extractTextFromFile = async (fileInput, originalName = null) => {
     return fullText.trim();
   }
 
-  // In extractTextFromFile.js - More robust temp file handling
-  if (ext === ".pptx" || ext === ".ppt") {
+  // Alternative approach in extractTextFromFile.js
+  if (ext === '.pptx' || ext === '.ppt') {
     try {
-      const tempDir = path.join(process.cwd(), "temp_uploads");
-      if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-
-      const tempPath = path.join(tempDir, `upload_${Date.now()}${ext}`);
-      await fs.promises.writeFile(tempPath, fileInput);
-      const text = await officeParser.parseOfficeAsync(tempPath);
-      await fs.promises.unlink(tempPath);
-      return text;
+      const buffer = Buffer.isBuffer(fileInput) 
+        ? fileInput 
+        : await fs.promises.readFile(fileInput);
+      
+      // Convert to base64 (officeparser accepts this)
+      const base64Data = buffer.toString('base64');
+      return await officeParser.parseOfficeAsync(base64Data, { type: 'base64' });
     } catch (err) {
-      throw new Error(`PPTX processing failed: ${err.message}`);
+      throw new Error(`PPTX extraction failed: ${err.message}`);
     }
   }
 

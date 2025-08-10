@@ -144,13 +144,28 @@ export const uploadNote = async (req, res) => {
     };
     console.log("Sending response:", responseData);
     res.status(201).json(responseData);
-  } catch (error) {
-    console.error('Upload Error:', {
-      file: req.file?.originalname,
-      error: err.stack,
-      memoryUsage: process.memoryUsage()
+  } catch (err) {
+    console.error("PPTX Upload Error:", {
+      timestamp: new Date().toISOString(),
+      file: {
+        name: req.file?.originalname,
+        size: req.file?.size,
+        type: req.file?.mimetype,
+      },
+      error: {
+        message: err.message,
+        stack: err.stack,
+        raw: err,
+      },
+      system: {
+        memory: process.memoryUsage(),
+        disk: require("node:fs").statSync("."),
+      },
     });
-    res.status(500).json({ error: "File processing failed" });
+    res.status(500).json({
+      error: "PPTX processing failed",
+      details: process.env.NODE_ENV === "development" ? err.message : null,
+    });
   }
 };
 
@@ -335,7 +350,9 @@ export const searchNotes = async (req, res) => {
 
     // Optional: filter by keyword in summary using full-text search
     if (keyword) {
-      query += ` AND to_tsvector('english', n.summary) @@ to_tsquery('english', $${params.length + 1})`;
+      query += ` AND to_tsvector('english', n.summary) @@ to_tsquery('english', $${
+        params.length + 1
+      })`;
       params.push(`${String(keyword).trim().replace(/\s+/g, " & ")}`);
     }
 

@@ -18,6 +18,17 @@ if (!fs.existsSync(uploadsDir)) {
   console.log("Created uploads directory:", uploadsDir);
 }
 
+// Ensure temp directory exists with write permissions
+const tempDir = path.join(__dirname, 'temp_uploads');
+try {
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  await fs.promises.chmod(tempDir, 0o777); // RWX for all
+  console.log(`Temp directory ready: ${tempDir}`);
+} catch (err) {
+  console.error('Temp directory setup failed:', err);
+  process.exit(1);
+}
+
 const app = express();
 
 // Increase timeout for long-running operations
