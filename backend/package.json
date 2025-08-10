@@ -4,7 +4,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "preinstall": "rm -rf node_modules package-lock.json",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build": "echo 'No build step required for Node.js backend'"
