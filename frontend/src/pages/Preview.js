@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
-// import ReactMarkdown from "react-markdown";
-// import remarkGfm from "remark-gfm";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { saveNote, checkIfSaved } from "../api/api";
 import styles from "../styles/Preview.module.css";
 import MetadataModal from "../components/MetadataModal";
@@ -332,50 +332,52 @@ export default function Preview() {
         <div className={styles.paneContent}>
           {summary && typeof summary === "string" && summary.length > 0 ? (
             <div>
-              <div
-                style={{
-                  fontFamily: "inherit",
-                  lineHeight: "1.6",
-                  fontSize: "14px",
-                  color: "#333",
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  code({ node, inline, className, children, ...props }) {
+                    return (
+                      <pre className={styles.markdownCode}>
+                        <code {...props}>{children}</code>
+                      </pre>
+                    );
+                  },
+                  blockquote({ children }) {
+                    return (
+                      <blockquote className={styles.markdownQuote}>
+                        {children}
+                      </blockquote>
+                    );
+                  },
+                  h1({ children }) {
+                    return (
+                      <h1 className={styles.markdownHeading}>{children}</h1>
+                    );
+                  },
+                  h2({ children }) {
+                    return (
+                      <h2 className={styles.markdownHeading}>{children}</h2>
+                    );
+                  },
+                  h3({ children }) {
+                    return (
+                      <h3 className={styles.markdownHeading}>{children}</h3>
+                    );
+                  },
+                  li({ children }) {
+                    return (
+                      <li className={styles.markdownListItem}>{children}</li>
+                    );
+                  },
+                  p({ children }) {
+                    return (
+                      <p className={styles.markdownParagraph}>{children}</p>
+                    );
+                  },
                 }}
-                dangerouslySetInnerHTML={{
-                  __html: String(summary)
-                    // Markdown to HTML conversions
-                    .replace(
-                      /### (.*?)$/gm,
-                      '<h3 style="margin: 1.5rem 0 0.5rem 0; color: #2c3e50;">$1</h3>'
-                    )
-                    .replace(
-                      /## (.*?)$/gm,
-                      '<h2 style="margin: 2rem 0 0.5rem 0; color: #2c3e50;">$1</h2>'
-                    )
-                    .replace(
-                      /# (.*?)$/gm,
-                      '<h1 style="margin: 2rem 0 0.5rem 0; color: #2c3e50;">$1</h1>'
-                    )
-                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-                    .replace(
-                      /```(\w+)?\n([\s\S]*?)```/g,
-                      '<pre style="background: #f4f4f4; padding: 1rem; border-radius: 4px; overflow-x: auto; margin: 1rem 0;"><code>$2</code></pre>'
-                    )
-                    .replace(
-                      /`([^`]+)`/g,
-                      '<code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>'
-                    )
-                    .replace(/\n\n/g, '</p><p style="margin: 1rem 0;">')
-                    .replace(/\n/g, "<br>")
-                    .replace(
-                      /^- (.*$)/gm,
-                      '<li style="margin: 0.25rem 0;">$1</li>'
-                    )
-                    .replace(
-                      /\[([^\]]+)\]\(([^)]+)\)/g,
-                      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
-                    ),
-                }}
-              />
+              >
+                {String(summary).trim()}
+              </ReactMarkdown>
             </div>
           ) : (
             <p className={styles.pdfLoading}>No analysis available</p>
