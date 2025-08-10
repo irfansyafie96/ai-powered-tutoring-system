@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import pkg from "pdfjs-dist/legacy/build/pdf.js";
+import officeParser from "officeparser";
 const { getDocument } = pkg;
 
 /**
@@ -46,7 +47,9 @@ export const extractTextFromFile = async (fileInput, originalName = null) => {
     ext = path.extname(fileInput).toLowerCase();
     data = new Uint8Array(await fs.promises.readFile(fileInput));
   } else {
-    throw new Error("Invalid input type. Expected string (file path) or Buffer");
+    throw new Error(
+      "Invalid input type. Expected string (file path) or Buffer"
+    );
   }
 
   if (ext === ".txt") {
@@ -75,7 +78,28 @@ export const extractTextFromFile = async (fileInput, originalName = null) => {
     return fullText.trim();
   }
 
-  throw new Error("Unsupported file type for text extraction");
+  if (ext === ".pptx" || ext === ".ppt") {
+    try {
+      // For Cloudinary buffer uploads
+      if (Buffer.isBuffer(fileInput)) {
+        const tempPath = path.join(process.cwd(), "temp_upload.pptx");
+        await fs.promises.writeFile(tempPath, fileInput);
+        const text = await officeParser.parseOfficeAsync(tempPath);
+        await fs.promises.unlink(tempPath); // Clean up
+        return text;
+      }
+      // For direct file paths
+      else {
+        return await officeParser.parseOfficeAsync(fileInput);
+      }
+    } catch (err) {
+      throw new Error(`PPTX extraction failed: ${err.message}`);
+    }
+  }
+
+  throw new Error(
+    `Unsupported file type: ${ext}. Supported: .txt, .pdf, .pptx, .ppt`
+  );
 };
 
 /**
