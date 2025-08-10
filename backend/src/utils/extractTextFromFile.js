@@ -78,22 +78,19 @@ export const extractTextFromFile = async (fileInput, originalName = null) => {
     return fullText.trim();
   }
 
+  // In extractTextFromFile.js - More robust temp file handling
   if (ext === ".pptx" || ext === ".ppt") {
     try {
-      // For Cloudinary buffer uploads
-      if (Buffer.isBuffer(fileInput)) {
-        const tempPath = path.join(process.cwd(), "temp_upload.pptx");
-        await fs.promises.writeFile(tempPath, fileInput);
-        const text = await officeParser.parseOfficeAsync(tempPath);
-        await fs.promises.unlink(tempPath); // Clean up
-        return text;
-      }
-      // For direct file paths
-      else {
-        return await officeParser.parseOfficeAsync(fileInput);
-      }
+      const tempDir = path.join(process.cwd(), "temp_uploads");
+      if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+
+      const tempPath = path.join(tempDir, `upload_${Date.now()}${ext}`);
+      await fs.promises.writeFile(tempPath, fileInput);
+      const text = await officeParser.parseOfficeAsync(tempPath);
+      await fs.promises.unlink(tempPath);
+      return text;
     } catch (err) {
-      throw new Error(`PPTX extraction failed: ${err.message}`);
+      throw new Error(`PPTX processing failed: ${err.message}`);
     }
   }
 

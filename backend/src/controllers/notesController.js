@@ -145,8 +145,12 @@ export const uploadNote = async (req, res) => {
     console.log("Sending response:", responseData);
     res.status(201).json(responseData);
   } catch (error) {
-    console.error("Error uploading note:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Upload Error:', {
+      file: req.file?.originalname,
+      error: err.stack,
+      memoryUsage: process.memoryUsage()
+    });
+    res.status(500).json({ error: "File processing failed" });
   }
 };
 
