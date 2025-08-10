@@ -1,6 +1,6 @@
 import React from "react";
 import "./utils/pdfOverride.js";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PublicLayout from "./components/PublicLayout";
@@ -22,7 +22,7 @@ import { LoadingProvider } from "./contexts/LoadingContext.js";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/">
       <div className="app">
         {/* Provides global loading state to the application */}
         <LoadingProvider>
