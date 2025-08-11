@@ -1,4 +1,4 @@
-# Deployment Guide for Ai-Powered Tutoring System on Render
+# Deployment Guide for Ai-Powered Tutoring System on Azure
 
 ## Prerequisites
 
@@ -6,7 +6,7 @@
 2. **DeepSeek API Key**: Get your API key from [DeepSeek](https://platform.deepseek.com/)
 3. **GitHub Repository**: Ensure your code is pushed to GitHub
 
-## Step 1: Set up PostgreSQL Database on Render
+## Step 1: Set up PostgreSQL Database (Render or Azure)
 
 1. Go to [Render Dashboard](https://dashboard.render.com/)
 2. Click "New" → "PostgreSQL"
