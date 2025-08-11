@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 
 import express from "express";
 import cors from "cors";
-import { pool } from "./src/db.js";
+import { pool, testConnection } from "./src/db.js";
 import notesRoutes from "./src/routes/notesRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import quizRoutes from "./src/routes/quizRoutes.js";
@@ -126,27 +126,21 @@ app.get("/api/debug/db", async (req, res) => {
     console.log("=== DATABASE CONNECTION TEST ===");
     console.log("Attempting to connect to database...");
 
-    const client = await pool.connect();
-    console.log("Database connection successful!");
-    console.log("Client connected, testing query...");
+    // Use the new testConnection function with retry logic
+    const result = await testConnection();
 
-    // Test a simple query
-    const result = await client.query(
-      "SELECT NOW() as current_time, version() as db_version"
-    );
-    console.log("Query result:", result.rows[0]);
-
-    client.release();
-    console.log("Client released successfully");
-
-    res.json({
-      message: "Database connection successful",
-      data: {
-        current_time: result.rows[0].current_time,
-        db_version: result.rows[0].db_version,
-        connection: "OK",
-      },
-    });
+    if (result.success) {
+      res.json({
+        message: "Database connection successful",
+        data: {
+          current_time: result.data.current_time,
+          db_version: result.data.db_version,
+          connection: "OK",
+        },
+      });
+    } else {
+      throw new Error(result.error);
+    }
   } catch (error) {
     console.error("=== DATABASE CONNECTION ERROR ===");
     console.error("Error:", error.message);
