@@ -55,38 +55,18 @@ const allowedOrigins = [
   "https://ai-powered-tutoring-system-frontend.azurewebsites.net",
 ];
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  const isLocalDev = process.env.NODE_ENV === "development";
-
-  // Dynamic origin matching
-  if (
-    allowedOrigins.includes(origin) ||
-    origin?.endsWith(".onrender.com") ||
-    (isLocalDev && origin?.includes("localhost"))
-  ) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-
-  // Essential headers
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With, X-Render-Region, Origin"
-  );
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Vary", "Origin");
-
-  // Preflight handling
-  if (req.method === "OPTIONS") {
-    return res.status(204).end();
-  }
-
-  next();
-});
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
