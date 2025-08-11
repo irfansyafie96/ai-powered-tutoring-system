@@ -76,15 +76,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// +++ START DIAGNOSTIC ROUTES +++
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'Health check OK from root' });
-});
 
-app.get('/api', (req, res) => {
-  res.status(200).json({ message: 'Health check OK from /api' });
-});
-// +++ END DIAGNOSTIC ROUTES +++
 
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
