@@ -88,8 +88,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
-
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
 app.use("/api/quizzes", quizRoutes);
@@ -101,7 +99,7 @@ app.get("/api/health", (req, res) => {
     status: "OK",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || "development"
+    environment: process.env.NODE_ENV || "development",
   });
 });
 
@@ -117,16 +115,16 @@ app.get("/api/debug/env", (req, res) => {
     CLOUDINARY_URL: process.env.CLOUDINARY_URL ? "***SET***" : "***NOT SET***",
     OPENAI_API_KEY: process.env.OPENAI_API_KEY ? "***SET***" : "***NOT SET***",
     PORT: process.env.PORT,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
-  
+
   console.log("=== DEBUG ENDPOINT CALLED ===");
   console.log("Environment variables:", envVars);
-  
+
   res.json({
     message: "Environment variables check",
     data: envVars,
-    note: "Check the server console for detailed logging"
+    note: "Check the server console for detailed logging",
   });
 });
 
