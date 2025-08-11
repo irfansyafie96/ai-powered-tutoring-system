@@ -56,34 +56,72 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
+  console.log("=== LOGIN ATTEMPT ===");
+  console.log("Request body:", req.body);
+
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).json({ error: "Username and email are required." });
+    console.log("Missing credentials:", {
+      username: !!username,
+      password: !!password,
+    });
+    return res
+      .status(400)
+      .json({ error: "Username and password are required." });
   }
 
   try {
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
+    console.log("Attempting database connection...");
+
+    // Test database connection first
+    const client = await pool.connect();
+    console.log("Database connection successful");
+
+    console.log("Executing user query...");
+    const result = await client.query(
+      "SELECT * FROM users WHERE username = $1",
+      [username]
+    );
+    console.log("User query executed, rows found:", result.rows.length);
+
+    client.release();
 
     const user = result.rows[0];
-    if (!user)
+    if (!user) {
+      console.log("User not found:", username);
       return res.status(401).json({ error: "Invalid username or password" });
+    }
 
+    console.log("User found, comparing password...");
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid)
+    if (!valid) {
+      console.log("Password comparison failed for user:", username);
       return res.status(401).json({ error: "Invalid username or password" });
+    }
 
+    console.log("Password valid, generating JWT token...");
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
 
+    console.log("Login successful for user:", username);
     res.json({
       token,
       user: { id: user.id, username: user.username, email: user.email },
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    console.error("=== LOGIN ERROR ===");
+    console.error("Error message:", error.message);
+    console.error("Error code:", error.code);
+    console.error("Error detail:", error.detail);
+    console.error("Error hint:", error.hint);
+    console.error("Full error:", error);
+    console.error("Stack trace:", error.stack);
+
+    res.status(500).json({
+      error: "Server error",
+      details: process.env.NODE_ENV === "development" ? error.message : null,
+    });
   }
 };
 

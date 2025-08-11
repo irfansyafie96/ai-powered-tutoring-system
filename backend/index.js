@@ -103,6 +103,48 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Database connection test endpoint
+app.get("/api/debug/db", async (req, res) => {
+  try {
+    console.log("=== DATABASE CONNECTION TEST ===");
+    console.log("Attempting to connect to database...");
+
+    const client = await pool.connect();
+    console.log("Database connection successful!");
+
+    // Test a simple query
+    const result = await client.query(
+      "SELECT NOW() as current_time, version() as db_version"
+    );
+    console.log("Query result:", result.rows[0]);
+
+    client.release();
+
+    res.json({
+      message: "Database connection successful",
+      data: {
+        current_time: result.rows[0].current_time,
+        db_version: result.rows[0].db_version,
+        connection: "OK",
+      },
+    });
+  } catch (error) {
+    console.error("=== DATABASE CONNECTION ERROR ===");
+    console.error("Error:", error.message);
+    console.error("Code:", error.code);
+    console.error("Detail:", error.detail);
+    console.error("Hint:", error.hint);
+    console.error("Stack:", error.stack);
+
+    res.status(500).json({
+      message: "Database connection failed",
+      error: error.message,
+      code: error.code,
+      details: process.env.NODE_ENV === "development" ? error.stack : null,
+    });
+  }
+});
+
 // Debug endpoint to check environment variables
 app.get("/api/debug/env", (req, res) => {
   const envVars = {
