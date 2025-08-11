@@ -49,6 +49,10 @@ const allowedOrigins = [
 
   // Render's internal domains
   "https://render.com",
+
+  // Azure domains
+  "https://ai-tutoring-system-backend-irfan-cdhddbf5ewc2fegv.southeastasia-01.azurewebsites.net",
+  "https://ai-powered-tutoring-system-frontend.azurewebsites.net",
 ];
 
 app.use((req, res, next) => {

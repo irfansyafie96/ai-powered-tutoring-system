@@ -5,7 +5,10 @@ services:
     env: node
     plan: free
     rootDir: ./backend
-    buildCommand: npm install
+    buildCommand: |
+      # Install LibreOffice and dependencies for PPTX to PDF conversion
+      apt-get update && apt-get install -y libreoffice-writer libreoffice-impress libreoffice-common fonts-liberation
+      npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
