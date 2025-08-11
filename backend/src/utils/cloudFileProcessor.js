@@ -1,28 +1,5 @@
 import path from "path";
 import fetch from "node-fetch";
-import ConvertAPI from 'convertapi';
-
-/**
- * Converts a PPTX file to PDF using ConvertAPI
- * @param {string} fileUrl - The URL of the PPTX file
- * @returns {Promise<Buffer>} - The PDF buffer
- */
-const convertPptxToPdfWithApi = async (fileUrl) => {
-  try {
-    console.log("Converting PPTX to PDF with ConvertAPI...");
-    const convertApi = new ConvertAPI(process.env.CONVERTAPI_SECRET, {
-      conversionTimeout: 60, // Optional: set conversion timeout in seconds
-    });
-    const result = await convertApi.convert('pdf', { File: fileUrl }, 'pptx');
-    const pdfUrl = result.files[0].Url;
-    const pdfBuffer = await downloadFileFromUrl(pdfUrl);
-    console.log("PPTX to PDF conversion successful");
-    return pdfBuffer;
-  } catch (error) {
-    console.error("PPTX to PDF conversion failed:", error);
-    throw new Error("Failed to convert PPTX to PDF");
-  }
-};
 
 /**
  * Downloads a file from a URL and returns it as a buffer
