@@ -9,6 +9,10 @@ export const pool = new Pool({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
+  port: 5432,
+  ssl: {
+    rejectUnauthorized: false, // Required for Render's SSL certificates
+  },
 });
 
 console.log({
