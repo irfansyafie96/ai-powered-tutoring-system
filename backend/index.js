@@ -93,6 +93,22 @@ app.use("/api/notes", notesRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Simple test endpoint
+app.get("/test", (req, res) => {
+  res.json({
+    message: "Server is working!",
+    timestamp: new Date().toISOString(),
+    routes: [
+      "/api/auth",
+      "/api/notes",
+      "/api/quizzes",
+      "/api/health",
+      "/api/debug/db",
+      "/api/debug/env",
+    ],
+  });
+});
+
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({
@@ -186,5 +202,19 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+  console.log("=== SERVER STARTUP ===");
   console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`Database host: ${process.env.DB_HOST}`);
+  console.log(`Database user: ${process.env.DB_USER}`);
+  console.log(`Database name: ${process.env.DB_NAME}`);
+  console.log(`Database password: ${process.env.DB_PASS ? "SET" : "NOT SET"}`);
+  console.log(`JWT secret: ${process.env.JWT_SECRET ? "SET" : "NOT SET"}`);
+  console.log(
+    `Cloudinary URL: ${process.env.CLOUDINARY_URL ? "SET" : "NOT SET"}`
+  );
+  console.log(
+    `OpenAI API key: ${process.env.OPENAI_API_KEY ? "SET" : "NOT SET"}`
+  );
+  console.log("=== SERVER READY ===");
 });
