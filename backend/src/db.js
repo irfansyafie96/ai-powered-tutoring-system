@@ -11,7 +11,8 @@ export const pool = new Pool({
   host: process.env.DB_HOST,
   port: 5432,
   ssl: {
-    rejectUnauthorized: false, // Required for Render's SSL certificates
+    rejectUnauthorized: false,
+    sslmode: "require",
   },
 });
 
