@@ -95,6 +95,41 @@ app.use("/api/notes", notesRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || "development"
+  });
+});
+
+// Debug endpoint to check environment variables
+app.get("/api/debug/env", (req, res) => {
+  const envVars = {
+    NODE_ENV: process.env.NODE_ENV,
+    DB_HOST: process.env.DB_HOST,
+    DB_USER: process.env.DB_USER,
+    DB_NAME: process.env.DB_NAME,
+    DB_PASS: process.env.DB_PASS ? "***SET***" : "***NOT SET***",
+    JWT_SECRET: process.env.JWT_SECRET ? "***SET***" : "***NOT SET***",
+    CLOUDINARY_URL: process.env.CLOUDINARY_URL ? "***SET***" : "***NOT SET***",
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY ? "***SET***" : "***NOT SET***",
+    PORT: process.env.PORT,
+    timestamp: new Date().toISOString()
+  };
+  
+  console.log("=== DEBUG ENDPOINT CALLED ===");
+  console.log("Environment variables:", envVars);
+  
+  res.json({
+    message: "Environment variables check",
+    data: envVars,
+    note: "Check the server console for detailed logging"
+  });
+});
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error("=== GLOBAL ERROR HANDLER ===");
