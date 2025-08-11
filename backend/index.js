@@ -128,6 +128,7 @@ app.get("/api/debug/db", async (req, res) => {
 
     const client = await pool.connect();
     console.log("Database connection successful!");
+    console.log("Client connected, testing query...");
 
     // Test a simple query
     const result = await client.query(
@@ -136,6 +137,7 @@ app.get("/api/debug/db", async (req, res) => {
     console.log("Query result:", result.rows[0]);
 
     client.release();
+    console.log("Client released successfully");
 
     res.json({
       message: "Database connection successful",
@@ -152,6 +154,7 @@ app.get("/api/debug/db", async (req, res) => {
     console.error("Detail:", error.detail);
     console.error("Hint:", error.hint);
     console.error("Stack:", error.stack);
+    console.error("Full error object:", JSON.stringify(error, null, 2));
 
     res.status(500).json({
       message: "Database connection failed",
