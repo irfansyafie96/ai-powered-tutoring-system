@@ -1,4 +1,16 @@
 import "dotenv/config";
+
+console.log("--- Checking Environment Variables ---");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("DB_HOST:", process.env.DB_HOST);
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_NAME:", process.env.DB_NAME);
+console.log("DB_PASS:", process.env.DB_PASS ? "Set" : "Not Set");
+console.log("JWT_SECRET:", process.env.JWT_SECRET ? "Set" : "Not Set");
+console.log("CLOUDINARY_URL:", process.env.CLOUDINARY_URL ? "Set" : "Not Set");
+console.log("OPENAI_API_KEY:", process.env.OPENAI_API_KEY ? "Set" : "Not Set");
+console.log("------------------------------------");
+
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
