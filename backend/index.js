@@ -159,6 +159,75 @@ app.get("/api/debug/db", async (req, res) => {
   }
 });
 
+// Database setup endpoint to create tables
+app.post("/api/debug/setup-db", async (req, res) => {
+  try {
+    console.log("=== DATABASE SETUP ===");
+    console.log("Creating database tables...");
+
+    const client = await pool.connect();
+    console.log("✅ Connected to Azure database");
+
+    // Create users table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log("✅ Users table created/verified");
+
+    // Create notes table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notes (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        content TEXT,
+        file_path VARCHAR(500),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log("✅ Notes table created/verified");
+
+    // Create quizzes table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS quizzes (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        questions JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log("✅ Quizzes table created/verified");
+
+    client.release();
+    console.log("✅ Database setup completed successfully");
+
+    res.json({
+      message: "Database setup completed successfully",
+      tables: ["users", "notes", "quizzes"],
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("=== DATABASE SETUP ERROR ===");
+    console.error("Error:", error.message);
+    console.error("Stack:", error.stack);
+
+    res.status(500).json({
+      message: "Database setup failed",
+      error: error.message,
+      details: process.env.NODE_ENV === "development" ? error.stack : null,
+    });
+  }
+});
+
 // Debug endpoint to check environment variables
 app.get("/api/debug/env", (req, res) => {
   const envVars = {

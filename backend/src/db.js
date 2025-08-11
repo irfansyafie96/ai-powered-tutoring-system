@@ -4,7 +4,7 @@ const { Pool } = pg;
 
 dotenv.config();
 
-// Build connection string with all required parameters for Render
+// Azure Database for PostgreSQL configuration
 const connectionConfig = {
   host: process.env.DB_HOST,
   port: 5432,
@@ -12,30 +12,21 @@ const connectionConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
 
-  // SSL configuration for Render
+  // Azure PostgreSQL SSL configuration
   ssl: {
-    rejectUnauthorized: false,
-    require: true,
-    sslmode: "require",
+    rejectUnauthorized: false, // Azure uses self-signed certificates
   },
 
-  // Render-optimized settings
-  connectionTimeoutMillis: 5000, // Shorter timeout
-  idleTimeoutMillis: 30000, // Keep connections alive longer
-  query_timeout: 30000, // Allow longer queries
-  statement_timeout: 30000,
-  max: 3, // Very conservative pool size for free tier
-  min: 0, // No minimum connections
-  acquireTimeoutMillis: 5000,
+  // Azure-optimized connection pool settings
+  connectionTimeoutMillis: 30000, // 30 seconds
+  idleTimeoutMillis: 30000, // 30 seconds
+  max: 10, // Azure allows more connections
+  min: 2, // Keep some connections ready
 
-  // Additional Render-specific parameters
-  application_name: "tutoring-app",
-  connect_timeout: 10,
+  // Connection parameters
+  application_name: "tutoring-app-azure",
   keepAlive: true,
-  keepAliveInitialDelayMillis: 0,
-
-  // Add these connection parameters
-  options: "--application_name=tutoring-app --connect_timeout=10",
+  keepAliveInitialDelayMillis: 10000,
 };
 
 export const pool = new Pool(connectionConfig);
@@ -51,9 +42,9 @@ pool.on("error", (err, client) => {
 });
 
 pool.on("connect", (client) => {
-  console.log("✅ New database client connected");
+  console.log("✅ New Azure database client connected");
 
-  // Set session parameters for better stability
+  // Set session parameters for Azure PostgreSQL
   client
     .query(
       `
@@ -67,13 +58,13 @@ pool.on("connect", (client) => {
     });
 });
 
-// Alternative: Function to get a reliable connection
+// Function to get a reliable connection
 export async function getConnection(retries = 3) {
   for (let i = 0; i < retries; i++) {
     try {
-      console.log(`Connection attempt ${i + 1}/${retries}`);
+      console.log(`Azure connection attempt ${i + 1}/${retries}`);
       const client = await pool.connect();
-      console.log("✅ Database connection acquired");
+      console.log("✅ Azure database connection acquired");
       return client;
     } catch (error) {
       console.log(`❌ Connection attempt ${i + 1} failed:`, error.message);
@@ -96,10 +87,10 @@ export async function testConnection() {
     const result = await client.query(
       "SELECT NOW() as current_time, version()"
     );
-    console.log("✅ Database test successful:", result.rows[0]);
+    console.log("✅ Azure database test successful:", result.rows[0]);
     return { success: true, data: result.rows[0] };
   } catch (error) {
-    console.error("❌ Database test failed:", {
+    console.error("❌ Azure database test failed:", {
       message: error.message,
       code: error.code,
       detail: error.detail,
@@ -125,6 +116,7 @@ console.log({
     connectionTimeout: connectionConfig.connectionTimeoutMillis,
     idleTimeout: connectionConfig.idleTimeoutMillis,
   },
+  provider: "Azure Database for PostgreSQL",
 });
 
 export default pool;
