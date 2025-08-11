@@ -14,10 +14,21 @@ import { cloudinary } from "../config/cloudinary.js";
  * @param {object} res - The response object.
  */
 export const uploadNote = async (req, res) => {
+  console.log("=== UPLOAD NOTE START ===");
+  console.log("Request received for file upload");
+
   try {
     if (!req.file) {
+      console.log("No file in request");
       return res.status(400).json({ error: "No file uploaded" });
     }
+
+    console.log("File object received:", {
+      hasFile: !!req.file,
+      originalname: req.file?.originalname,
+      size: req.file?.size,
+      mimetype: req.file?.mimetype,
+    });
 
     // Check file size (limit to 10MB to prevent timeouts)
     const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -27,7 +38,11 @@ export const uploadNote = async (req, res) => {
       });
     }
 
-    console.log("File uploaded to Cloudinary:", req.file);
+    console.log("File uploaded to Cloudinary:", {
+      originalname: req.file.originalname,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+    });
     console.log("req.file.path:", req.file.path);
     console.log("req.file.url:", req.file.url);
     console.log("req.file.secure_url:", req.file.secure_url);
@@ -40,7 +55,8 @@ export const uploadNote = async (req, res) => {
       console.error("fileUrl is not a string:", fileUrl);
       fileUrl = String(fileUrl);
     }
-    const ext = path.extname(req.file.originalname).toLowerCase();
+    const originalExt = path.extname(req.file.originalname).toLowerCase();
+    let ext = originalExt;
 
     // Step 1: Process file from Cloudinary (download + convert if needed)
     console.log("Processing file from Cloudinary...");
@@ -49,19 +65,88 @@ export const uploadNote = async (req, res) => {
       req.file.originalname
     );
 
+    console.log(
+      "processCloudFile completed, buffer size:",
+      processedBuffer?.length
+    );
+
+    // Check if the file was converted (PPTX -> PDF)
+    let wasConverted = false;
+    let convertedPdfUrl = null;
+
+    if (
+      (originalExt === ".pptx" || originalExt === ".ppt") &&
+      processedBuffer.length > 0
+    ) {
+      // Check if the buffer looks like a PDF (PDF files start with %PDF)
+      if (processedBuffer.toString("ascii", 0, 4) === "%PDF") {
+        ext = ".pdf"; // Update extension to reflect the converted format
+        wasConverted = true;
+        console.log(`File converted from ${originalExt} to ${ext}`);
+
+        // Upload the converted PDF to Cloudinary
+        try {
+          console.log("Uploading converted PDF to Cloudinary...");
+          const pdfUploadResult = await cloudinary.uploader.upload(
+            `data:application/pdf;base64,${processedBuffer.toString("base64")}`,
+            {
+              folder: "ai-tutoring-system",
+              resource_type: "raw",
+              format: "pdf",
+              public_id: `${path.parse(req.file.originalname).name}_converted`,
+            }
+          );
+
+          convertedPdfUrl = pdfUploadResult.secure_url || pdfUploadResult.url;
+          console.log("Converted PDF uploaded to Cloudinary:", convertedPdfUrl);
+        } catch (uploadError) {
+          console.error("Failed to upload converted PDF:", uploadError);
+          // Continue with original file if PDF upload fails
+        }
+      } else {
+        console.log(
+          `File conversion failed, keeping original format ${originalExt}`
+        );
+        wasConverted = false;
+      }
+    }
+
+    // Store conversion info for later use
+    const conversionInfo = {
+      originalFormat: originalExt,
+      convertedFormat: ext,
+      wasConverted: wasConverted,
+    };
+
     // Step 2: Extract full text from the processed file
     console.log("Extracting text from document...");
     let fullText;
     try {
-      fullText = await extractTextFromFile(
-        processedBuffer,
-        req.file.originalname
-      );
-      console.log(`Extracted ${fullText.length} characters from document`);
+      // If the file wasn't converted and it's a PPTX, we need to handle it differently
+      if (
+        !conversionInfo.wasConverted &&
+        (conversionInfo.originalFormat === ".pptx" ||
+          conversionInfo.originalFormat === ".ppt")
+      ) {
+        console.log(
+          "PPTX file was not converted, using fallback text extraction"
+        );
+        fullText = `PowerPoint Presentation: ${
+          req.file.originalname
+        }\n\nThis PowerPoint file has been uploaded successfully but could not be converted to PDF. Text extraction and summarization features are not available for this file type.\n\nFile size: ${(
+          req.file.size / 1024
+        ).toFixed(2)} KB`;
+      } else {
+        fullText = await extractTextFromFile(
+          processedBuffer,
+          req.file.originalname
+        );
+        console.log(`Extracted ${fullText.length} characters from document`);
 
-      // Check if text extraction was successful
-      if (!fullText || fullText.trim().length < 10) {
-        throw new Error("Text extraction produced insufficient content");
+        // Check if text extraction was successful
+        if (!fullText || fullText.trim().length < 10) {
+          throw new Error("Text extraction produced insufficient content");
+        }
       }
     } catch (extractionError) {
       console.error("Text extraction failed:", extractionError);
@@ -112,6 +197,9 @@ export const uploadNote = async (req, res) => {
           summary: JSON.parse(JSON.stringify(String(cachedSummary))),
           fileHash: JSON.parse(JSON.stringify(String(fileHash))),
           cached: true,
+          originalFormat: conversionInfo.originalFormat,
+          convertedFormat: conversionInfo.convertedFormat,
+          wasConverted: conversionInfo.wasConverted,
         },
       };
       console.log("Sending cached response:", cachedResponse);
@@ -134,17 +222,28 @@ export const uploadNote = async (req, res) => {
     }
 
     // Step 7: Return the file URL and summary
+    // Use converted PDF URL if available, otherwise use original file URL
+    const finalFileUrl = convertedPdfUrl || fileUrl;
+
     const responseData = {
       note: {
-        fileUrl: JSON.parse(JSON.stringify(String(fileUrl))),
+        fileUrl: JSON.parse(JSON.stringify(String(finalFileUrl))),
         summary: JSON.parse(JSON.stringify(String(summary))),
         fileHash: JSON.parse(JSON.stringify(String(fileHash))),
         cached: false,
+        originalFormat: conversionInfo.originalFormat,
+        convertedFormat: conversionInfo.convertedFormat,
+        wasConverted: conversionInfo.wasConverted,
       },
     };
     console.log("Sending response:", responseData);
     res.status(201).json(responseData);
   } catch (err) {
+    console.error("=== UPLOAD ERROR OCCURRED ===");
+    console.error("Error message:", err.message);
+    console.error("Error stack:", err.stack);
+    console.error("Error type:", err.constructor.name);
+
     console.error("PPTX Upload Error:", {
       timestamp: new Date().toISOString(),
       file: {

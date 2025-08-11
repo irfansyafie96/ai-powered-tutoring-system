@@ -3,17 +3,17 @@ import axios from "axios";
 const isLocalDev = process.env.NODE_ENV === "development";
 
 export const api = axios.create({
-  baseURL: window.ENV_CONFIG?.REACT_APP_API_URL 
+  baseURL: window.ENV_CONFIG?.REACT_APP_API_URL
     ? `${window.ENV_CONFIG.REACT_APP_API_URL}/api`
     : process.env.REACT_APP_API_URL
-      ? `${process.env.REACT_APP_API_URL}/api`
-      : 'http://localhost:5000/api',
+    ? `${process.env.REACT_APP_API_URL}/api`
+    : "http://localhost:5000/api",
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-    'X-Render-Region': 'singapore'
-  }
+    "Content-Type": "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+    "X-Render-Region": "singapore",
+  },
 });
 
 // export const api = axios.create({

@@ -58,7 +58,18 @@ export const extractTextFromFile = async (fileInput, originalName = null) => {
     );
   }
 
-  if (ext === ".txt") {
+  // Smart file type detection: check actual content, not just extension
+  let actualFileType = ext;
+  if (Buffer.isBuffer(fileInput)) {
+    const buffer = fileInput;
+    // Check if buffer starts with PDF magic number (%PDF)
+    if (buffer.length >= 4 && buffer.toString("ascii", 0, 4) === "%PDF") {
+      actualFileType = ".pdf";
+      console.log(`File content detected as PDF (original extension: ${ext})`);
+    }
+  }
+
+  if (actualFileType === ".txt") {
     if (Buffer.isBuffer(fileInput)) {
       return fileInput.toString("utf-8");
     } else {
@@ -66,7 +77,8 @@ export const extractTextFromFile = async (fileInput, originalName = null) => {
     }
   }
 
-  if (ext === ".pdf") {
+  if (actualFileType === ".pdf") {
+    console.log("Processing as PDF file...");
     const pdfDoc = await getDocument({ data }).promise;
 
     let fullText = "";
@@ -80,23 +92,18 @@ export const extractTextFromFile = async (fileInput, originalName = null) => {
     // Save extracted text for debugging
     fs.writeFileSync("debug_extracted_text.txt", fullText, "utf-8");
     console.log("Full text saved to debug_extracted_text.txt");
+    console.log(`Extracted ${fullText.length} characters from PDF`);
 
     return fullText.trim();
   }
 
-  // Alternative approach in extractTextFromFile.js
-  if (ext === '.pptx' || ext === '.ppt') {
-    try {
-      const buffer = Buffer.isBuffer(fileInput) 
-        ? fileInput 
-        : await fs.promises.readFile(fileInput);
-      
-      // Convert to base64 (officeparser accepts this)
-      const base64Data = buffer.toString('base64');
-      return await officeParser.parseOfficeAsync(base64Data, { type: 'base64' });
-    } catch (err) {
-      throw new Error(`PPTX extraction failed: ${err.message}`);
-    }
+  // Note: PPTX files are now converted to PDF before reaching this function
+  // This section is kept for backward compatibility but should not be reached
+  if (actualFileType === ".pptx" || actualFileType === ".ppt") {
+    console.log(
+      `Warning: ${actualFileType} file reached text extraction without conversion. This should not happen.`
+    );
+    return `PowerPoint Presentation: ${originalName}\n\nThis PowerPoint file should have been converted to PDF before reaching text extraction. Please check the conversion pipeline.`;
   }
 
   throw new Error(

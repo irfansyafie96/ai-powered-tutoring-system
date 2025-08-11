@@ -15,7 +15,7 @@ import {
 
 const notesRoutes = Router();
 
-// Route for uploading a new note file
+// Route for uploading all file types
 notesRoutes.post("/upload", authenticateJWT, upload.single("file"), uploadNote);
 // Route for saving note metadata (summary, subject, topic)
 notesRoutes.post("/", authenticateJWT, saveNoteMetadata);
