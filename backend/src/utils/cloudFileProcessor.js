@@ -57,10 +57,10 @@ export const processCloudFile = async (fileUrl, originalName) => {
     const ext = path.extname(originalName).toLowerCase();
 
     // Convert PPTX to PDF if needed
-    if (ext === ".pptx") {
-      console.log("Detected PPTX file, converting to PDF...");
-      return await convertPptxToPdfWithApi(fileUrl);
-    }
+    // if (ext === ".pptx") {
+    //   console.log("Detected PPTX file, converting to PDF...");
+    //   return await convertPptxToPdfWithApi(fileUrl);
+    // }
 
     // For other file types, just download the file
     return await downloadFileFromUrl(fileUrl);
