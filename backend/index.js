@@ -55,7 +55,18 @@ const allowedOrigins = [
   "https://ai-powered-tutoring-system-frontend.azurewebsites.net",
 ];
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
@@ -64,6 +75,16 @@ app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
+
+// +++ START DIAGNOSTIC ROUTES +++
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Health check OK from root' });
+});
+
+app.get('/api', (req, res) => {
+  res.status(200).json({ message: 'Health check OK from /api' });
+});
+// +++ END DIAGNOSTIC ROUTES +++
 
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
