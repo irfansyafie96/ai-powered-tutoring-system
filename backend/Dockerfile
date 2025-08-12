@@ -1,23 +1,22 @@
-FROM mcr.microsoft.com/appsvc/node:20-lts
+FROM node:20-alpine
 
 # Install LibreOffice and ensure soffice binary is available
-RUN apt-get update && \
-    apt-get install -y \
+RUN apk update && \
+    apk add --no-cache \
         libreoffice \
         libreoffice-writer \
         libreoffice-impress \
         libreoffice-calc \
-        fonts-liberation \
         && \
     # Create symlink to ensure soffice is in PATH
     ln -sf /usr/bin/libreoffice /usr/bin/soffice && \
     # Verify installation
     which soffice && \
     soffice --version && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    # Clean up
+    rm -rf /var/cache/apk/*
 
-WORKDIR /home/site/wwwroot
+WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
