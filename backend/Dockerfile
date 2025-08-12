@@ -8,6 +8,7 @@ RUN apk update && \
         libreoffice-impress \
         libreoffice-calc \
         bash \
+        busybox \
         coreutils \
         && \
     # Create symlink to ensure soffice is in PATH
