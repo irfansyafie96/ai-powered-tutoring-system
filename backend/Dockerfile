@@ -1,12 +1,14 @@
 FROM node:20-alpine
 
-# Install LibreOffice and ensure soffice binary is available
+# Install LibreOffice and essential shell utilities
 RUN apk update && \
     apk add --no-cache \
         libreoffice \
         libreoffice-writer \
         libreoffice-impress \
         libreoffice-calc \
+        bash \
+        coreutils \
         && \
     # Create symlink to ensure soffice is in PATH
     ln -sf /usr/bin/libreoffice /usr/bin/soffice && \
