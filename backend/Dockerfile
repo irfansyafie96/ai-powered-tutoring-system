@@ -10,6 +10,7 @@ RUN apk update && \
         bash \
         busybox \
         coreutils \
+        util-linux \
         && \
     # Create symlink to ensure soffice is in PATH
     ln -sf /usr/bin/libreoffice /usr/bin/soffice && \
@@ -25,4 +26,6 @@ RUN npm install
 COPY . .
 
 EXPOSE 8080
-CMD ["npm", "start"]
+
+# Use exec form and specify the shell explicitly to avoid entrypoint issues
+CMD ["sh", "-c", "node index.js"]
