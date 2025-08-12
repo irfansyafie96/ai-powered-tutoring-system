@@ -2,9 +2,52 @@ import path from "path";
 import fetch from "node-fetch";
 import libre from "libreoffice-convert";
 import { promisify } from "util";
+import { exec } from "child_process";
+import { promisify as utilPromisify } from "util";
 
 // Convert libreoffice-convert to use promises
 const libreConvert = promisify(libre.convert);
+const execAsync = utilPromisify(exec);
+
+/**
+ * Checks if LibreOffice is properly installed and accessible
+ * @returns {Promise<boolean>} - True if LibreOffice is available
+ */
+const checkLibreOffice = async () => {
+  try {
+    // Check if soffice binary exists and is executable
+    const { stdout } = await execAsync("which soffice");
+    if (stdout.trim()) {
+      // Test if soffice can run
+      await execAsync("soffice --version");
+      console.log("✅ LibreOffice (soffice) is available and working");
+      return true;
+    }
+  } catch (error) {
+    console.log(
+      "❌ LibreOffice (soffice) not found or not working:",
+      error.message
+    );
+  }
+
+  try {
+    // Fallback: check if libreoffice binary exists
+    const { stdout } = await execAsync("which libreoffice");
+    if (stdout.trim()) {
+      // Test if libreoffice can run
+      await execAsync("libreoffice --version");
+      console.log("✅ LibreOffice (libreoffice) is available and working");
+      return true;
+    }
+  } catch (error) {
+    console.log(
+      "❌ LibreOffice (libreoffice) not found or not working:",
+      error.message
+    );
+  }
+
+  return false;
+};
 
 /**
  * Converts a PPTX file to PDF using LibreOffice
@@ -14,6 +57,14 @@ const libreConvert = promisify(libre.convert);
 const convertPptxToPdf = async (pptxBuffer) => {
   try {
     console.log("Converting PPTX to PDF with LibreOffice...");
+
+    // First check if LibreOffice is available
+    const isLibreOfficeAvailable = await checkLibreOffice();
+    if (!isLibreOfficeAvailable) {
+      throw new Error(
+        "LibreOffice is not properly installed or accessible on this system"
+      );
+    }
 
     // Convert PPTX to PDF
     const pdfBuffer = await libreConvert(pptxBuffer, ".pdf", undefined);
@@ -26,13 +77,14 @@ const convertPptxToPdf = async (pptxBuffer) => {
     // Check if it's a LibreOffice installation issue
     if (
       error.message.includes("libreoffice") ||
-      error.message.includes("soffice")
+      error.message.includes("soffice") ||
+      error.message.includes("not properly installed")
     ) {
       console.error(
-        "LibreOffice not found. Please install LibreOffice on your system."
+        "LibreOffice not found or not working. Please ensure LibreOffice is properly installed."
       );
       throw new Error(
-        "PPTX to PDF conversion requires LibreOffice to be installed on the server"
+        "PPTX to PDF conversion requires LibreOffice to be properly installed and accessible on the server"
       );
     }
 

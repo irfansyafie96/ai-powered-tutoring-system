@@ -1,8 +1,19 @@
 FROM mcr.microsoft.com/appsvc/node:20-lts
 
-# Install LibreOffice during image build (not startup)
+# Install LibreOffice and ensure soffice binary is available
 RUN apt-get update && \
-    apt-get install -y libreoffice && \
+    apt-get install -y \
+        libreoffice \
+        libreoffice-writer \
+        libreoffice-impress \
+        libreoffice-calc \
+        fonts-liberation \
+        && \
+    # Create symlink to ensure soffice is in PATH
+    ln -sf /usr/bin/libreoffice /usr/bin/soffice && \
+    # Verify installation
+    which soffice && \
+    soffice --version && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
