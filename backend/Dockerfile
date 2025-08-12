@@ -28,4 +28,4 @@ COPY . .
 EXPOSE 8080
 
 # Use exec form and specify the shell explicitly to avoid entrypoint issues
-CMD ["sh", "-c", "node index.js"]
+CMD ["node", "index.js"]
