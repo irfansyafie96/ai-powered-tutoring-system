@@ -7,14 +7,19 @@ cloudinary.config({
   cloudinary_url: process.env.CLOUDINARY_URL,
 });
 
-// Configure Cloudinary storage for ALL file types
+// Configure Cloudinary storage with conditional resource type
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: "ai-tutoring-system",
-    resource_type: "raw", // Use raw for all document files
-    // Remove format restrictions - let Cloudinary handle it automatically
-    // format: "auto", // This was causing issues
+  params: (req, file) => {
+    // Use different resource types based on file type
+    const isPdf = file.mimetype === "application/pdf";
+
+    return {
+      folder: "ai-tutoring-system",
+      resource_type: isPdf ? "image" : "raw", // PDFs as 'image' for better rendering
+      format: isPdf ? "pdf" : undefined,
+      flags: isPdf ? "attachment" : undefined, // Better browser handling for PDFs
+    };
   },
 });
 

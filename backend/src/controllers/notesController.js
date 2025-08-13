@@ -91,7 +91,7 @@ export const uploadNote = async (req, res) => {
             `data:application/pdf;base64,${processedBuffer.toString("base64")}`,
             {
               folder: "ai-tutoring-system",
-              resource_type: "raw",
+              resource_type: "image", // Use 'image' for better PDF rendering
               format: "pdf",
               public_id: `${path.parse(req.file.originalname).name}_converted`,
             }
@@ -108,6 +108,32 @@ export const uploadNote = async (req, res) => {
           `File conversion failed, keeping original format ${originalExt}`
         );
         wasConverted = false;
+      }
+    }
+
+    // Process PDF files for better rendering (add after line ~95 in your current code)
+    if (
+      originalExt === ".pdf" &&
+      processedBuffer.length > 0 &&
+      !convertedPdfUrl
+    ) {
+      try {
+        console.log(
+          "Re-uploading PDF with proper format for better rendering..."
+        );
+        const pdfUploadResult = await cloudinary.uploader.upload(
+          `data:application/pdf;base64,${processedBuffer.toString("base64")}`,
+          {
+            folder: "ai-tutoring-system",
+            resource_type: "image", // Use 'image' for better PDF rendering
+            format: "pdf",
+            public_id: `${path.parse(req.file.originalname).name}_processed`,
+          }
+        );
+        convertedPdfUrl = pdfUploadResult.secure_url || pdfUploadResult.url;
+        console.log("PDF re-uploaded for better rendering:", convertedPdfUrl);
+      } catch (uploadError) {
+        console.error("Failed to re-upload PDF:", uploadError);
       }
     }
 
